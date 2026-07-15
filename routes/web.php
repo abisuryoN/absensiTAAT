@@ -62,6 +62,13 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         Route::post('/imports/preview', [\App\Http\Controllers\Admin\ImportController::class, 'preview'])->name('imports.preview');
         Route::post('/imports/commit', [\App\Http\Controllers\Admin\ImportController::class, 'commit'])->name('imports.commit');
         Route::post('/imports/cancel', [\App\Http\Controllers\Admin\ImportController::class, 'cancel'])->name('imports.cancel');
+
+        // Absensi Gerbang
+        Route::get('/attendance/scan', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'index'])->name('attendance.scan');
+        Route::post('/attendance/scan', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'scan'])->name('attendance.scan.post');
+        Route::get('/attendance/today', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'today'])->name('attendance.today');
+        Route::get('/attendance/manual', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'manualIndex'])->name('attendance.manual');
+        Route::post('/attendance/manual', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'manualStore'])->name('attendance.manual.post');
     });
 
 // 2. Guru Group

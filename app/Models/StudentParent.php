@@ -23,7 +23,21 @@ class StudentParent extends Model
         'relationship',
         'address',
     ];
+    /**
+     * Set the relationship attribute to lowercase.
+     */
+    public function setRelationshipAttribute($value)
+    {
+        $this->attributes['relationship'] = strtolower($value);
+    }
 
+    /**
+     * Get the relationship attribute capitalized.
+     */
+    public function getRelationshipAttribute($value)
+    {
+        return ucfirst(strtolower($value));
+    }
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

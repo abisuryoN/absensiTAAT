@@ -16,9 +16,15 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.attendance.scan') }}" class="nav-link {{ request()->routeIs('admin.attendance.scan') ? 'active' : '' }}">
                     <i class="bi bi-qr-code-scan"></i>
                     <span>Absensi Gerbang</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.attendance.today') }}" class="nav-link {{ request()->routeIs('admin.attendance.today') ? 'active' : '' }}">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Rekap Hari Ini</span>
                 </a>
             </li>
 
