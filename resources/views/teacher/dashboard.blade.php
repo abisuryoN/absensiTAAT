@@ -1,6 +1,19 @@
 <x-app-layout>
     @section('title', 'Dashboard Guru')
 
+    <!-- Welcome Header (Photo 4 style) -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="bg-dark bg-opacity-10 text-dark rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background-color: #334155 !important;">
+            <i class="bi bi-eye-slash text-white fs-5"></i>
+        </div>
+        <div>
+            <h4 class="fw-bold mb-1 text-dark">Halo, {{ strtoupper($teacher->name) }}!</h4>
+            <p class="text-muted mb-0 fs-7">
+                Mode Privasi Aktif: Data sensitif disembunyikan.
+            </p>
+        </div>
+    </div>
+
     <!-- Stats Cards Row -->
     <div class="row g-4 mb-4">
         <div class="col-12 col-md-6 col-lg-4">

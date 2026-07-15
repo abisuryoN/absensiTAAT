@@ -1,6 +1,19 @@
 <x-app-layout>
     @section('title', 'Portal Siswa')
 
+    <!-- Welcome Header (Photo 4 style) -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="bg-dark bg-opacity-10 text-dark rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background-color: #334155 !important;">
+            <i class="bi bi-eye-slash text-white fs-5"></i>
+        </div>
+        <div>
+            <h4 class="fw-bold mb-1 text-dark">Halo, {{ strtoupper($student->name) }}!</h4>
+            <p class="text-muted mb-0 fs-7">
+                Mode Privasi Aktif: Data sensitif disembunyikan.
+            </p>
+        </div>
+    </div>
+
     <div class="row g-4">
         <!-- Main Card: Student Info & Dynamic QR -->
         <div class="col-12 col-lg-8">
