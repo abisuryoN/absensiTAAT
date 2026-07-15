@@ -109,20 +109,46 @@ body {
     width: 280px;
     background: #ebf3fc; /* Biru muda premium */
     color: #334155;
-    height: 100vh;
+    height: calc(100vh - 24px); /* Height for floating layout */
     position: sticky;
-    top: 0;
+    top: 12px;
     left: 0;
+    margin: 12px 15px 12px 15px; /* Float with right margin to prevent button clip */
+    border-radius: 20px; /* Floating rounded design */
     display: flex;
     flex-direction: column;
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 8px 30px rgba(37, 99, 235, 0.05);
+    border: 1px solid rgba(37, 99, 235, 0.08);
     z-index: 100;
-    transition: all 0.3s ease;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin 0.3s ease, padding 0.3s ease;
+
+    .sidebar-toggle-btn {
+        position: absolute;
+        top: 25px;
+        right: -13px;
+        width: 26px;
+        height: 26px;
+        background: #ffffff;
+        border: 1px solid rgba(37, 99, 235, 0.15);
+        border-radius: 50%;
+        color: #475569;
+        cursor: pointer;
+        z-index: 110;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        &:hover {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+            transform: scale(1.1);
+        }
+    }
 
     .sidebar-nav-container {
         flex-grow: 1;
         overflow-y: auto;
         padding-bottom: 1.5rem;
+        transition: all 0.3s ease;
         
         /* Custom scrollbar */
         &::-webkit-scrollbar {
@@ -146,11 +172,12 @@ body {
         border-radius: 12px; /* Capsule style like photo 3 */
         margin: 0.25rem 1rem;
         font-weight: 500;
-        transition: all 0.2s ease;
+        transition: all 0.2s ease, padding 0.3s ease, margin 0.3s ease;
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        i { font-size: 1.2rem; }
+        white-space: nowrap;
+        i { font-size: 1.2rem; transition: margin 0.3s ease; }
         &:hover {
             color: #1e3a8a;
             background: rgba(37, 99, 235, 0.07);
@@ -166,6 +193,50 @@ body {
     .sidebar-header {
         padding: 1.5rem;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        transition: padding 0.3s ease;
+    }
+
+    /* Collapsed Sidebar State (Photo 3 collapse style) */
+    &.collapsed {
+        width: 80px;
+        
+        .sidebar-header {
+            padding: 1.5rem 0.5rem;
+            justify-content: center !important;
+            a {
+                justify-content: center !important;
+                img {
+                    margin: 0 !important;
+                }
+            }
+        }
+
+        .sidebar-title-container, 
+        .sidebar-badge, 
+        .nav-item-header, 
+        .nav-link span, 
+        .profile-text-container, 
+        .profile-expand-icon {
+            display: none !important;
+        }
+
+        .nav-link {
+            justify-content: center !important;
+            padding: 0.75rem 0 !important;
+            margin: 0.25rem 0.75rem !important;
+            i {
+                margin: 0 !important;
+                font-size: 1.35rem;
+            }
+        }
+
+        .sidebar-profile-container {
+            justify-content: center !important;
+            padding: 1rem 0.5rem !important;
+            button {
+                justify-content: center !important;
+            }
+        }
     }
 }
 

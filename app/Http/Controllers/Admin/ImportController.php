@@ -5,6 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\ImportService;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\Templates\StudentImportTemplate;
+use App\Exports\Templates\TeacherImportTemplate;
+use App\Exports\Templates\ClassImportTemplate;
+use App\Exports\Templates\ScheduleImportTemplate;
 
 class ImportController extends Controller
 {
@@ -73,5 +78,35 @@ class ImportController extends Controller
     {
         session()->forget(['import_type', 'import_rows']);
         return redirect()->route('admin.imports.index')->with('success', 'Import data dibatalkan.');
+    }
+
+    public function downloadTemplate($type)
+    {
+        $templates = [
+            'students' => [
+                'class' => StudentImportTemplate::class,
+                'filename' => 'Template_Import_Siswa.xlsx'
+            ],
+            'teachers' => [
+                'class' => TeacherImportTemplate::class,
+                'filename' => 'Template_Import_Guru.xlsx'
+            ],
+            'classes' => [
+                'class' => ClassImportTemplate::class,
+                'filename' => 'Template_Import_Kelas.xlsx'
+            ],
+            'schedules' => [
+                'class' => ScheduleImportTemplate::class,
+                'filename' => 'Template_Import_Jadwal.xlsx'
+            ],
+        ];
+
+        if (!isset($templates[$type])) {
+            return back()->with('error', 'Tipe template tidak valid.');
+        }
+
+        $template = $templates[$type];
+        
+        return Excel::download(new $template['class'], $template['filename']);
     }
 }

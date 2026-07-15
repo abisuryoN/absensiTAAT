@@ -66,6 +66,7 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
 
         // Excel Imports
         Route::get('/imports', [\App\Http\Controllers\Admin\ImportController::class, 'index'])->name('imports.index');
+        Route::get('/imports/template/{type}', [\App\Http\Controllers\Admin\ImportController::class, 'downloadTemplate'])->name('imports.template');
         Route::post('/imports/preview', [\App\Http\Controllers\Admin\ImportController::class, 'preview'])->name('imports.preview');
         Route::post('/imports/commit', [\App\Http\Controllers\Admin\ImportController::class, 'commit'])->name('imports.commit');
         Route::post('/imports/cancel', [\App\Http\Controllers\Admin\ImportController::class, 'cancel'])->name('imports.cancel');

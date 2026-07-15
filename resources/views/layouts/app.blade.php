@@ -12,7 +12,7 @@
     @stack('styles')
 </head>
 <body class="d-flex flex-column h-100">
-    <div class="container-fluid p-0 d-flex align-items-stretch min-vh-100">
+    <div class="container-fluid p-0 d-flex align-items-stretch min-vh-100 bg-white">
         <!-- Sidebar -->
         @include('layouts.partials.sidebar')
 

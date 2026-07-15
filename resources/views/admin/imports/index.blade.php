@@ -47,105 +47,59 @@
             </div>
         </div>
 
-        <!-- Formatting & Instructions -->
+        <!-- Template Downloads -->
         <div class="col-md-6">
             <div class="card glass-card border-0">
                 <div class="card-body p-4">
                     <h5 class="fw-bold text-dark mb-3">
-                        <i class="bi bi-info-circle me-1"></i> Panduan Format Kolom
+                        <i class="bi bi-download me-1"></i> Download Template Excel
                     </h5>
                     
-                    <div class="accordion" id="formatAccordion">
-                        <!-- Siswa -->
-                        <div class="accordion-item bg-transparent">
-                            <h2 class="accordion-header" id="headingSiswa">
-                                <button class="accordion-button collapsed fw-semibold fs-7" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSiswa" aria-expanded="false" aria-controls="collapseSiswa">
-                                    Format Data Siswa
-                                </button>
-                            </h2>
-                            <div id="collapseSiswa" class="accordion-collapse collapse" aria-labelledby="headingSiswa" data-bs-parent="#formatAccordion">
-                                <div class="accordion-body fs-8 text-muted">
-                                    <p class="mb-1">Kolom yang dibutuhkan (baris pertama sebagai header):</p>
-                                    <ul class="ps-3 mb-0">
-                                        <li><code>nis</code> (Wajib, unik)</li>
-                                        <li><code>nisn</code> (Opsional)</li>
-                                        <li><code>name</code> (Wajib)</li>
-                                        <li><code>email</code> (Wajib, unik)</li>
-                                        <li><code>gender</code> (Wajib: L / P)</li>
-                                        <li><code>phone</code> (Opsional)</li>
-                                        <li><code>class_name</code> (Wajib, harus sesuai nama kelas terdaftar)</li>
-                                        <li><code>parent_name</code> (Opsional)</li>
-                                        <li><code>parent_phone</code> (Opsional)</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                    <p class="text-muted fs-8 mb-3">
+                        Download template Excel sesuai dengan jenis data yang akan diimport. Template sudah berisi format kolom yang sesuai.
+                    </p>
 
-                        <!-- Guru -->
-                        <div class="accordion-item bg-transparent">
-                            <h2 class="accordion-header" id="headingGuru">
-                                <button class="accordion-button collapsed fw-semibold fs-7" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGuru" aria-expanded="false" aria-controls="collapseGuru">
-                                    Format Data Guru
-                                </button>
-                            </h2>
-                            <div id="collapseGuru" class="accordion-collapse collapse" aria-labelledby="headingGuru" data-bs-parent="#formatAccordion">
-                                <div class="accordion-body fs-8 text-muted">
-                                    <p class="mb-1">Kolom yang dibutuhkan:</p>
-                                    <ul class="ps-3 mb-0">
-                                        <li><code>nip</code> (Opsional, unik)</li>
-                                        <li><code>nuptk</code> (Opsional, unik)</li>
-                                        <li><code>name</code> (Wajib)</li>
-                                        <li><code>email</code> (Wajib, unik)</li>
-                                        <li><code>gender</code> (Wajib: L / P)</li>
-                                        <li><code>phone</code> (Opsional)</li>
-                                    </ul>
-                                </div>
+                    <div class="d-grid gap-2">
+                        <!-- Template Siswa -->
+                        <a href="{{ route('admin.imports.template', 'students') }}" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between">
+                            <div>
+                                <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                                <span class="fw-semibold">Template Data Siswa</span>
                             </div>
-                        </div>
+                            <i class="bi bi-download"></i>
+                        </a>
 
-                        <!-- Kelas -->
-                        <div class="accordion-item bg-transparent">
-                            <h2 class="accordion-header" id="headingKelas">
-                                <button class="accordion-button collapsed fw-semibold fs-7" type="button" data-bs-toggle="collapse" data-bs-target="#collapseKelas" aria-expanded="false" aria-controls="collapseKelas">
-                                    Format Data Kelas
-                                </button>
-                            </h2>
-                            <div id="collapseKelas" class="accordion-collapse collapse" aria-labelledby="headingKelas" data-bs-parent="#formatAccordion">
-                                <div class="accordion-body fs-8 text-muted">
-                                    <p class="mb-1">Kolom yang dibutuhkan:</p>
-                                    <ul class="ps-3 mb-0">
-                                        <li><code>academic_year</code> (Wajib, harus sesuai tahun ajaran terdaftar cth: 2025/2026)</li>
-                                        <li><code>major_code</code> (Wajib, harus sesuai kode jurusan terdaftar cth: IPA)</li>
-                                        <li><code>grade_level</code> (Wajib: 10 / 11 / 12)</li>
-                                        <li><code>name</code> (Wajib, nama kelas cth: XI IPA 1)</li>
-                                        <li><code>capacity</code> (Wajib, kapasitas siswa cth: 36)</li>
-                                    </ul>
-                                </div>
+                        <!-- Template Guru -->
+                        <a href="{{ route('admin.imports.template', 'teachers') }}" class="btn btn-outline-success text-start d-flex align-items-center justify-content-between">
+                            <div>
+                                <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                                <span class="fw-semibold">Template Data Guru</span>
                             </div>
-                        </div>
+                            <i class="bi bi-download"></i>
+                        </a>
 
-                        <!-- Jadwal -->
-                        <div class="accordion-item bg-transparent">
-                            <h2 class="accordion-header" id="headingJadwal">
-                                <button class="accordion-button collapsed fw-semibold fs-7" type="button" data-bs-toggle="collapse" data-bs-target="#collapseJadwal" aria-expanded="false" aria-controls="collapseJadwal">
-                                    Format Jadwal Pelajaran
-                                </button>
-                            </h2>
-                            <div id="collapseJadwal" class="accordion-collapse collapse" aria-labelledby="headingJadwal" data-bs-parent="#formatAccordion">
-                                <div class="accordion-body fs-8 text-muted">
-                                    <p class="mb-1">Kolom yang dibutuhkan:</p>
-                                    <ul class="ps-3 mb-0">
-                                        <li><code>teacher_email</code> (Wajib, harus email guru terdaftar)</li>
-                                        <li><code>subject_code</code> (Wajib, harus kode mapel terdaftar)</li>
-                                        <li><code>class_name</code> (Wajib, harus nama kelas terdaftar)</li>
-                                        <li><code>day</code> (Wajib: Senin / Selasa / Rabu / Kamis / Jumat / Sabtu)</li>
-                                        <li><code>start_time</code> (Wajib, format HH:MM cth: 07:00)</li>
-                                        <li><code>end_time</code> (Wajib, format HH:MM cth: 08:30)</li>
-                                        <li><code>room</code> (Opsional)</li>
-                                    </ul>
-                                </div>
+                        <!-- Template Kelas -->
+                        <a href="{{ route('admin.imports.template', 'classes') }}" class="btn btn-outline-warning text-start d-flex align-items-center justify-content-between">
+                            <div>
+                                <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                                <span class="fw-semibold">Template Data Kelas</span>
                             </div>
-                        </div>
+                            <i class="bi bi-download"></i>
+                        </a>
+
+                        <!-- Template Jadwal -->
+                        <a href="{{ route('admin.imports.template', 'schedules') }}" class="btn btn-outline-info text-start d-flex align-items-center justify-content-between">
+                            <div>
+                                <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                                <span class="fw-semibold">Template Jadwal Pelajaran</span>
+                            </div>
+                            <i class="bi bi-download"></i>
+                        </a>
+                    </div>
+
+                    <div class="alert alert-info mt-3 mb-0 fs-8">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Petunjuk:</strong> Download template, isi data sesuai format, lalu upload file untuk preview sebelum menyimpan ke database.
                     </div>
                 </div>
             </div>
