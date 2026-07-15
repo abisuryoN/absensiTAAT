@@ -1,0 +1,96 @@
+<x-app-layout>
+    @section('title', 'Tahun Ajaran')
+
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h3 class="fw-bold tracking-tight text-dark mb-1">Tahun Ajaran</h3>
+            <p class="text-muted mb-0">Kelola daftar tahun ajaran sekolah dan status keaktifannya.</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ route('admin.academic-years.create') }}" class="btn btn-primary fw-semibold">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Tahun Ajaran
+            </a>
+        </div>
+    </div>
+
+    <div class="card glass-card border-0">
+        <div class="card-body p-4">
+            <!-- Search & Filters -->
+            <form method="GET" action="{{ route('admin.academic-years.index') }}" class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" name="search" class="form-control border-start-0" placeholder="Cari nama tahun ajaran..." value="{{ request('search') }}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select name="is_active" class="form-select" onchange="this.form.submit()">
+                        <option value="">Semua Status</option>
+                        <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
+                        <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Tidak Aktif</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-light border fw-semibold">Filter</button>
+                </div>
+            </form>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-premium align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nama Tahun Ajaran</th>
+                            <th>Tanggal Mulai</th>
+                            <th>Tanggal Selesai</th>
+                            <th>Status</th>
+                            <th class="text-center" style="width: 150px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($academicYears as $year)
+                            <tr>
+                                <td class="fw-semibold text-dark">{{ $year->name }}</td>
+                                <td>{{ $year->start_date->format('d M Y') }}</td>
+                                <td>{{ $year->end_date->format('d M Y') }}</td>
+                                <td>
+                                    @if($year->is_active)
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-8">Aktif</span>
+                                    @else
+                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 fs-8">Tidak Aktif</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="{{ route('admin.academic-years.edit', $year) }}" class="btn btn-light btn-sm border" title="Edit">
+                                            <i class="bi bi-pencil-square text-primary"></i>
+                                        </a>
+                                        <form action="{{ route('admin.academic-years.destroy', $year) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus tahun ajaran ini? Data yang terikat akan ikut terpengaruh.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-light btn-sm border" title="Hapus">
+                                                <i class="bi bi-trash3 text-danger"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    Tidak ada data tahun ajaran ditemukan.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-3">
+                {{ $academicYears->links() }}
+            </div>
+        </div>
+    </div>
+</x-app-layout>

@@ -29,6 +29,22 @@ class Schedule extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * Set the day attribute to lowercase.
+     */
+    public function setDayAttribute($value)
+    {
+        $this->attributes['day'] = strtolower($value);
+    }
+
+    /**
+     * Get the day attribute capitalized.
+     */
+    public function getDayAttribute($value)
+    {
+        return ucfirst(strtolower($value));
+    }
+
     public function academicYear(): BelongsTo
     {
         return $this->belongsTo(AcademicYear::class);

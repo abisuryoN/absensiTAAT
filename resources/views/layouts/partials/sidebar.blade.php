@@ -24,33 +24,63 @@
 
             <li class="nav-item-header text-uppercase text-muted px-4 py-2 mt-3 fs-7 fw-bold">Master Data</li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.students.index') }}" class="nav-link {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
                     <i class="bi bi-people"></i>
                     <span>Data Siswa</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.parents.index') }}" class="nav-link {{ request()->routeIs('admin.parents.*') ? 'active' : '' }}">
+                    <i class="bi bi-person-heart"></i>
+                    <span>Data Orang Tua</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.teachers.index') }}" class="nav-link {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
                     <i class="bi bi-person-badge"></i>
                     <span>Data Guru</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.classes.index') }}" class="nav-link {{ request()->routeIs('admin.classes.*') ? 'active' : '' }}">
                     <i class="bi bi-building"></i>
                     <span>Data Kelas</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.academic-years.index') }}" class="nav-link {{ request()->routeIs('admin.academic-years.*') ? 'active' : '' }}">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Tahun Ajaran</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.semesters.index') }}" class="nav-link {{ request()->routeIs('admin.semesters.*') ? 'active' : '' }}">
+                    <i class="bi bi-calendar-range"></i>
+                    <span>Semester</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.majors.index') }}" class="nav-link {{ request()->routeIs('admin.majors.*') ? 'active' : '' }}">
+                    <i class="bi bi-diagram-3"></i>
+                    <span>Jurusan</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.subjects.index') }}" class="nav-link {{ request()->routeIs('admin.subjects.*') ? 'active' : '' }}">
                     <i class="bi bi-book"></i>
                     <span>Mata Pelajaran</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.schedules.index') }}" class="nav-link {{ request()->routeIs('admin.schedules.*') ? 'active' : '' }}">
                     <i class="bi bi-calendar3"></i>
                     <span>Jadwal Pelajaran</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.holidays.index') }}" class="nav-link {{ request()->routeIs('admin.holidays.*') ? 'active' : '' }}">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>Hari Libur</span>
                 </a>
             </li>
 
@@ -62,13 +92,13 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.imports.index') }}" class="nav-link {{ request()->routeIs('admin.imports.*') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-arrow-up"></i>
                     <span>Import Data</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.settings.index') }}" class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
                     <i class="bi bi-gear"></i>
                     <span>Pengaturan Sistem</span>
                 </a>

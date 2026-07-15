@@ -1,0 +1,109 @@
+<x-app-layout>
+    @section('title', 'Data Orang Tua')
+
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h3 class="fw-bold tracking-tight text-dark mb-1">Daftar Orang Tua / Wali</h3>
+            <p class="text-muted mb-0">Kelola data wali siswa untuk integrasi notifikasi WhatsApp.</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ route('admin.parents.create') }}" class="btn btn-primary fw-semibold">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Orang Tua
+            </a>
+        </div>
+    </div>
+
+    <div class="card glass-card border-0">
+        <div class="card-body p-4">
+            <!-- Search & Filters -->
+            <form method="GET" action="{{ route('admin.parents.index') }}" class="row g-3 mb-4">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" name="search" class="form-control border-start-0" placeholder="Cari nama orang tua atau nomor HP..." value="{{ request('search') }}">
+                    </div>
+                </div>
+                <div class="col-md-4 d-grid">
+                    <button type="submit" class="btn btn-light border fw-semibold">Cari</button>
+                </div>
+            </form>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-premium align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nama Lengkap</th>
+                            <th>Hubungan</th>
+                            <th>No. HP Utama (WA)</th>
+                            <th>No. HP Cadangan</th>
+                            <th>Alamat</th>
+                            <th>Akun Portal (Email)</th>
+                            <th>Daftar Siswa Terkait</th>
+                            <th class="text-center" style="width: 150px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($parents as $parent)
+                            <tr>
+                                <td class="fw-semibold text-dark">{{ $parent->name }}</td>
+                                <td>
+                                    @if($parent->relationship == 'Ayah')
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 fs-8">Ayah</span>
+                                    @elseif($parent->relationship == 'Ibu')
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 fs-8">Ibu</span>
+                                    @else
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1 fs-8">Wali</span>
+                                    @endif
+                                </td>
+                                <td class="fw-bold text-dark">{{ $parent->phone }}</td>
+                                <td>{{ $parent->phone_secondary ?: '-' }}</td>
+                                <td>{{ Str::limit($parent->address, 40) ?: '-' }}</td>
+                                <td>
+                                    @if($parent->user)
+                                        <span class="text-dark fs-7">{{ $parent->user->email }}</span>
+                                    @else
+                                        <span class="text-muted fs-8">Tidak Ada Akun</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @forelse($parent->students as $student)
+                                        <span class="badge bg-light text-dark border fs-8 mb-1">{{ $student->name }} ({{ $student->class->name }})</span>
+                                    @empty
+                                        <span class="text-muted fs-8">Belum memetakan siswa</span>
+                                    @endforelse
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="{{ route('admin.parents.edit', $parent) }}" class="btn btn-light btn-sm border" title="Edit">
+                                            <i class="bi bi-pencil-square text-primary"></i>
+                                        </a>
+                                        <form action="{{ route('admin.parents.destroy', $parent) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data orang tua ini? Akun login terkait juga akan ikut dihapus.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-light btn-sm border" title="Hapus">
+                                                <i class="bi bi-trash3 text-danger"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    Tidak ada data orang tua ditemukan.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-3">
+                {{ $parents->links() }}
+            </div>
+        </div>
+    </div>
+</x-app-layout>
