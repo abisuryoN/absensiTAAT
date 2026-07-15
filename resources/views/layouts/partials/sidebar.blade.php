@@ -92,7 +92,7 @@
 
             <li class="nav-item-header text-uppercase text-muted px-4 py-2 mt-3 fs-7 fw-bold">Laporan & Pengaturan</li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.reports.index') }}" class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-bar-graph"></i>
                     <span>Laporan Absensi</span>
                 </a>

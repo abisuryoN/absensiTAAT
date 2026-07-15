@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\HolidayController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\ReportController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -54,6 +55,11 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         Route::resource('students', StudentController::class);
         Route::resource('schedules', ScheduleController::class);
         Route::resource('holidays', HolidayController::class);
+
+        // Laporan & Reporting
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/excel', [ReportController::class, 'exportExcel'])->name('reports.excel');
+        Route::get('/reports/pdf', [ReportController::class, 'exportPdf'])->name('reports.pdf');
 
         // System Settings
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
