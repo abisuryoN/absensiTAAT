@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Student\StudentPortalController;
+use App\Http\Controllers\Teacher\TeacherPortalController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\AcademicYearController;
@@ -77,11 +78,15 @@ Route::middleware(['auth', 'active', 'role:guru'])
     ->prefix('teacher')
     ->name('teacher.')
     ->group(function () {
-        Route::get('/dashboard', function () {
-            return view('teacher.dashboard');
-        })->name('dashboard');
-
-        // Absensi Mapel routes will go here in Fase 5
+        Route::get('/dashboard', [TeacherPortalController::class, 'dashboard'])->name('dashboard');
+        Route::get('/schedules', [TeacherPortalController::class, 'schedules'])->name('schedules');
+        
+        // Absensi Mapel
+        Route::get('/attendance/{schedule}', [TeacherPortalController::class, 'attendanceInput'])->name('attendance.input');
+        Route::post('/attendance/store', [TeacherPortalController::class, 'attendanceStore'])->name('attendance.store');
+        
+        // Rekap Mengajar
+        Route::get('/recap', [TeacherPortalController::class, 'recap'])->name('recap');
     });
 
 // 3. Siswa Group

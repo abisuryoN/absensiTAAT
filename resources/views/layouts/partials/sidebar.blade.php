@@ -115,25 +115,25 @@
         @if(auth()->user()->hasRole('guru'))
             <li class="nav-item-header text-uppercase text-muted px-4 py-2 fs-7 fw-bold">Guru</li>
             <li>
-                <a href="{{ route('teacher.dashboard') }}" class="nav-link {{ request()->routeIs('teacher.dashboard') ? 'active' : '' }}">
+                <a href="{{ route('teacher.dashboard') }}" class="nav-link {{ request()->routeIs('teacher.dashboard') && !request()->routeIs('teacher.attendance.*') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('teacher.schedules') }}" class="nav-link {{ request()->routeIs('teacher.schedules') ? 'active' : '' }}">
                     <i class="bi bi-calendar-event"></i>
                     <span>Jadwal Mengajar</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('teacher.dashboard') }}" class="nav-link {{ request()->routeIs('teacher.attendance.*') ? 'active' : '' }}">
                     <i class="bi bi-check2-square"></i>
                     <span>Absensi Mapel</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('teacher.recap') }}" class="nav-link {{ request()->routeIs('teacher.recap') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-text"></i>
                     <span>Rekap Mengajar</span>
                 </a>

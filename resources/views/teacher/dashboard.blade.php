@@ -1,27 +1,28 @@
 <x-app-layout>
     @section('title', 'Dashboard Guru')
 
+    <!-- Stats Cards Row -->
     <div class="row g-4 mb-4">
-        <div class="col-12 col-md-6">
-            <div class="card stat-card glass-card text-white bg-primary h-100">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card stat-card glass-card text-white bg-primary border-0 shadow-sm h-100">
                 <div class="card-body d-flex align-items-center justify-content-between p-4">
                     <div>
-                        <span class="fs-7 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Jadwal Mengajar Hari Ini</span>
-                        <h2 class="display-6 fw-bold mb-0 mt-1">3 Kelas</h2>
+                        <span class="fs-8 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Jadwal Hari Ini</span>
+                        <h2 class="fw-bold mb-0 mt-1">{{ $schedulesCount }} Kelas</h2>
                     </div>
                     <div class="bg-white bg-opacity-15 rounded-3 p-3">
-                        <i class="bi bi-calendar-check-fill fs-2"></i>
+                        <i class="bi bi-calendar-check fs-2"></i>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-12 col-md-6">
-            <div class="card stat-card glass-card text-white bg-success h-100">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card stat-card glass-card text-white bg-success border-0 shadow-sm h-100">
                 <div class="card-body d-flex align-items-center justify-content-between p-4">
                     <div>
-                        <span class="fs-7 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Absensi Selesai Diisi</span>
-                        <h2 class="display-6 fw-bold mb-0 mt-1">2 Kelas</h2>
+                        <span class="fs-8 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Selesai Dikirim</span>
+                        <h2 class="fw-bold mb-0 mt-1">{{ $submittedCount }} Kelas</h2>
                     </div>
                     <div class="bg-white bg-opacity-15 rounded-3 p-3">
                         <i class="bi bi-check2-all fs-2"></i>
@@ -29,51 +30,102 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card stat-card glass-card text-white bg-warning border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <span class="fs-8 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Draf Tersimpan</span>
+                        <h2 class="fw-bold mb-0 mt-1">{{ $draftCount }} Kelas</h2>
+                    </div>
+                    <div class="bg-white bg-opacity-15 rounded-3 p-3">
+                        <i class="bi bi-pencil-square fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="card glass-card border-0 shadow-sm p-4">
-        <h5 class="fw-bold mb-3">Jadwal Pelajaran Hari Ini</h5>
-        <div class="table-responsive">
-            <table class="table table-premium align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th>Waktu</th>
-                        <th>Mata Pelajaran</th>
-                        <th>Kelas</th>
-                        <th>Status Absensi</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>07:30 - 09:00</td>
-                        <td>Matematika Peminatan</td>
-                        <td>XI IPA 1</td>
-                        <td><span class="badge bg-success">Sudah Diisi</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-secondary rounded-3 px-3 disabled">Lihat Rekap</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>09:15 - 10:45</td>
-                        <td>Matematika Peminatan</td>
-                        <td>XI IPA 2</td>
-                        <td><span class="badge bg-success">Sudah Diisi</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-secondary rounded-3 px-3 disabled">Lihat Rekap</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>11:00 - 12:30</td>
-                        <td>Matematika Wajib</td>
-                        <td>XI IPS 3</td>
-                        <td><span class="badge bg-warning text-dark">Belum Diisi</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-primary rounded-3 px-3 disabled">Isi Absensi</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- Main Table Card -->
+    <div class="card glass-card border-0 shadow-sm">
+        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-clock-history me-2 text-primary"></i>Jadwal Mengajar Hari Ini
+            </h5>
+            <span class="badge bg-light text-dark px-3 py-2 fs-8 border rounded-3 fw-semibold">
+                <i class="bi bi-calendar-event me-1 text-primary"></i>{{ Carbon\Carbon::today()->translatedFormat('l, d F Y') }}
+            </span>
+        </div>
+        <div class="card-body px-4 pb-4">
+            @if($todaySchedules->isEmpty())
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-x fs-1 text-muted d-block mb-3"></i>
+                    <h6 class="fw-semibold text-muted mb-1">Tidak Ada Jadwal Mengajar Hari Ini</h6>
+                    <p class="text-muted fs-8 mb-0">Selamat beristirahat atau silakan periksa tab jadwal mingguan.</p>
+                </div>
+            @else
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="fs-8 fw-semibold text-muted text-uppercase" style="width: 15%;">Waktu</th>
+                                <th class="fs-8 fw-semibold text-muted text-uppercase">Mata Pelajaran</th>
+                                <th class="fs-8 fw-semibold text-muted text-uppercase">Kelas</th>
+                                <th class="fs-8 fw-semibold text-muted text-uppercase" style="width: 20%;">Status Absensi</th>
+                                <th class="fs-8 fw-semibold text-muted text-uppercase text-end" style="width: 20%;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($todaySchedules as $schedule)
+                                @php
+                                    $attendance = $todayAttendances->get($schedule->id);
+                                @endphp
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-dark bg-opacity-10 text-dark px-2 py-1 fw-semibold fs-8">
+                                            {{ substr($schedule->start_time, 0, 5) }} - {{ substr($schedule->end_time, 0, 5) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-semibold text-dark">{{ $schedule->subject->name ?? '-' }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-semibold text-dark">{{ $schedule->class->name ?? '-' }}</span>
+                                    </td>
+                                    <td>
+                                        @if($attendance)
+                                            @if($attendance->status === 'submitted')
+                                                <span class="badge bg-success-subtle text-success-emphasis border border-success border-opacity-25 px-2.5 py-1 fs-9">
+                                                    <i class="bi bi-check-circle-fill me-1"></i>Sudah Diisi
+                                                </span>
+                                            @else
+                                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning border-opacity-25 px-2.5 py-1 fs-9">
+                                                    <i class="bi bi-pencil-square me-1"></i>Draf (Belum Kirim)
+                                                </span>
+                                            @endif
+                                        @else
+                                            <span class="badge bg-secondary-subtle text-secondary px-2.5 py-1 fs-9">
+                                                <i class="bi bi-exclamation-circle me-1"></i>Belum Diisi
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end">
+                                        @if($attendance && $attendance->status === 'submitted')
+                                            <a href="{{ route('teacher.attendance.input', $schedule->id) }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 fs-8">
+                                                <i class="bi bi-pencil me-1"></i>Ubah Absen
+                                            </a>
+                                        @else
+                                            <a href="{{ route('teacher.attendance.input', $schedule->id) }}" class="btn btn-sm btn-primary rounded-3 px-3 fs-8">
+                                                <i class="bi bi-check2-square me-1"></i>Isi Absensi
+                                            </a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>
