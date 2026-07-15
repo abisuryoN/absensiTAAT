@@ -9,6 +9,7 @@
 
     <!-- Vite Styles & Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @stack('styles')
 </head>
 <body class="d-flex flex-column h-100">
     <div class="container-fluid p-0 d-flex align-items-stretch min-vh-100">
@@ -43,5 +44,7 @@
             @include('layouts.partials.footer')
         </div>
     </div>
+    @stack('scripts')
 </body>
 </html>
+

@@ -150,19 +150,19 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('student.qrcode') }}" class="nav-link {{ request()->routeIs('student.qrcode') ? 'active' : '' }}">
                     <i class="bi bi-qr-code"></i>
                     <span>QR Code Absensi</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('student.schedule') }}" class="nav-link {{ request()->routeIs('student.schedule') ? 'active' : '' }}">
                     <i class="bi bi-calendar3"></i>
                     <span>Jadwal Pelajaran</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
+                <a href="{{ route('student.history') }}" class="nav-link {{ request()->routeIs('student.history') ? 'active' : '' }}">
                     <i class="bi bi-clock-history"></i>
                     <span>Riwayat Hadir</span>
                 </a>

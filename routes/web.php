@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Student\StudentPortalController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\AcademicYearController;
@@ -88,11 +89,18 @@ Route::middleware(['auth', 'active', 'role:siswa'])
     ->prefix('student')
     ->name('student.')
     ->group(function () {
-        Route::get('/dashboard', function () {
-            return view('student.dashboard');
-        })->name('dashboard');
+        // Dashboard with live QR Code
+        Route::get('/dashboard', [StudentPortalController::class, 'dashboard'])->name('dashboard');
 
-        // QR Code routes will go here in Fase 4
+        // QR Code AJAX endpoint
+        Route::get('/qr-code', [StudentPortalController::class, 'dashboard'])->name('qrcode');
+        Route::post('/qr-code/generate', [StudentPortalController::class, 'generateQr'])->name('qrcode.generate');
+
+        // Jadwal Pelajaran
+        Route::get('/schedule', [StudentPortalController::class, 'schedule'])->name('schedule');
+
+        // Riwayat Kehadiran
+        Route::get('/history', [StudentPortalController::class, 'history'])->name('history');
     });
 
 require __DIR__.'/auth.php';
