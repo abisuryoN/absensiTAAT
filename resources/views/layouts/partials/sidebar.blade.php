@@ -212,14 +212,14 @@
             </div>
             <i class="bi bi-chevron-expand text-muted flex-shrink-0 profile-expand-icon"></i>
         </button>
-        <ul class="dropdown-menu dropdown-menu-dark border-0 shadow-lg p-2 rounded-3 w-100" aria-labelledby="sidebarUserMenu" style="margin-bottom: 5px;">
-            <li class="px-3 py-2 border-bottom border-secondary border-opacity-20 mb-2">
-                <span class="d-block text-white fw-bold fs-7">{{ auth()->user()->name }}</span>
-                <span class="text-muted fs-8 text-uppercase">{{ auth()->user()->roles->first()?->name ?? 'User' }}</span>
+        <ul class="dropdown-menu border-0 shadow-lg p-2 rounded-3 w-100" aria-labelledby="sidebarUserMenu" style="margin-bottom: 5px;">
+            <li class="px-3 py-2 border-bottom mb-2">
+                <span class="d-block fw-bold fs-7" style="color: #1e293b;">{{ auth()->user()->name }}</span>
+                <span class="fs-8 text-uppercase" style="color: #64748b;">{{ auth()->user()->roles->first()?->name ?? 'User' }}</span>
             </li>
             <li>
                 <a class="dropdown-item d-flex align-items-center gap-2 px-3 py-2 fs-7 rounded-2" href="{{ route('profile.edit') }}">
-                    <i class="bi bi-person text-muted"></i>
+                    <i class="bi bi-person" style="color: #64748b;"></i>
                     <span>Profil Saya</span>
                 </a>
             </li>

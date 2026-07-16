@@ -288,6 +288,138 @@ body {
     tbody tr:last-child td { border-bottom: none; }
 }
 
+// Profile Dropdown Styling (Light Theme)
+.dropdown-menu {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+    
+    .dropdown-item {
+        color: #334155;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        
+        &.text-danger:hover {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+    }
+    
+    .border-bottom {
+        border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+    
+    .dropdown-divider {
+        border-color: rgba(0, 0, 0, 0.08);
+    }
+}
+
+// Profile Page Styling
+.profile-section {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    margin-bottom: 1.5rem;
+    border: 1px solid #e2e8f0;
+    
+    h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+    
+    p {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+        
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+        
+        input {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            
+            &:focus {
+                outline: none;
+                border-color: $primary;
+                box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            }
+        }
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+        color: #ffffff;
+        border: none;
+        padding: 0.625rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background: linear-gradient(135deg, darken($primary, 5%) 0%, darken($secondary, 5%) 100%);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        &:active {
+            transform: translateY(1px);
+        }
+    }
+    
+    .btn-delete {
+        background: #ffffff;
+        color: $danger;
+        border: 1px solid $danger;
+        padding: 0.625rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background: $danger;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+            transform: translateY(-1px);
+        }
+    }
+    
+    .error-message {
+        color: $danger;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+    
+    .success-message {
+        color: $success;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+}
+
 // Helpers
 .hover-lift {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
