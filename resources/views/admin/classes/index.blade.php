@@ -24,28 +24,34 @@
                     </div>
                 </div>
                 <div class="col-md-3">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Tahun Ajaran">
                     <select name="academic_year_id" class="form-select" onchange="this.form.submit()">
                         <option value="">Semua Tahun Ajaran</option>
                         @foreach($academicYears as $year)
                             <option value="{{ $year->id }}" {{ request('academic_year_id') == $year->id ? 'selected' : '' }}>{{ $year->name }}</option>
                         @endforeach
                     </select>
+                    </div>
                 </div>
                 <div class="col-md-2">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Jurusan">
                     <select name="major_id" class="form-select" onchange="this.form.submit()">
                         <option value="">Semua Jurusan</option>
                         @foreach($majors as $major)
                             <option value="{{ $major->id }}" {{ request('major_id') == $major->id ? 'selected' : '' }}>{{ $major->code }}</option>
                         @endforeach
                     </select>
+                    </div>
                 </div>
                 <div class="col-md-2">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Tingkat">
                     <select name="grade_level" class="form-select" onchange="this.form.submit()">
                         <option value="">Semua Tingkat</option>
                         <option value="10" {{ request('grade_level') == '10' ? 'selected' : '' }}>Kelas 10</option>
                         <option value="11" {{ request('grade_level') == '11' ? 'selected' : '' }}>Kelas 11</option>
                         <option value="12" {{ request('grade_level') == '12' ? 'selected' : '' }}>Kelas 12</option>
                     </select>
+                    </div>
                 </div>
                 <div class="col-md-2 d-grid">
                     <button type="submit" class="btn btn-light border fw-semibold">Filter</button>

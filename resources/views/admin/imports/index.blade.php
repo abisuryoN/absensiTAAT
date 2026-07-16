@@ -22,6 +22,7 @@
 
                         <div class="mb-3">
                             <label for="type" class="form-label fw-semibold">Tipe Data Master <span class="text-danger">*</span></label>
+                            <div class="custom-select-wrapper" data-placeholder="Pilih Tipe Data">
                             <select name="type" id="type" class="form-select" required>
                                 <option value="">Pilih Tipe Data</option>
                                 <option value="students">Data Siswa</option>
@@ -29,6 +30,7 @@
                                 <option value="classes">Data Kelas</option>
                                 <option value="schedules">Data Jadwal Pelajaran</option>
                             </select>
+                            </div>
                         </div>
 
                         <div class="mb-4">

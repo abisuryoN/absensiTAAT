@@ -22,6 +22,7 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="academic_year_id" class="form-label fw-semibold">Tahun Ajaran <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Tahun Ajaran">
                                 <select name="academic_year_id" id="academic_year_id" class="form-select @error('academic_year_id') is-invalid @enderror" required>
                                     <option value="">Pilih Tahun Ajaran</option>
                                     @foreach($academicYears as $year)
@@ -30,12 +31,14 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                </div>
                                 @error('academic_year_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="semester_id" class="form-label fw-semibold">Semester <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Semester">
                                 <select name="semester_id" id="semester_id" class="form-select @error('semester_id') is-invalid @enderror" required>
                                     <option value="">Pilih Semester</option>
                                     @foreach($semesters as $semester)
@@ -44,6 +47,7 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                </div>
                                 @error('semester_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -53,24 +57,28 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="teacher_id" class="form-label fw-semibold">Guru Pengajar <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Guru">
                                 <select name="teacher_id" id="teacher_id" class="form-select @error('teacher_id') is-invalid @enderror" required>
                                     <option value="">Pilih Guru</option>
                                     @foreach($teachers as $teacher)
                                         <option value="{{ $teacher->id }}" {{ old('teacher_id', $schedule->teacher_id) == $teacher->id ? 'selected' : '' }}>{{ $teacher->name }}</option>
                                     @endforeach
                                 </select>
+                                </div>
                                 @error('teacher_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="subject_id" class="form-label fw-semibold">Mata Pelajaran <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Mata Pelajaran">
                                 <select name="subject_id" id="subject_id" class="form-select @error('subject_id') is-invalid @enderror" required>
                                     <option value="">Pilih Mata Pelajaran</option>
                                     @foreach($subjects as $subject)
                                         <option value="{{ $subject->id }}" {{ old('subject_id', $schedule->subject_id) == $subject->id ? 'selected' : '' }}>{{ $subject->name }}</option>
                                     @endforeach
                                 </select>
+                                </div>
                                 @error('subject_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -80,24 +88,28 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="class_id" class="form-label fw-semibold">Kelas <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Kelas">
                                 <select name="class_id" id="class_id" class="form-select @error('class_id') is-invalid @enderror" required>
                                     <option value="">Pilih Kelas</option>
                                     @foreach($classes as $class)
                                         <option value="{{ $class->id }}" {{ old('class_id', $schedule->class_id) == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
                                     @endforeach
                                 </select>
+                                </div>
                                 @error('class_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="day" class="form-label fw-semibold">Hari <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Hari">
                                 <select name="day" id="day" class="form-select @error('day') is-invalid @enderror" required>
                                     <option value="">Pilih Hari</option>
                                     @foreach(['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'] as $day)
                                         <option value="{{ $day }}" {{ old('day', $schedule->day) == $day ? 'selected' : '' }}>{{ $day }}</option>
                                     @endforeach
                                 </select>
+                                </div>
                                 @error('day')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

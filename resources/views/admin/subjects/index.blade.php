@@ -24,11 +24,13 @@
                     </div>
                 </div>
                 <div class="col-md-4">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Status">
                     <select name="is_active" class="form-select" onchange="this.form.submit()">
                         <option value="">Semua Status</option>
                         <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
                         <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Tidak Aktif</option>
                     </select>
+                    </div>
                 </div>
                 <div class="col-md-2 d-grid">
                     <button type="submit" class="btn btn-light border fw-semibold">Filter</button>

@@ -50,11 +50,13 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="gender" class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Gender">
                                 <select name="gender" id="gender" class="form-select @error('gender') is-invalid @enderror" required>
                                     <option value="">Pilih Gender</option>
                                     <option value="L" {{ old('gender', $student->gender) == 'L' ? 'selected' : '' }}>Laki-laki</option>
                                     <option value="P" {{ old('gender', $student->gender) == 'P' ? 'selected' : '' }}>Perempuan</option>
                                 </select>
+                                </div>
                                 @error('gender')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -113,12 +115,14 @@
 
                         <div class="mb-3">
                             <label for="class_id" class="form-label fw-semibold">Kelas <span class="text-danger">*</span></label>
+                            <div class="custom-select-wrapper" data-placeholder="Pilih Kelas">
                             <select name="class_id" id="class_id" class="form-select @error('class_id') is-invalid @enderror" required>
                                 <option value="">Pilih Kelas</option>
                                 @foreach($classes as $class)
                                     <option value="{{ $class->id }}" {{ old('class_id', $student->class_id) == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
                                 @endforeach
                             </select>
+                            </div>
                             @error('class_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -127,12 +131,14 @@
 
                         <div class="mb-3">
                             <label for="parent_id" class="form-label fw-semibold">Orang Tua / Wali</label>
+                            <div class="custom-select-wrapper" data-placeholder="Pilih Orang Tua (Opsional)">
                             <select name="parent_id" id="parent_id" class="form-select @error('parent_id') is-invalid @enderror">
                                 <option value="">Pilih Orang Tua (Opsional)</option>
                                 @foreach($parents as $parent)
                                     <option value="{{ $parent->id }}" {{ old('parent_id', $student->parent_id) == $parent->id ? 'selected' : '' }}>{{ $parent->name }} ({{ $parent->relationship }}) - {{ $parent->phone }}</option>
                                 @endforeach
                             </select>
+                            </div>
                             @error('parent_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

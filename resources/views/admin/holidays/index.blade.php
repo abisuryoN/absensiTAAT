@@ -127,14 +127,16 @@
                         </div>
                         <div class="mb-3">
                             <label for="academic_year_id" class="form-label fw-semibold">Pilih Tahun Ajaran <span class="text-danger">*</span></label>
-                            <select name="academic_year_id" id="academic_year_id" class="form-select" required>
-                                <option value="">-- Pilih Tahun Ajaran --</option>
+                            <div class="custom-select-wrapper" data-placeholder="-- Pilih Tahun Ajaran --">
+                                <select name="academic_year_id" id="academic_year_id" class="form-select" required>
+                                    <option value="">-- Pilih Tahun Ajaran --</option>
                                 @foreach($academicYears as $year)
                                     <option value="{{ $year->id }}" {{ $year->is_active ? 'selected' : '' }}>
                                         {{ $year->name }} {{ $year->is_active ? '(Aktif)' : '' }}
                                     </option>
-                                @endforeach
-                            </select>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div class="alert alert-warning">
                             <i class="bi bi-exclamation-triangle me-2"></i>

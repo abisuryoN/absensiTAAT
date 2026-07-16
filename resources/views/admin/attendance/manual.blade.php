@@ -21,6 +21,7 @@
                         <!-- Student Selector -->
                         <div class="mb-3">
                             <label for="student_id" class="form-label fw-semibold">Pilih Siswa <span class="text-danger">*</span></label>
+                            <div class="custom-select-wrapper" data-placeholder="Cari Siswa...">
                             <select name="student_id" id="student_id" class="form-select @error('student_id') is-invalid @enderror" required>
                                 <option value="">Cari Siswa...</option>
                                 @foreach($students as $student)
@@ -29,6 +30,7 @@
                                     </option>
                                 @endforeach
                             </select>
+                            </div>
                             @error('student_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -37,6 +39,7 @@
                         <!-- Status Selector -->
                         <div class="mb-3">
                             <label for="status" class="form-label fw-semibold">Status Kehadiran <span class="text-danger">*</span></label>
+                            <div class="custom-select-wrapper" data-placeholder="Pilih Status">
                             <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required>
                                 <option value="">Pilih Status</option>
                                 <option value="hadir" {{ old('status') === 'hadir' ? 'selected' : '' }}>Hadir</option>
@@ -45,6 +48,7 @@
                                 <option value="sakit" {{ old('status') === 'sakit' ? 'selected' : '' }}>Sakit</option>
                                 <option value="alpha" {{ old('status') === 'alpha' ? 'selected' : '' }}>Alpha (Tidak Hadir)</option>
                             </select>
+                            </div>
                             @error('status')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

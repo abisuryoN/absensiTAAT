@@ -75,6 +75,7 @@
                     </div>
                     <div class="col-auto">
                         <label class="form-label fs-8 fw-semibold text-muted text-uppercase mb-1">Status</label>
+                        <div class="custom-select-wrapper" data-placeholder="Semua Status">
                         <select name="status" class="form-select form-select-sm" style="max-width: 160px;">
                             <option value="">Semua Status</option>
                             <option value="hadir" {{ $selectedStatus === 'hadir' ? 'selected' : '' }}>Hadir</option>
@@ -83,6 +84,7 @@
                             <option value="sakit" {{ $selectedStatus === 'sakit' ? 'selected' : '' }}>Sakit</option>
                             <option value="alpha" {{ $selectedStatus === 'alpha' ? 'selected' : '' }}>Alpha</option>
                         </select>
+                        </div>
                     </div>
                     <div class="col-auto">
                         <button type="submit" class="btn btn-primary btn-sm">

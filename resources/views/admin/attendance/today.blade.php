@@ -27,14 +27,17 @@
                     </div>
                 </div>
                 <div class="col-md-3">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Kelas">
                     <select name="class_id" class="form-select" onchange="this.form.submit()">
                         <option value="">Semua Kelas</option>
                         @foreach($classes as $class)
                             <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
                         @endforeach
                     </select>
+                    </div>
                 </div>
                 <div class="col-md-3">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Status Kehadiran">
                     <select name="status" class="form-select" onchange="this.form.submit()">
                         <option value="">Semua Status Kehadiran</option>
                         <option value="hadir" {{ request('status') === 'hadir' ? 'selected' : '' }}>Hadir</option>
@@ -43,6 +46,7 @@
                         <option value="sakit" {{ request('status') === 'sakit' ? 'selected' : '' }}>Sakit</option>
                         <option value="alpha" {{ request('status') === 'alpha' ? 'selected' : '' }}>Alpha (Tidak Masuk)</option>
                     </select>
+                    </div>
                 </div>
                 <div class="col-md-2 d-grid">
                     <button type="submit" class="btn btn-light border fw-semibold">Filter</button>

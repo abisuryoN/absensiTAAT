@@ -33,12 +33,14 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="relationship" class="form-label fw-semibold">Hubungan Keluarga <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Hubungan">
                                 <select name="relationship" id="relationship" class="form-select @error('relationship') is-invalid @enderror" required>
                                     <option value="">Pilih Hubungan</option>
                                     <option value="Ayah" {{ old('relationship', $parent->relationship) == 'Ayah' ? 'selected' : '' }}>Ayah</option>
                                     <option value="Ibu" {{ old('relationship', $parent->relationship) == 'Ibu' ? 'selected' : '' }}>Ibu</option>
                                     <option value="Wali" {{ old('relationship', $parent->relationship) == 'Wali' ? 'selected' : '' }}>Wali</option>
                                 </select>
+                                </div>
                                 @error('relationship')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

@@ -22,6 +22,7 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="academic_year_id" class="form-label fw-semibold">Tahun Ajaran <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Tahun Ajaran">
                                 <select name="academic_year_id" id="academic_year_id" class="form-select @error('academic_year_id') is-invalid @enderror" required>
                                     <option value="">Pilih Tahun Ajaran</option>
                                     @foreach($academicYears as $year)
@@ -30,12 +31,14 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                </div>
                                 @error('academic_year_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="major_id" class="form-label fw-semibold">Jurusan <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Jurusan">
                                 <select name="major_id" id="major_id" class="form-select @error('major_id') is-invalid @enderror" required>
                                     <option value="">Pilih Jurusan</option>
                                     @foreach($majors as $major)
@@ -44,6 +47,7 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                </div>
                                 @error('major_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -53,12 +57,14 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="grade_level" class="form-label fw-semibold">Tingkat Kelas <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Tingkat">
                                 <select name="grade_level" id="grade_level" class="form-select @error('grade_level') is-invalid @enderror" required>
                                     <option value="">Pilih Tingkat</option>
                                     <option value="10" {{ old('grade_level', $class->grade_level) == 10 ? 'selected' : '' }}>Kelas 10</option>
                                     <option value="11" {{ old('grade_level', $class->grade_level) == 11 ? 'selected' : '' }}>Kelas 11</option>
                                     <option value="12" {{ old('grade_level', $class->grade_level) == 12 ? 'selected' : '' }}>Kelas 12</option>
                                 </select>
+                                </div>
                                 @error('grade_level')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -82,6 +88,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="homeroom_teacher_id" class="form-label fw-semibold">Wali Kelas</label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Wali Kelas (Opsional)">
                                 <select name="homeroom_teacher_id" id="homeroom_teacher_id" class="form-select @error('homeroom_teacher_id') is-invalid @enderror">
                                     <option value="">Pilih Wali Kelas (Opsional)</option>
                                     @foreach($teachers as $teacher)
@@ -90,6 +97,7 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                </div>
                                 @error('homeroom_teacher_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

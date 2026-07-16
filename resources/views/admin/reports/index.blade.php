@@ -22,10 +22,12 @@
 
                     <div class="col-12 col-md-3">
                         <label class="form-label fs-8 fw-semibold text-muted text-uppercase mb-1">Jenis Laporan</label>
+                        <div class="custom-select-wrapper" data-placeholder="Pilih Opsi">
                         <select name="report_type" id="report_type" class="form-select form-select-sm" onchange="toggleSubjectFilter()">
                             <option value="gate" {{ $reportType === 'gate' ? 'selected' : '' }}>Absensi Gerbang (Gate)</option>
                             <option value="subject" {{ $reportType === 'subject' ? 'selected' : '' }}>Absensi Mata Pelajaran</option>
                         </select>
+                        </div>
                     </div>
 
                     <div class="col-12 col-md-2.5 col-lg-2">
@@ -40,6 +42,7 @@
 
                     <div class="col-12 col-md-2">
                         <label class="form-label fs-8 fw-semibold text-muted text-uppercase mb-1">Kelas</label>
+                        <div class="custom-select-wrapper" data-placeholder="Semua Kelas">
                         <select name="class_id" class="form-select form-select-sm">
                             <option value="">Semua Kelas</option>
                             @foreach($classes as $class)
@@ -48,10 +51,12 @@
                                 </option>
                             @endforeach
                         </select>
+                        </div>
                     </div>
 
                     <div class="col-12 col-md-2" id="subject_filter_wrapper" style="display: {{ $reportType === 'subject' ? 'block' : 'none' }};">
                         <label class="form-label fs-8 fw-semibold text-muted text-uppercase mb-1">Mata Pelajaran</label>
+                        <div class="custom-select-wrapper" data-placeholder="Semua Mapel">
                         <select name="subject_id" class="form-select form-select-sm">
                             <option value="">Semua Mapel</option>
                             @foreach($subjects as $subj)
@@ -60,10 +65,12 @@
                                 </option>
                             @endforeach
                         </select>
+                        </div>
                     </div>
 
                     <div class="col-12 col-md-2">
                         <label class="form-label fs-8 fw-semibold text-muted text-uppercase mb-1">Status</label>
+                        <div class="custom-select-wrapper" data-placeholder="Semua Status">
                         <select name="status" class="form-select form-select-sm">
                             <option value="">Semua Status</option>
                             @if($reportType === 'gate')
@@ -80,6 +87,7 @@
                                 <option value="dispensasi" {{ request('status') === 'dispensasi' ? 'selected' : '' }}>Dispensasi</option>
                             @endif
                         </select>
+                        </div>
                     </div>
 
                     <div class="col-12 d-flex gap-2 justify-content-end mt-4">

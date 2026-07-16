@@ -24,28 +24,34 @@
                     </div>
                 </div>
                 <div class="col-md-2">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Kelas">
                     <select name="class_id" class="form-select" onchange="this.form.submit()">
                         <option value="">Semua Kelas</option>
                         @foreach($classes as $class)
                             <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
                         @endforeach
                     </select>
+                    </div>
                 </div>
                 <div class="col-md-2">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Guru">
                     <select name="teacher_id" class="form-select" onchange="this.form.submit()">
                         <option value="">Semua Guru</option>
                         @foreach($teachers as $teacher)
                             <option value="{{ $teacher->id }}" {{ request('teacher_id') == $teacher->id ? 'selected' : '' }}>{{ $teacher->name }}</option>
                         @endforeach
                     </select>
+                    </div>
                 </div>
                 <div class="col-md-2">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Hari">
                     <select name="day" class="form-select" onchange="this.form.submit()">
                         <option value="">Semua Hari</option>
                         @foreach(['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'] as $day)
                             <option value="{{ $day }}" {{ request('day') == $day ? 'selected' : '' }}>{{ $day }}</option>
                         @endforeach
                     </select>
+                    </div>
                 </div>
                 <div class="col-md-3 d-grid">
                     <button type="submit" class="btn btn-light border fw-semibold">Filter</button>

@@ -20,6 +20,7 @@
 
                         <div class="mb-3">
                             <label for="academic_year_id" class="form-label fw-semibold">Tahun Ajaran <span class="text-danger">*</span></label>
+                            <div class="custom-select-wrapper" data-placeholder="Pilih Tahun Ajaran">
                             <select name="academic_year_id" id="academic_year_id" class="form-select @error('academic_year_id') is-invalid @enderror" required>
                                 <option value="">Pilih Tahun Ajaran</option>
                                 @foreach($academicYears as $year)
@@ -28,6 +29,7 @@
                                     </option>
                                 @endforeach
                             </select>
+                            </div>
                             @error('academic_year_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -43,10 +45,12 @@
 
                         <div class="mb-3">
                             <label for="semester_number" class="form-label fw-semibold">Nomor Semester <span class="text-danger">*</span></label>
+                            <div class="custom-select-wrapper" data-placeholder="Pilih Opsi">
                             <select name="semester_number" id="semester_number" class="form-select @error('semester_number') is-invalid @enderror" required>
                                 <option value="1" {{ old('semester_number') == 1 ? 'selected' : '' }}>Semester 1 (Ganjil)</option>
                                 <option value="2" {{ old('semester_number') == 2 ? 'selected' : '' }}>Semester 2 (Genap)</option>
                             </select>
+                            </div>
                             @error('semester_number')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

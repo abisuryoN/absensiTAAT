@@ -20,14 +20,16 @@
 
                         <div class="mb-3">
                             <label for="academic_year_id" class="form-label fw-semibold">Tahun Ajaran <span class="text-danger">*</span></label>
-                            <select name="academic_year_id" id="academic_year_id" class="form-select @error('academic_year_id') is-invalid @enderror" required>
-                                <option value="">Pilih Tahun Ajaran</option>
-                                @foreach($academicYears as $year)
-                                    <option value="{{ $year->id }}" {{ old('academic_year_id', \App\Models\AcademicYear::active()->first()?->id) == $year->id ? 'selected' : '' }}>
-                                        {{ $year->name }} {{ $year->is_active ? '(Aktif)' : '' }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <div class="custom-select-wrapper" data-placeholder="Pilih Tahun Ajaran">
+                                <select name="academic_year_id" id="academic_year_id" class="form-select @error('academic_year_id') is-invalid @enderror" required>
+                                    <option value="">Pilih Tahun Ajaran</option>
+                                    @foreach($academicYears as $year)
+                                        <option value="{{ $year->id }}" {{ old('academic_year_id', \App\Models\AcademicYear::active()->first()?->id) == $year->id ? 'selected' : '' }}>
+                                            {{ $year->name }} {{ $year->is_active ? '(Aktif)' : '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                             @error('academic_year_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -51,12 +53,14 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="type" class="form-label fw-semibold">Tipe Hari Libur <span class="text-danger">*</span></label>
-                                <select name="type" id="type" class="form-select @error('type') is-invalid @enderror" required>
-                                    <option value="">Pilih Tipe</option>
-                                    <option value="Nasional" {{ old('type') == 'Nasional' ? 'selected' : '' }}>Nasional</option>
-                                    <option value="Sekolah" {{ old('type') == 'Sekolah' ? 'selected' : '' }}>Sekolah</option>
-                                    <option value="Khusus" {{ old('type') == 'Khusus' ? 'selected' : '' }}>Khusus</option>
-                                </select>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Tipe">
+                                    <select name="type" id="type" class="form-select @error('type') is-invalid @enderror" required>
+                                        <option value="">Pilih Tipe</option>
+                                        <option value="Nasional" {{ old('type') == 'Nasional' ? 'selected' : '' }}>Nasional</option>
+                                        <option value="Sekolah" {{ old('type') == 'Sekolah' ? 'selected' : '' }}>Sekolah</option>
+                                        <option value="Khusus" {{ old('type') == 'Khusus' ? 'selected' : '' }}>Khusus</option>
+                                    </select>
+                                </div>
                                 @error('type')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

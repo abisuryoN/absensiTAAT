@@ -89,11 +89,13 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="gender" class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Gender">
                                 <select name="gender" id="gender" class="form-select @error('gender') is-invalid @enderror" required>
                                     <option value="">Pilih Gender</option>
                                     <option value="L" {{ old('gender') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                                     <option value="P" {{ old('gender') == 'P' ? 'selected' : '' }}>Perempuan</option>
                                 </select>
+                                </div>
                                 @error('gender')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

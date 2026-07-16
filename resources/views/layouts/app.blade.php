@@ -8,7 +8,7 @@
     <title>@yield('title', 'Sistem Absensi') - {{ config('app.name', 'SMAN 1 Tajurhalang') }}</title>
 
     <!-- Vite Styles & Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+        @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/js/custom-dropdown.js'])
     @stack('styles')
 </head>
 <body class="d-flex flex-column h-100">
