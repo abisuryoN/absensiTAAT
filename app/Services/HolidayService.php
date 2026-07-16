@@ -18,7 +18,9 @@ class HolidayService
 
     public function getAll(array $filters = [])
     {
-        $query = Holiday::with('academicYear');
+        $query = Holiday::with('academicYear')
+            // Exclude weekend holidays (Sabtu/Minggu) from table display
+            ->whereNotIn('name', ['Sabtu', 'Minggu']);
 
         if (!empty($filters['search'])) {
             $query->where('name', 'like', '%' . $filters['search'] . '%');
