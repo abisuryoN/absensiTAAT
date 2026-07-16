@@ -241,8 +241,8 @@ class AttendanceGateService
     {
         $dayOfWeek = Carbon::parse($date)->dayOfWeek;
         
-        // Sunday (0) is default holiday. Customize if Saturday (6) is also holiday.
-        if ($dayOfWeek === Carbon::SUNDAY) {
+        // Saturday (6) and Sunday (0) are holidays
+        if ($dayOfWeek === Carbon::SATURDAY || $dayOfWeek === Carbon::SUNDAY) {
             return true;
         }
 

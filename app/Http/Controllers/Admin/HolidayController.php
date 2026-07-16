@@ -21,7 +21,8 @@ class HolidayController extends Controller
     public function index(Request $request)
     {
         $holidays = $this->service->getAll($request->all());
-        return view('admin.holidays.index', compact('holidays'));
+        $academicYears = AcademicYear::orderByDesc('start_date')->get();
+        return view('admin.holidays.index', compact('holidays', 'academicYears'));
     }
 
     public function create()
@@ -55,6 +56,25 @@ class HolidayController extends Controller
             return redirect()->route('admin.holidays.index')->with('success', 'Hari libur berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('admin.holidays.index')->with('error', $e->getMessage());
+        }
+    }
+
+    public function sync(Request $request)
+    {
+        $request->validate([
+            'academic_year_id' => 'required|exists:academic_years,id',
+        ]);
+
+        try {
+            $result = $this->service->syncFromApi($request->academic_year_id);
+            
+            if ($result['success']) {
+                return redirect()->route('admin.holidays.index')->with('success', $result['message']);
+            } else {
+                return redirect()->route('admin.holidays.index')->with('error', $result['message']);
+            }
+        } catch (\Exception $e) {
+            return redirect()->route('admin.holidays.index')->with('error', 'Gagal sinkronisasi: ' . $e->getMessage());
         }
     }
 }

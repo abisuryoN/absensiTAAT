@@ -54,6 +54,7 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         Route::resource('students', StudentController::class);
         Route::resource('schedules', ScheduleController::class);
         Route::resource('holidays', HolidayController::class);
+        Route::post('/holidays/sync', [HolidayController::class, 'sync'])->name('holidays.sync');
 
         // Laporan & Reporting
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
