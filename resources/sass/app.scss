@@ -3,6 +3,7 @@
 
 // Bootstrap Variable Overrides (must be before Bootstrap import)
 $font-family-sans-serif: 'Outfit', sans-serif;
+$font-size-base: 0.875rem; // Reduced from default 1rem to 0.875rem (14px)
 $primary: #4f46e5;
 $secondary: #7c3aed;
 $success: #10b981;
@@ -29,6 +30,7 @@ body {
     background-attachment: fixed;
     min-height: 100vh;
     letter-spacing: -0.01em;
+    font-size: 14px; // Set base font size to 14px for better laptop display
 }
 
 // Premium Scrollbar
@@ -106,7 +108,7 @@ body {
 
 // Sidebar
 .sidebar {
-    width: 280px;
+    width: 260px; // Reduced from 280px to 260px
     background: #ebf3fc; /* Biru muda premium */
     color: #334155;
     height: calc(100vh - 32px); /* Height for floating layout */
@@ -168,16 +170,17 @@ body {
 
     .nav-link {
         color: #475569;
-        padding: 0.75rem 1.2rem;
+        padding: 0.6rem 1rem; // Reduced padding for more compact look
         border-radius: 12px; /* Capsule style like photo 3 */
-        margin: 0.25rem 1rem;
+        margin: 0.2rem 0.8rem; // Reduced margin
         font-weight: 500;
+        font-size: 0.875rem; // Explicit smaller font size
         transition: all 0.2s ease, padding 0.3s ease, margin 0.3s ease;
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.6rem; // Reduced gap
         white-space: nowrap;
-        i { font-size: 1.2rem; transition: margin 0.3s ease; }
+        i { font-size: 1.1rem; transition: margin 0.3s ease; } // Reduced icon size
         &:hover {
             color: #1e3a8a;
             background: rgba(37, 99, 235, 0.07);
