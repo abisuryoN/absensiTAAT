@@ -1,7 +1,8 @@
 <x-app-layout>
     @section('title', 'Tambah Jadwal Pelajaran')
 
-    <div class="row mb-4">
+    {{-- Desktop Header --}}
+    <div class="row mb-4 d-none d-md-flex">
         <div class="col">
             <a href="{{ route('admin.schedules.index') }}" class="btn btn-light border btn-sm mb-3">
                 <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
@@ -11,14 +12,25 @@
         </div>
     </div>
 
+    {{-- Mobile Header --}}
+    <div class="d-block d-md-none mobile-page-content">
+        <div class="mobile-section-header">
+            <a href="{{ route('admin.schedules.index') }}" class="btn btn-light border btn-sm mb-2" style="display:inline-flex;align-items:center;gap:6px;">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+            <h3 class="mobile-heading">Tambah Jadwal Pelajaran</h3>
+            <p class="mobile-subtitle">Atur jadwal mengajar guru</p>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-9">
-            <div class="card glass-card border-0">
+            <div class="card glass-card border-0 mobile-form-card">
                 <div class="card-body p-4">
                     <form method="POST" action="{{ route('admin.schedules.store') }}">
                         @csrf
 
-                        <div class="row mb-3">
+                        <div class="row mobile-form-row mb-3">
                             <div class="col-md-6">
                                 <label for="academic_year_id" class="form-label fw-semibold">Tahun Ajaran <span class="text-danger">*</span></label>
                                 <div class="custom-select-wrapper" data-placeholder="Pilih Tahun Ajaran">
@@ -53,7 +65,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3">
+                        <div class="row mobile-form-row mb-3">
                             <div class="col-md-6">
                                 <label for="teacher_id" class="form-label fw-semibold">Guru Pengajar <span class="text-danger">*</span></label>
                                 <div class="custom-select-wrapper" data-placeholder="Pilih Guru">
@@ -84,7 +96,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3">
+                        <div class="row mobile-form-row mb-3">
                             <div class="col-md-6">
                                 <label for="class_id" class="form-label fw-semibold">Kelas <span class="text-danger">*</span></label>
                                 <div class="custom-select-wrapper" data-placeholder="Pilih Kelas">
@@ -115,7 +127,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3">
+                        <div class="row mobile-form-row mb-3">
                             <div class="col-md-4">
                                 <label for="start_time" class="form-label fw-semibold">Jam Mulai <span class="text-danger">*</span></label>
                                 <input type="time" name="start_time" id="start_time" class="form-control @error('start_time') is-invalid @enderror" value="{{ old('start_time') }}" required>
@@ -139,14 +151,14 @@
                             </div>
                         </div>
 
-                        <div class="mb-4">
+                        <div class="mobile-full-width mb-4">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
                                 <label class="form-check-label fw-semibold" for="is_active">Aktif</label>
                             </div>
                         </div>
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <div class="mobile-form-submit">
                             <button type="submit" class="btn btn-primary fw-semibold px-4">
                                 <i class="bi bi-save me-1"></i> Simpan Jadwal
                             </button>
@@ -156,7 +168,7 @@
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3 d-none d-md-block">
             <div class="card glass-card border-0">
                 <div class="card-body p-3">
                     <h6 class="fw-bold text-dark mb-2"><i class="bi bi-info-circle me-1"></i> Informasi</h6>

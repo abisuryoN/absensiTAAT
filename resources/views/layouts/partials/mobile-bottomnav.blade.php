@@ -8,10 +8,10 @@
         if ($role === 'super_admin') {
             $bottomMenus = [
                 ['label' => 'Dashboard', 'icon' => 'bi-speedometer2', 'route' => 'admin.dashboard'],
-                ['label' => 'Absensi', 'icon' => 'bi-qr-code-scan', 'route' => 'admin.attendance.today'],
+                ['label' => 'Gerbang', 'icon' => 'bi-qr-code-scan', 'route' => 'admin.attendance.scan'],
+                ['label' => 'Hari Ini', 'icon' => 'bi-calendar-check', 'route' => 'admin.attendance.today'],
+                ['label' => 'Data', 'icon' => 'bi-people', 'route' => 'admin.students.index'],
                 ['label' => 'Rekap', 'icon' => 'bi-file-earmark-bar-graph', 'route' => 'admin.reports.index'],
-                ['label' => 'Jadwal', 'icon' => 'bi-calendar-week', 'route' => 'admin.schedules.index'],
-                ['label' => 'Data', 'icon' => 'bi-database', 'route' => 'admin.students.index'],
             ];
         } elseif ($role === 'guru') {
             $bottomMenus = [
@@ -40,12 +40,13 @@
         @php
             $isActive = false;
             if (isset($menu['route'])) {
-                $prefix = explode('.', $menu['route'])[0] . '.';
-                // Exact match for dashboard
-                if ($menu['route'] === 'admin.dashboard' || $menu['route'] === 'teacher.dashboard' || $menu['route'] === 'student.dashboard' || $menu['route'] === 'dashboard') {
-                    $isActive = $currentRoute === $menu['route'];
+                // Exact route match - no prefix matching to avoid false positives
+                if ($menu['route'] === 'profile.edit') {
+                    // Profile matches all profile.* routes
+                    $isActive = str_starts_with($currentRoute ?? '', 'profile.');
                 } else {
-                    $isActive = str_starts_with($currentRoute ?? '', $prefix);
+                    // Exact match for specific route
+                    $isActive = $currentRoute === $menu['route'];
                 }
             }
         @endphp

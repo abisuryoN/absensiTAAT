@@ -17,7 +17,8 @@
         </div>
     @endif
 
-    <div class="row mb-4 align-items-center">
+    {{-- Desktop Header --}}
+    <div class="row mb-4 align-items-center d-none d-md-flex">
         <div class="col">
             <h3 class="fw-bold tracking-tight text-dark mb-1">Hari Libur</h3>
             <p class="text-muted mb-0">Kelola daftar hari libur nasional, sekolah, dan khusus per tahun ajaran.</p>
@@ -32,8 +33,27 @@
         </div>
     </div>
 
+    {{-- Mobile Header --}}
+    <div class="d-block d-md-none mobile-page-content">
+        <div class="mobile-section-header">
+            <div>
+                <h3 class="mobile-heading">Hari Libur</h3>
+                <p class="mobile-subtitle">Kelola daftar hari libur</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-success mobile-btn" data-bs-toggle="modal" data-bs-target="#syncModal" style="padding:8px 12px; font-size:13px;">
+                    <i class="bi bi-arrow-repeat"></i>
+                </button>
+                <a href="{{ route('admin.holidays.create') }}" class="btn btn-primary mobile-btn" style="padding:8px 12px; font-size:13px;">
+                    <i class="bi bi-plus-lg"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <div class="card glass-card border-0">
-        <div class="card-body p-4">
+        {{-- Desktop card body --}}
+        <div class="card-body p-4 d-none d-md-block">
             <!-- Search & Filters -->
             <form method="GET" action="{{ route('admin.holidays.index') }}" class="row g-3 mb-4">
                 <div class="col-md-8">
@@ -106,6 +126,69 @@
             <!-- Pagination -->
             <div class="mt-3">
                 {{ $holidays->links() }}
+            </div>
+        </div>
+
+        {{-- Mobile card body --}}
+        <div class="d-block d-md-none mobile-card-body">
+            <!-- Search -->
+            <form method="GET" action="{{ route('admin.holidays.index') }}" class="mobile-filter-form">
+                <div class="mobile-filter-row">
+                    <div class="mobile-search-group">
+                        <span class="mobile-search-icon"><i class="bi bi-search"></i></span>
+                        <input type="text" name="search" class="mobile-search-input" placeholder="Cari hari libur..." value="{{ request('search') }}">
+                    </div>
+                    <button type="submit" class="mobile-filter-btn">Cari</button>
+                </div>
+            </form>
+
+            <!-- Cards -->
+            <div class="mobile-holiday-list">
+                @forelse($holidays as $holiday)
+                    <div class="mobile-data-card">
+                        <div class="mobile-data-card-top">
+                            <div>
+                                <div class="mobile-data-name">{{ $holiday->name }}</div>
+                                <div class="mobile-date-label">{{ $holiday->date->format('d M Y') }}</div>
+                            </div>
+                            <div class="mobile-data-actions">
+                                <a href="{{ route('admin.holidays.edit', $holiday) }}" class="btn btn-light btn-sm border" title="Edit">
+                                    <i class="bi bi-pencil-square text-primary"></i>
+                                </a>
+                                <form action="{{ route('admin.holidays.destroy', $holiday) }}" method="POST" onsubmit="return confirm('Hapus hari libur ini?')" style="display:inline;">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-light btn-sm border" title="Hapus">
+                                        <i class="bi bi-trash3 text-danger"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="mobile-data-details">
+                            <div class="mobile-data-detail">
+                                <span>Tipe:</span>
+                                @if($holiday->type == 'national')
+                                    <span class="badge bg-danger">Nasional</span>
+                                @elseif($holiday->type == 'school')
+                                    <span class="badge bg-primary">Khusus</span>
+                                @else
+                                    <span class="badge bg-warning">Lainnya</span>
+                                @endif
+                            </div>
+                            <div class="mobile-data-detail"><span>Tahun Ajaran:</span> {{ $holiday->academicYear->name }}</div>
+                            <div class="mobile-data-detail"><span>Ket:</span> {{ Str::limit($holiday->description, 50) ?: '-' }}</div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="mobile-empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <p>Tidak ada data hari libur ditemukan.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-3">
+                {{ $holidays->appends(request()->all())->links('vendor.pagination.bootstrap-5') }}
             </div>
         </div>
     </div>

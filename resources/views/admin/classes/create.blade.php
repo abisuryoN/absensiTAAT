@@ -1,7 +1,8 @@
 <x-app-layout>
     @section('title', 'Tambah Kelas')
 
-    <div class="row mb-4">
+    {{-- Desktop Header --}}
+    <div class="row mb-4 d-none d-md-flex">
         <div class="col">
             <a href="{{ route('admin.classes.index') }}" class="btn btn-light border btn-sm mb-3">
                 <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
@@ -11,14 +12,25 @@
         </div>
     </div>
 
+    {{-- Mobile Header --}}
+    <div class="d-block d-md-none mobile-page-content">
+        <div class="mobile-section-header">
+            <a href="{{ route('admin.classes.index') }}" class="btn btn-light border btn-sm mb-2" style="display:inline-flex;align-items:center;gap:6px;">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+            <h3 class="mobile-heading">Tambah Kelas</h3>
+            <p class="mobile-subtitle">Buat rombongan belajar baru</p>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-8">
-            <div class="card glass-card border-0">
+            <div class="card glass-card border-0 mobile-form-card">
                 <div class="card-body p-4">
                     <form method="POST" action="{{ route('admin.classes.store') }}">
                         @csrf
 
-                        <div class="row mb-3">
+                        <div class="row mobile-form-row mb-3">
                             <div class="col-md-6">
                                 <label for="academic_year_id" class="form-label fw-semibold">Tahun Ajaran <span class="text-danger">*</span></label>
                                 <div class="custom-select-wrapper" data-placeholder="Pilih Tahun Ajaran">
@@ -53,7 +65,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3">
+                        <div class="row mobile-form-row mb-3">
                             <div class="col-md-6">
                                 <label for="grade_level" class="form-label fw-semibold">Tingkat Kelas <span class="text-danger">*</span></label>
                                 <div class="custom-select-wrapper" data-placeholder="Pilih Tingkat">
@@ -77,9 +89,9 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3">
+                        <div class="row mobile-form-row mb-3">
                             <div class="col-md-6">
-                                <label for="capacity" class="form-label fw-semibold">Kapasitas (Daya Tampung Siswa) <span class="text-danger">*</span></label>
+                                <label for="capacity" class="form-label fw-semibold">Kapasitas <span class="text-danger">*</span></label>
                                 <input type="number" name="capacity" id="capacity" class="form-control @error('capacity') is-invalid @enderror" placeholder="Contoh: 36" value="{{ old('capacity', 36) }}" min="1" max="100" required>
                                 @error('capacity')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -103,14 +115,14 @@
                             </div>
                         </div>
 
-                        <div class="mb-4">
+                        <div class="mobile-full-width mb-4">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
                                 <label class="form-check-label fw-semibold" for="is_active">Aktif</label>
                             </div>
                         </div>
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <div class="mobile-form-submit">
                             <button type="submit" class="btn btn-primary fw-semibold px-4">
                                 <i class="bi bi-save me-1"></i> Simpan
                             </button>

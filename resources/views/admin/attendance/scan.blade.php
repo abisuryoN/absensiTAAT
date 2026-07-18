@@ -138,6 +138,62 @@
         </div>
     </div>
 
+    {{-- Mobile Gate Grid (only on <768px) --}}
+    <div class="d-block d-md-none mobile-page-content" style="padding:0; margin-top:0;">
+        <div class="mobile-gate-grid">
+            {{-- Scanner --}}
+            <div class="gate-card gate-scanner" id="mobile-gate-scanner">
+                <div class="gate-card-title">Scanner</div>
+                <div class="scanner-placeholder">
+                    <div class="scanner-icon"><i class="bi bi-qr-code-scan"></i></div>
+                    <div class="scanner-text">Arahkan QR Code ke kamera atau scan barcode</div>
+                </div>
+            </div>
+
+            {{-- Result --}}
+            <div class="gate-card gate-result" id="mobile-gate-result">
+                <div class="gate-card-title">Hasil Scan</div>
+                <div id="mobile-gate-result-content">
+                    <div class="result-profile">
+                        <div class="result-avatar"><i class="bi bi-person"></i></div>
+                        <div class="result-info">
+                            <div class="result-name" id="mobile-result-name">-</div>
+                            <div class="result-class" id="mobile-result-class">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Status --}}
+            <div class="gate-card gate-status" id="mobile-gate-status">
+                <div class="gate-card-title">Status</div>
+                <div class="status-item">
+                    <span class="status-label">Status Scan</span>
+                    <span class="status-badge badge bg-secondary" id="mobile-status-badge">Menunggu</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Waktu</span>
+                    <span class="status-label fw-semibold" id="mobile-scan-time">-</span>
+                </div>
+            </div>
+
+            {{-- Statistics --}}
+            <div class="gate-card gate-stats" id="mobile-gate-stats">
+                <div class="gate-card-title">Statistik</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-num" id="mobile-stat-hadir">0</div>
+                        <div class="stat-label">Hadir</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-num" id="mobile-stat-terlambat">0</div>
+                        <div class="stat-label">Telat</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Include html5-qrcode library for camera scanning -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 

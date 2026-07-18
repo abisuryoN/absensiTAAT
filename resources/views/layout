@@ -1,0 +1,98 @@
+{{-- Mobile Bottom Navigation — fixed to bottom --}}
+@php
+    $currentRoute = request()->route()->getName();
+    $user = auth()->user();
+    $role = $user->roles->first()?->name;
+@endphp
+
+<nav class="mobile-bottom-nav">
+    @if($role === 'super_admin')
+        {{-- Dashboard --}}
+        <a href="{{ route('admin.dashboard') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'admin.dashboard' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-speedometer2"></i></span>
+            <span class="mobile-bottom-nav-label">Beranda</span>
+        </a>
+        {{-- Absensi --}}
+        <a href="{{ route('admin.attendance.today') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'admin.attendance.today' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-qr-code-scan"></i></span>
+            <span class="mobile-bottom-nav-label">Absensi</span>
+        </a>
+        {{-- Gerbang --}}
+        <a href="{{ route('admin.attendance.scan') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'admin.attendance.scan' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>
+            <span class="mobile-bottom-nav-label">Gerbang</span>
+        </a>
+        {{-- Laporan --}}
+        <a href="{{ route('admin.reports.index') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'admin.reports.index' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-file-earmark-bar-graph"></i></span>
+            <span class="mobile-bottom-nav-label">Laporan</span>
+        </a>
+        {{-- Lainnya — buka drawer --}}
+        <a href="#" id="mobileBottomNavMore" class="mobile-bottom-nav-item">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>
+            <span class="mobile-bottom-nav-label">Lainnya</span>
+        </a>
+    @elseif($role === 'guru')
+        {{-- Dashboard --}}
+        <a href="{{ route('teacher.dashboard') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'teacher.dashboard' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-speedometer2"></i></span>
+            <span class="mobile-bottom-nav-label">Beranda</span>
+        </a>
+        {{-- Absensi --}}
+        <a href="{{ route('teacher.attendance.input') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'teacher.attendance.input' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-check2-square"></i></span>
+            <span class="mobile-bottom-nav-label">Absensi</span>
+        </a>
+        {{-- Jadwal --}}
+        <a href="{{ route('teacher.schedules') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'teacher.schedules' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-calendar3"></i></span>
+            <span class="mobile-bottom-nav-label">Jadwal</span>
+        </a>
+        {{-- Rekap --}}
+        <a href="{{ route('teacher.recap') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'teacher.recap' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-file-earmark-text"></i></span>
+            <span class="mobile-bottom-nav-label">Rekap</span>
+        </a>
+        {{-- Lainnya --}}
+        <a href="#" id="mobileBottomNavMore" class="mobile-bottom-nav-item">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>
+            <span class="mobile-bottom-nav-label">Lainnya</span>
+        </a>
+    @elseif($role === 'siswa')
+        {{-- Dashboard --}}
+        <a href="{{ route('student.dashboard') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'student.dashboard' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-speedometer2"></i></span>
+            <span class="mobile-bottom-nav-label">Beranda</span>
+        </a>
+        {{-- QR Code --}}
+        <a href="{{ route('student.qrcode') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'student.qrcode' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-qr-code"></i></span>
+            <span class="mobile-bottom-nav-label">QR Saya</span>
+        </a>
+        {{-- Jadwal --}}
+        <a href="{{ route('student.schedule') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'student.schedule' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-calendar3"></i></span>
+            <span class="mobile-bottom-nav-label">Jadwal</span>
+        </a>
+        {{-- Riwayat --}}
+        <a href="{{ route('student.history') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'student.history' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-clock-history"></i></span>
+            <span class="mobile-bottom-nav-label">Riwayat</span>
+        </a>
+        {{-- Lainnya --}}
+        <a href="#" id="mobileBottomNavMore" class="mobile-bottom-nav-item">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>
+            <span class="mobile-bottom-nav-label">Lainnya</span>
+        </a>
+    @else
+        {{-- Fallback --}}
+        <a href="{{ route('dashboard') }}" class="mobile-bottom-nav-item {{ $currentRoute === 'dashboard' ? 'active' : '' }}">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-speedometer2"></i></span>
+            <span class="mobile-bottom-nav-label">Beranda</span>
+        </a>
+        <a href="#" id="mobileBottomNavMore" class="mobile-bottom-nav-item">
+            <span class="mobile-bottom-nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>
+            <span class="mobile-bottom-nav-label">Lainnya</span>
+        </a>
+    @endif
+</nav>

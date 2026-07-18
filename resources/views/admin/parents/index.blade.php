@@ -1,7 +1,8 @@
 <x-app-layout>
     @section('title', 'Data Orang Tua')
 
-    <div class="row mb-4 align-items-center">
+    {{-- Desktop Header --}}
+    <div class="row mb-4 align-items-center d-none d-md-flex">
         <div class="col">
             <h3 class="fw-bold tracking-tight text-dark mb-1">Daftar Orang Tua / Wali</h3>
             <p class="text-muted mb-0">Kelola data wali siswa untuk integrasi notifikasi WhatsApp.</p>
@@ -13,8 +14,21 @@
         </div>
     </div>
 
+    {{-- Mobile Header --}}
+    <div class="d-block d-md-none mobile-page-content">
+        <div class="mobile-section-header">
+            <div>
+                <h3 class="mobile-heading">Data Orang Tua</h3>
+                <p class="mobile-subtitle">Kelola data wali siswa</p>
+            </div>
+            <a href="{{ route('admin.parents.create') }}" class="btn btn-primary mobile-btn" style="white-space:nowrap;">
+                <i class="bi bi-plus-lg"></i> Tambah
+            </a>
+        </div>
+    </div>
+
     <div class="card glass-card border-0">
-        <div class="card-body p-4">
+        <div class="card-body p-4 d-none d-md-block">
             <!-- Search & Filters -->
             <form method="GET" action="{{ route('admin.parents.index') }}" class="row g-3 mb-4">
                 <div class="col-md-8">
@@ -103,6 +117,76 @@
             <!-- Pagination -->
             <div class="mt-3">
                 {{ $parents->links() }}
+            </div>
+        </div>
+
+        {{-- Mobile Body --}}
+        <div class="d-block d-md-none mobile-card-body">
+            <!-- Search -->
+            <form method="GET" action="{{ route('admin.parents.index') }}" class="mobile-filter-form">
+                <div class="mobile-filter-row">
+                    <div class="mobile-search-group">
+                        <span class="mobile-search-icon"><i class="bi bi-search"></i></span>
+                        <input type="text" name="search" class="mobile-search-input" placeholder="Cari nama atau nomor HP..." value="{{ request('search') }}">
+                    </div>
+                    <button type="submit" class="mobile-filter-btn">Cari</button>
+                </div>
+            </form>
+
+            <!-- Cards -->
+            <div class="mobile-parent-list">
+                @forelse($parents as $parent)
+                    <div class="mobile-data-card">
+                        <div class="mobile-data-card-top">
+                            <div>
+                                <div class="mobile-data-name">{{ $parent->name }}</div>
+                                <div class="mobile-data-sub">
+                                    @if($parent->relationship == 'Ayah')
+                                        <span class="badge bg-primary">Ayah</span>
+                                    @elseif($parent->relationship == 'Ibu')
+                                        <span class="badge bg-danger">Ibu</span>
+                                    @else
+                                        <span class="badge bg-warning">Wali</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="mobile-data-actions">
+                                <a href="{{ route('admin.parents.edit', $parent) }}" class="btn btn-light btn-sm border" title="Edit">
+                                    <i class="bi bi-pencil-square text-primary"></i>
+                                </a>
+                                <form action="{{ route('admin.parents.destroy', $parent) }}" method="POST" onsubmit="return confirm('Hapus data orang tua ini?')" style="display:inline;">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-light btn-sm border" title="Hapus">
+                                        <i class="bi bi-trash3 text-danger"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="mobile-data-details">
+                            <div class="mobile-data-detail"><i class="bi bi-whatsapp"></i> {{ $parent->phone }}</div>
+                            <div class="mobile-data-detail"><i class="bi bi-telephone"></i> {{ $parent->phone_secondary ?: '-' }}</div>
+                            <div class="mobile-data-detail"><i class="bi bi-geo-alt"></i> {{ Str::limit($parent->address, 30) ?: '-' }}</div>
+                            <div class="mobile-data-detail"><i class="bi bi-envelope"></i> {{ $parent->user->email ?? 'Tidak Ada Akun' }}</div>
+                            <div class="mobile-data-detail"><i class="bi bi-people"></i>
+                                @forelse($parent->students as $student)
+                                    {{ $student->name }}@if(!$loop->last), @endif
+                                @empty
+                                    -
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="mobile-empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <p>Tidak ada data orang tua ditemukan.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-3">
+                {{ $parents->links('vendor.pagination.bootstrap-5') }}
             </div>
         </div>
     </div>
