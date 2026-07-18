@@ -23,6 +23,9 @@ $body-color: #334155;
 // Custom Dropdown
 @import 'custom-dropdown';
 
+// Mobile Responsive Design System
+@import 'mobile';
+
 // ─── Custom Premium Styles ──────────────────────────────────────
 
 body {
@@ -109,17 +112,17 @@ body {
     }
 }
 
-// Sidebar
+// Sidebar — Desktop
 .sidebar {
-    width: 260px; // Reduced from 280px to 260px
-    background: #ebf3fc; /* Biru muda premium */
+    width: 260px;
+    background: #ebf3fc;
     color: #334155;
-    height: calc(100vh - 32px); /* Height for floating layout */
+    height: calc(100vh - 32px);
     position: sticky;
     top: 8px;
     left: 0;
-    margin: 8px 15px 16px 15px; /* Float with right margin to prevent button clip */
-    border-radius: 20px; /* Floating rounded design */
+    margin: 8px 15px 16px 15px;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 8px 30px rgba(37, 99, 235, 0.05);
@@ -155,7 +158,6 @@ body {
         padding-bottom: 1.5rem;
         transition: all 0.3s ease;
         
-        /* Custom scrollbar */
         &::-webkit-scrollbar {
             width: 4px;
         }
@@ -173,24 +175,24 @@ body {
 
     .nav-link {
         color: #475569;
-        padding: 0.6rem 1rem; // Reduced padding for more compact look
-        border-radius: 12px; /* Capsule style like photo 3 */
-        margin: 0.2rem 0.8rem; // Reduced margin
+        padding: 0.6rem 1rem;
+        border-radius: 12px;
+        margin: 0.2rem 0.8rem;
         font-weight: 500;
-        font-size: 0.875rem; // Explicit smaller font size
+        font-size: 0.875rem;
         transition: all 0.2s ease, padding 0.3s ease, margin 0.3s ease;
         display: flex;
         align-items: center;
-        gap: 0.6rem; // Reduced gap
+        gap: 0.6rem;
         white-space: nowrap;
-        i { font-size: 1.1rem; transition: margin 0.3s ease; } // Reduced icon size
+        i { font-size: 1.1rem; transition: margin 0.3s ease; }
         &:hover {
             color: #1e3a8a;
             background: rgba(37, 99, 235, 0.07);
         }
         &.active {
             color: #ffffff !important;
-            background: #2563eb; /* Solid blue capsule like photo 3 */
+            background: #2563eb;
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
             font-weight: 600;
         }
@@ -202,7 +204,6 @@ body {
         transition: padding 0.3s ease;
     }
 
-    /* Collapsed Sidebar State (Photo 3 collapse style) */
     &.collapsed {
         width: 80px;
         
@@ -245,6 +246,9 @@ body {
         }
     }
 }
+
+// ─── Fix for guest/login layout on mobile ──────────────────────
+// Handled in _mobile.scss for <992px
 
 // Scanner
 .scanner-viewport {

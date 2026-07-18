@@ -56,7 +56,7 @@
                     <tbody>
                         @forelse($teachers as $teacher)
                             <tr>
-                                <td>
+                                <td data-label="Foto">
                                     @if($teacher->photo)
                                         <img src="{{ Storage::url($teacher->photo) }}" alt="" class="rounded-circle object-fit-cover" style="width: 40px; height: 40px;">
                                     @else
@@ -65,35 +65,35 @@
                                         </div>
                                     @endif
                                 </td>
-                                <td>
+                                <td data-label="NIP / NUPTK">
                                     <span class="d-block fw-semibold text-dark fs-7">NIP: {{ $teacher->nip ?: '-' }}</span>
                                     <span class="text-muted fs-8">NUPTK: {{ $teacher->nuptk ?: '-' }}</span>
                                 </td>
-                                <td class="fw-semibold text-dark">{{ $teacher->name }}</td>
-                                <td>
+                                <td data-label="Nama" class="fw-semibold text-dark">{{ $teacher->name }}</td>
+                                <td data-label="Gender">
                                     @if($teacher->gender == 'L')
                                         <span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1 fs-8">Laki-laki</span>
                                     @else
                                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 fs-8">Perempuan</span>
                                     @endif
                                 </td>
-                                <td>{{ $teacher->user->email }}</td>
-                                <td>{{ $teacher->phone ?: '-' }}</td>
-                                <td>
+                                <td data-label="Email">{{ $teacher->user->email }}</td>
+                                <td data-label="No. HP">{{ $teacher->phone ?: '-' }}</td>
+                                <td data-label="Mapel Diampu">
                                     @forelse($teacher->subjects as $subject)
                                         <span class="badge bg-light text-dark border fs-8 mb-1">{{ $subject->name }}</span>
                                     @empty
                                         <span class="text-muted fs-8">-</span>
                                     @endforelse
                                 </td>
-                                <td>
+                                <td data-label="Status">
                                     @if($teacher->is_active)
                                         <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-8">Aktif</span>
                                     @else
                                         <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 fs-8">Tidak Aktif</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                <td data-label="Aksi" class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a href="{{ route('admin.teachers.edit', $teacher) }}" class="btn btn-light btn-sm border" title="Edit">
                                             <i class="bi bi-pencil-square text-primary"></i>

@@ -54,19 +54,19 @@
                     <tbody>
                         @forelse($semesters as $semester)
                             <tr>
-                                <td class="fw-semibold text-dark">{{ $semester->academicYear->name }}</td>
-                                <td>{{ $semester->name }}</td>
-                                <td>Semester {{ $semester->semester_number }}</td>
-                                <td>{{ $semester->start_date->format('d M Y') }}</td>
-                                <td>{{ $semester->end_date->format('d M Y') }}</td>
-                                <td>
+                                <td data-label="Tahun Ajaran" class="fw-semibold text-dark">{{ $semester->academicYear->name }}</td>
+                                <td data-label="Nama Semester">{{ $semester->name }}</td>
+                                <td data-label="No. Semester">Semester {{ $semester->semester_number }}</td>
+                                <td data-label="Tanggal Mulai">{{ $semester->start_date->format('d M Y') }}</td>
+                                <td data-label="Tanggal Selesai">{{ $semester->end_date->format('d M Y') }}</td>
+                                <td data-label="Status">
                                     @if($semester->is_active)
                                         <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-8">Aktif</span>
                                     @else
                                         <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 fs-8">Tidak Aktif</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                <td data-label="Aksi" class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a href="{{ route('admin.semesters.edit', $semester) }}" class="btn btn-light btn-sm border" title="Edit">
                                             <i class="bi bi-pencil-square text-primary"></i>

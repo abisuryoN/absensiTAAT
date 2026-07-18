@@ -73,26 +73,26 @@
                     </thead>
                     <tbody>
                         @foreach($previewRows as $row)
-                            <tr class="{{ $row['is_valid'] ? 'table-success-subtle' : 'table-danger-subtle' }}">
-                                <td class="text-center fw-bold">{{ $row['row_number'] }}</td>
-                                <td>
+                                    <tr class="{{ $row['is_valid'] ? 'table-success-subtle' : 'table-danger-subtle' }}">
+                                        <td data-label="Baris Excel" class="text-center fw-bold">{{ $row['row_number'] }}</td>
+                                        <td data-label="Status">
                                     @if($row['is_valid'])
                                         <span class="badge bg-success text-white px-2 py-1 fs-8">Valid</span>
                                     @else
                                         <span class="badge bg-danger text-white px-2 py-1 fs-8">Error</span>
                                     @endif
                                 </td>
-                                <td>
-                                    <div class="row g-1">
-                                        @foreach($row['data'] as $key => $val)
-                                            <div class="col-6">
-                                                <span class="fw-semibold text-muted text-uppercase" style="font-size: 0.65rem;">{{ str_replace('_', ' ', $key) }}:</span>
-                                                <span class="text-dark d-block text-truncate fs-8">{{ $val ?: '-' }}</span>
+                                        <td data-label="Data">
+                                            <div class="row g-1">
+                                                @foreach($row['data'] as $key => $val)
+                                                    <div class="col-6">
+                                                        <span class="fw-semibold text-muted text-uppercase" style="font-size: 0.65rem;">{{ str_replace('_', ' ', $key) }}:</span>
+                                                        <span class="text-dark d-block text-truncate fs-8">{{ $val ?: '-' }}</span>
+                                                    </div>
+                                                @endforeach
                                             </div>
-                                        @endforeach
-                                    </div>
-                                </td>
-                                <td>
+                                        </td>
+                                        <td data-label="Keterangan">
                                     @if($row['is_valid'])
                                         <span class="text-success"><i class="bi bi-check-circle me-1"></i> Data siap diimpor</span>
                                     @else

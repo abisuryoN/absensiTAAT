@@ -123,13 +123,13 @@
                                 <tbody>
                                     @foreach($attendances as $att)
                                         <tr>
-                                            <td class="px-4">
+                                            <td data-label="Tanggal" class="px-4">
                                                 <span class="fw-semibold">{{ $att->date->format('d M Y') }}</span>
                                             </td>
-                                            <td>
+                                            <td data-label="Hari">
                                                 <span class="fs-7 text-muted">{{ $att->date->translatedFormat('l') }}</span>
                                             </td>
-                                            <td>
+                                            <td data-label="Jam Masuk">
                                                 @if($att->time_in && $att->time_in !== '00:00:00')
                                                     <span class="badge bg-dark bg-opacity-10 text-dark fw-semibold px-2 py-1">
                                                         {{ substr($att->time_in, 0, 5) }}
@@ -138,7 +138,7 @@
                                                     <span class="text-muted fs-8">-</span>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td data-label="Status">
                                                 @php
                                                     $statusConfig = [
                                                         'hadir' => ['bg' => 'bg-success', 'icon' => 'bi-check-circle-fill'],
@@ -153,7 +153,7 @@
                                                     <i class="bi {{ $cfg['icon'] }} me-1"></i>{{ ucfirst($att->status) }}
                                                 </span>
                                             </td>
-                                            <td>
+                                            <td data-label="Metode">
                                                 @php
                                                     $methodLabels = [
                                                         'barcode' => 'Barcode',
@@ -163,7 +163,7 @@
                                                 @endphp
                                                 <span class="fs-8 text-muted">{{ $methodLabels[$att->method] ?? $att->method }}</span>
                                             </td>
-                                            <td>
+                                            <td data-label="Catatan">
                                                 <span class="fs-8 text-muted">{{ $att->note ?? '-' }}</span>
                                             </td>
                                         </tr>

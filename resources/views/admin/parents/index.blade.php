@@ -46,8 +46,8 @@
                     <tbody>
                         @forelse($parents as $parent)
                             <tr>
-                                <td class="fw-semibold text-dark">{{ $parent->name }}</td>
-                                <td>
+                                <td data-label="Nama" class="fw-semibold text-dark">{{ $parent->name }}</td>
+                                <td data-label="Hubungan">
                                     @if($parent->relationship == 'Ayah')
                                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 fs-8">Ayah</span>
                                     @elseif($parent->relationship == 'Ibu')
@@ -56,24 +56,24 @@
                                         <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1 fs-8">Wali</span>
                                     @endif
                                 </td>
-                                <td class="fw-bold text-dark">{{ $parent->phone }}</td>
-                                <td>{{ $parent->phone_secondary ?: '-' }}</td>
-                                <td>{{ Str::limit($parent->address, 40) ?: '-' }}</td>
-                                <td>
+                                <td data-label="No. HP (WA)" class="fw-bold text-dark">{{ $parent->phone }}</td>
+                                <td data-label="HP Cadangan">{{ $parent->phone_secondary ?: '-' }}</td>
+                                <td data-label="Alamat">{{ Str::limit($parent->address, 40) ?: '-' }}</td>
+                                <td data-label="Email Portal">
                                     @if($parent->user)
                                         <span class="text-dark fs-7">{{ $parent->user->email }}</span>
                                     @else
                                         <span class="text-muted fs-8">Tidak Ada Akun</span>
                                     @endif
                                 </td>
-                                <td>
+                                <td data-label="Siswa Terkait">
                                     @forelse($parent->students as $student)
                                         <span class="badge bg-light text-dark border fs-8 mb-1">{{ $student->name }} ({{ $student->class->name }})</span>
                                     @empty
                                         <span class="text-muted fs-8">Belum memetakan siswa</span>
                                     @endforelse
                                 </td>
-                                <td class="text-center">
+                                <td data-label="Aksi" class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a href="{{ route('admin.parents.edit', $parent) }}" class="btn btn-light btn-sm border" title="Edit">
                                             <i class="bi bi-pencil-square text-primary"></i>

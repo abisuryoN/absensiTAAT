@@ -51,18 +51,18 @@
                                     <tbody>
                                         @foreach($schedules[$day] as $schedule)
                                             <tr>
-                                                <td>
+                                                <td data-label="Waktu">
                                                     <span class="badge bg-dark bg-opacity-10 text-dark fw-semibold px-2 py-1 fs-8">
                                                         {{ substr($schedule->start_time, 0, 5) }} - {{ substr($schedule->end_time, 0, 5) }}
                                                     </span>
                                                 </td>
-                                                <td>
+                                                <td data-label="Mata Pelajaran">
                                                     <span class="fw-semibold text-dark">{{ $schedule->subject->name ?? '-' }}</span>
                                                 </td>
-                                                <td>
+                                                <td data-label="Kelas">
                                                     <span class="fw-semibold text-dark">{{ $schedule->class->name ?? '-' }}</span>
                                                 </td>
-                                                <td>
+                                                <td data-label="Ruangan">
                                                     @if($schedule->room)
                                                         <span class="fs-7 text-muted">
                                                             <i class="bi bi-geo-alt-fill me-1"></i>{{ $schedule->room }}
@@ -71,7 +71,7 @@
                                                         <span class="text-muted fs-8">-</span>
                                                     @endif
                                                 </td>
-                                                <td class="text-end">
+                                                <td data-label="Aksi" class="text-end">
                                                     <a href="{{ route('teacher.attendance.input', $schedule->id) }}" class="btn btn-sm btn-light border rounded-3 px-2.5 py-1 fs-8">
                                                         <i class="bi bi-check2-square"></i> Absen
                                                     </a>

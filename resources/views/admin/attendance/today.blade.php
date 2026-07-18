@@ -71,13 +71,13 @@
                     <tbody>
                         @forelse($attendances as $attendance)
                             <tr>
-                                <td class="fw-semibold text-dark">{{ substr($attendance->time_in, 0, 5) }} WIB</td>
-                                <td class="text-muted fs-8">{{ $attendance->student->nis }}</td>
-                                <td class="fw-semibold text-dark">{{ $attendance->student->name }}</td>
-                                <td>
+                                <td data-label="Waktu Scan" class="fw-semibold text-dark">{{ substr($attendance->time_in, 0, 5) }} WIB</td>
+                                <td data-label="NIS" class="text-muted fs-8">{{ $attendance->student->nis }}</td>
+                                <td data-label="Nama Siswa" class="fw-semibold text-dark">{{ $attendance->student->name }}</td>
+                                <td data-label="Kelas">
                                     <span class="badge bg-light text-dark border px-2 py-1 fs-8">{{ $attendance->student->class->name ?? '-' }}</span>
                                 </td>
-                                <td>
+                                <td data-label="Status">
                                     @if($attendance->status === 'hadir')
                                         <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-8">Hadir</span>
                                     @elseif($attendance->status === 'terlambat')
@@ -90,7 +90,7 @@
                                         <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 fs-8">Alpha</span>
                                     @endif
                                 </td>
-                                <td>
+                                <td data-label="Metode">
                                     @if($attendance->method === 'barcode')
                                         <span class="fs-8 text-muted"><i class="bi bi-barcode me-1"></i> Barcode</span>
                                     @elseif($attendance->method === 'qr_code')
@@ -99,8 +99,8 @@
                                         <span class="fs-8 text-muted"><i class="bi bi-pencil-square me-1"></i> Manual</span>
                                     @endif
                                 </td>
-                                <td class="text-muted fs-8">{{ $attendance->note ?: '-' }}</td>
-                                <td class="fs-8">{{ $attendance->scanner->name ?? 'System' }}</td>
+                                <td data-label="Keterangan" class="text-muted fs-8">{{ $attendance->note ?: '-' }}</td>
+                                <td data-label="Petugas" class="fs-8">{{ $attendance->scanner->name ?? 'System' }}</td>
                             </tr>
                         @empty
                             <tr>

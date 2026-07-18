@@ -77,27 +77,27 @@
                     <tbody>
                         @forelse($schedules as $schedule)
                             <tr>
-                                <td>
+                                <td data-label="Hari">
                                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fw-bold">{{ $schedule->day }}</span>
                                 </td>
-                                <td class="fw-semibold text-dark">
+                                <td data-label="Jam" class="fw-semibold text-dark">
                                     {{ substr($schedule->start_time, 0, 5) }} - {{ substr($schedule->end_time, 0, 5) }}
                                 </td>
-                                <td>
+                                <td data-label="Kelas">
                                     <span class="badge bg-light text-dark border px-2 py-1 fw-semibold fs-8">{{ $schedule->class->name }}</span>
                                 </td>
-                                <td class="fw-semibold">{{ $schedule->subject->name }}</td>
-                                <td>{{ $schedule->teacher->name }}</td>
-                                <td>{{ $schedule->room ?: '-' }}</td>
-                                <td class="text-muted fs-8">{{ $schedule->academicYear->name }} / {{ $schedule->semester->name }}</td>
-                                <td>
+                                <td data-label="Mapel" class="fw-semibold">{{ $schedule->subject->name }}</td>
+                                <td data-label="Guru">{{ $schedule->teacher->name }}</td>
+                                <td data-label="Ruangan">{{ $schedule->room ?: '-' }}</td>
+                                <td data-label="Tahun Ajaran" class="text-muted fs-8">{{ $schedule->academicYear->name }} / {{ $schedule->semester->name }}</td>
+                                <td data-label="Status">
                                     @if($schedule->is_active)
                                         <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-8">Aktif</span>
                                     @else
                                         <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 fs-8">Tidak Aktif</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                <td data-label="Aksi" class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a href="{{ route('admin.schedules.edit', $schedule) }}" class="btn btn-light btn-sm border" title="Edit">
                                             <i class="bi bi-pencil-square text-primary"></i>

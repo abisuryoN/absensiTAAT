@@ -52,17 +52,17 @@
                     <tbody>
                         @forelse($subjects as $subject)
                             <tr>
-                                <td class="fw-bold text-dark">{{ $subject->code }}</td>
-                                <td class="fw-semibold">{{ $subject->name }}</td>
-                                <td>{{ Str::limit($subject->description, 55) ?: '-' }}</td>
-                                <td>
+                                <td data-label="Kode Mapel" class="fw-bold text-dark">{{ $subject->code }}</td>
+                                <td data-label="Nama Mapel" class="fw-semibold">{{ $subject->name }}</td>
+                                <td data-label="Deskripsi">{{ Str::limit($subject->description, 55) ?: '-' }}</td>
+                                <td data-label="Status">
                                     @if($subject->is_active)
                                         <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-8">Aktif</span>
                                     @else
                                         <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 fs-8">Tidak Aktif</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                <td data-label="Aksi" class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a href="{{ route('admin.subjects.edit', $subject) }}" class="btn btn-light btn-sm border" title="Edit">
                                             <i class="bi bi-pencil-square text-primary"></i>

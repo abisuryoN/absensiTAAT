@@ -78,12 +78,12 @@
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th class="fs-8 fw-semibold text-muted text-uppercase px-4" style="width: 15%;">Tanggal</th>
-                                        <th class="fs-8 fw-semibold text-muted text-uppercase" style="width: 20%;">Mata Pelajaran</th>
-                                        <th class="fs-8 fw-semibold text-muted text-uppercase" style="width: 12%;">Kelas</th>
-                                        <th class="fs-8 fw-semibold text-muted text-uppercase text-center" style="width: 15%;">Kehadiran Siswa</th>
-                                        <th class="fs-8 fw-semibold text-muted text-uppercase" style="width: 13%;">Status</th>
-                                        <th class="fs-8 fw-semibold text-muted text-uppercase px-4" style="width: 25%;">Jurnal/Catatan</th>
+                                        <th class="fs-8 fw-semibold text-muted text-uppercase px-4">Tanggal</th>
+                                        <th class="fs-8 fw-semibold text-muted text-uppercase">Mata Pelajaran</th>
+                                        <th class="fs-8 fw-semibold text-muted text-uppercase">Kelas</th>
+                                        <th class="fs-8 fw-semibold text-muted text-uppercase text-center">Kehadiran Siswa</th>
+                                        <th class="fs-8 fw-semibold text-muted text-uppercase">Status</th>
+                                        <th class="fs-8 fw-semibold text-muted text-uppercase px-4">Jurnal/Catatan</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -94,13 +94,13 @@
                                             $percent = $total > 0 ? round(($present / $total) * 100, 1) : 0;
                                         @endphp
                                         <tr>
-                                            <td class="px-4">
+                                            <td data-label="Tanggal" class="px-4">
                                                 <span class="fw-semibold text-dark d-block fs-7">
                                                     {{ $att->date->format('d M Y') }}
                                                 </span>
                                                 <span class="text-muted fs-8">{{ $att->date->translatedFormat('l') }}</span>
                                             </td>
-                                            <td>
+                                            <td data-label="Mata Pelajaran">
                                                 <span class="fw-semibold text-dark d-block fs-7">
                                                     {{ $att->schedule->subject->name ?? '-' }}
                                                 </span>
@@ -108,10 +108,10 @@
                                                     {{ substr($att->schedule->start_time ?? '', 0, 5) }} - {{ substr($att->schedule->end_time ?? '', 0, 5) }}
                                                 </span>
                                             </td>
-                                            <td>
+                                            <td data-label="Kelas">
                                                 <span class="fw-semibold text-dark fs-7">{{ $att->schedule->class->name ?? '-' }}</span>
                                             </td>
-                                            <td class="text-center">
+                                            <td data-label="Kehadiran Siswa" class="text-center">
                                                 @if($att->status === 'submitted')
                                                     <span class="fw-bold {{ $percent >= 90 ? 'text-success' : ($percent >= 75 ? 'text-warning' : 'text-danger') }} fs-7">
                                                         {{ $present }} / {{ $total }}
@@ -121,7 +121,7 @@
                                                     <span class="text-muted fs-8">-</span>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td data-label="Status">
                                                 @if($att->status === 'submitted')
                                                     <span class="badge bg-success-subtle text-success-emphasis border border-success border-opacity-25 px-2 py-0.5 fs-9">
                                                         Sudah Dikirim
@@ -138,7 +138,7 @@
                                                     </a>
                                                 @endif
                                             </td>
-                                            <td class="px-4">
+                                            <td data-label="Jurnal/Catatan" class="px-4">
                                                 <span class="fs-8 text-muted d-block text-truncate" style="max-width: 250px;" title="{{ $att->note ?? '-' }}">
                                                     {{ $att->note ?? '-' }}
                                                 </span>

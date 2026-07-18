@@ -54,7 +54,7 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-md-2" id="subject_filter_wrapper" style="display: {{ $reportType === 'subject' ? 'block' : 'none' }};">
+                    <div class="col-12 col-md-2" id="subject_filter_wrapper" style="display: {{ $reportType === 'subject' ? 'block' : 'none' }}">
                         <label class="form-label fs-8 fw-semibold text-muted text-uppercase mb-1">Mata Pelajaran</label>
                         <div class="custom-select-wrapper" data-placeholder="Semua Mapel">
                         <select name="subject_id" class="form-select form-select-sm">
@@ -173,19 +173,19 @@
                                             @endphp
                                             @if($reportType === 'gate')
                                                 <tr>
-                                                    <td class="px-4 text-muted fs-7">{{ $no++ }}</td>
-                                                    <td>
+                                                    <td data-label="No" class="px-4 text-muted fs-7">{{ $no++ }}</td>
+                                                    <td data-label="Tanggal">
                                                         <span class="fw-semibold text-dark fs-7 d-block">{{ $row->date->format('d M Y') }}</span>
                                                         <span class="text-muted fs-8">{{ $row->date->translatedFormat('l') }}</span>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Nama Siswa">
                                                         <span class="fw-semibold text-dark d-block fs-7">{{ $row->student->name ?? '-' }}</span>
                                                         <span class="text-muted fs-8">NIS: {{ $row->student->nis ?? '-' }}</span>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Kelas">
                                                         <span class="fw-semibold text-dark fs-7">{{ $row->student->class->name ?? '-' }}</span>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Jam Masuk">
                                                         @if($row->time_in && $row->time_in !== '00:00:00')
                                                             <span class="badge bg-dark bg-opacity-10 text-dark px-2 py-1 fs-8 fw-semibold">
                                                                 {{ substr($row->time_in, 0, 5) }}
@@ -194,15 +194,15 @@
                                                             <span class="text-muted fs-8">-</span>
                                                         @endif
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Status">
                                                         <span class="badge {{ $cfg['bg'] }} px-2 py-1 fs-9">
                                                             <i class="bi {{ $cfg['icon'] }} me-1"></i>{{ ucfirst($row->status) }}
                                                         </span>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Metode">
                                                         <span class="fs-8 text-muted">{{ ucfirst($row->method) }}</span>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Catatan">
                                                         <span class="fs-8 text-muted" title="{{ $row->note }}">{{ $row->note ?? '-' }}</span>
                                                     </td>
                                                 </tr>
@@ -212,8 +212,8 @@
                                                     $schedule = $attendance->schedule ?? null;
                                                 @endphp
                                                 <tr>
-                                                    <td class="px-4 text-muted fs-7">{{ $no++ }}</td>
-                                                    <td>
+                                                    <td data-label="No" class="px-4 text-muted fs-7">{{ $no++ }}</td>
+                                                    <td data-label="Tanggal">
                                                         <span class="fw-semibold text-dark fs-7 d-block">
                                                             {{ $attendance && $attendance->date ? $attendance->date->format('d M Y') : '-' }}
                                                         </span>
@@ -221,25 +221,25 @@
                                                             {{ $attendance && $attendance->date ? $attendance->date->translatedFormat('l') : '-' }}
                                                         </span>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Mapel / Jam">
                                                         <span class="fw-semibold text-dark fs-7 d-block">{{ $schedule->subject->name ?? '-' }}</span>
                                                         <span class="text-muted fs-8">
                                                             {{ $schedule ? substr($schedule->start_time, 0, 5) . ' - ' . substr($schedule->end_time, 0, 5) : '-' }}
                                                         </span>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Nama Siswa / Kelas">
                                                         <span class="fw-semibold text-dark fs-7 d-block">{{ $row->student->name ?? '-' }}</span>
                                                         <span class="text-muted fs-8">Kelas: {{ $row->student->class->name ?? '-' }}</span>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Guru Pengajar">
                                                         <span class="fs-7 text-dark">{{ $schedule->teacher->name ?? '-' }}</span>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Status">
                                                         <span class="badge {{ $cfg['bg'] }} px-2 py-1 fs-9">
                                                             <i class="bi {{ $cfg['icon'] }} me-1"></i>{{ ucfirst($row->status) }}
                                                         </span>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Catatan">
                                                         <span class="fs-8 text-muted" title="{{ $row->note }}">{{ $row->note ?? '-' }}</span>
                                                     </td>
                                                 </tr>

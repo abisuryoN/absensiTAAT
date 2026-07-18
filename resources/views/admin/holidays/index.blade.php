@@ -63,9 +63,9 @@
                     <tbody>
                         @forelse($holidays as $holiday)
                             <tr>
-                                <td class="fw-semibold text-dark text-center">{{ $holiday->date->format('d M Y') }}</td>
-                                <td class="fw-semibold">{{ $holiday->name }}</td>
-                                <td class="text-center">
+                                <td data-label="Tanggal" class="fw-semibold text-dark text-center">{{ $holiday->date->format('d M Y') }}</td>
+                                <td data-label="Nama Hari Libur" class="fw-semibold">{{ $holiday->name }}</td>
+                                <td data-label="Tipe" class="text-center">
                                     @if($holiday->type == 'national')
                                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fs-8">Nasional</span>
                                     @elseif($holiday->type == 'school')
@@ -74,9 +74,9 @@
                                         <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 fs-8">Lainnya</span>
                                     @endif
                                 </td>
-                                <td class="text-center text-muted">{{ $holiday->academicYear->name }}</td>
-                                <td>{{ Str::limit($holiday->description, 40) ?: '-' }}</td>
-                                <td class="text-center">
+                                <td data-label="Tahun Ajaran" class="text-center text-muted">{{ $holiday->academicYear->name }}</td>
+                                <td data-label="Keterangan">{{ Str::limit($holiday->description, 40) ?: '-' }}</td>
+                                <td data-label="Aksi" class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a href="{{ route('admin.holidays.edit', $holiday) }}" class="btn btn-light btn-sm border" title="Edit">
                                             <i class="bi bi-pencil-square text-primary"></i>

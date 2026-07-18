@@ -52,17 +52,17 @@
                     <tbody>
                         @forelse($academicYears as $year)
                             <tr>
-                                <td class="fw-semibold text-dark">{{ $year->name }}</td>
-                                <td>{{ $year->start_date->format('d M Y') }}</td>
-                                <td>{{ $year->end_date->format('d M Y') }}</td>
-                                <td>
+                                <td data-label="Tahun Ajaran" class="fw-semibold text-dark">{{ $year->name }}</td>
+                                <td data-label="Tanggal Mulai">{{ $year->start_date->format('d M Y') }}</td>
+                                <td data-label="Tanggal Selesai">{{ $year->end_date->format('d M Y') }}</td>
+                                <td data-label="Status">
                                     @if($year->is_active)
                                         <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-8">Aktif</span>
                                     @else
                                         <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 fs-8">Tidak Aktif</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                <td data-label="Aksi" class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a href="{{ route('admin.academic-years.edit', $year) }}" class="btn btn-light btn-sm border" title="Edit">
                                             <i class="bi bi-pencil-square text-primary"></i>

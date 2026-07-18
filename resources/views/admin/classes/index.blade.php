@@ -76,12 +76,12 @@
                     <tbody>
                         @forelse($classes as $class)
                             <tr>
-                                <td><span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">Kelas {{ $class->grade_level }}</span></td>
-                                <td class="fw-semibold text-dark">{{ $class->name }}</td>
-                                <td>{{ $class->major->code }}</td>
-                                <td>{{ $class->academicYear->name }}</td>
-                                <td>{{ $class->homeroomTeacher ? $class->homeroomTeacher->name : '-' }}</td>
-                                <td>
+                                <td data-label="Tingkat"><span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">Kelas {{ $class->grade_level }}</span></td>
+                                <td data-label="Nama Kelas" class="fw-semibold text-dark">{{ $class->name }}</td>
+                                <td data-label="Jurusan">{{ $class->major->code }}</td>
+                                <td data-label="Tahun Ajaran">{{ $class->academicYear->name }}</td>
+                                <td data-label="Wali Kelas">{{ $class->homeroomTeacher ? $class->homeroomTeacher->name : '-' }}</td>
+                                <td data-label="Daya Tampung">
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="progress flex-grow-1" style="height: 6px; min-width: 60px;">
                                             @php
@@ -93,14 +93,14 @@
                                         <span class="fs-8 fw-semibold text-muted">{{ $class->students_count }}/{{ $class->capacity }}</span>
                                     </div>
                                 </td>
-                                <td>
+                                <td data-label="Status">
                                     @if($class->is_active)
                                         <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-8">Aktif</span>
                                     @else
                                         <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 fs-8">Tidak Aktif</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                <td data-label="Aksi" class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a href="{{ route('admin.classes.edit', $class) }}" class="btn btn-light btn-sm border" title="Edit">
                                             <i class="bi bi-pencil-square text-primary"></i>

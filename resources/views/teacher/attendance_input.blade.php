@@ -80,8 +80,8 @@
                                             $student = $detail->student;
                                         @endphp
                                         <tr>
-                                            <td class="px-4 text-muted fs-7">{{ $no++ }}</td>
-                                            <td>
+                                            <td data-label="No" class="px-4 text-muted fs-7">{{ $no++ }}</td>
+                                            <td data-label="Siswa">
                                                 <div class="d-flex align-items-center gap-3">
                                                     @if($student->photo)
                                                         <img src="{{ asset('storage/' . $student->photo) }}" alt="" width="36" height="36" class="rounded-circle object-fit-cover border">
@@ -96,7 +96,7 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="text-center">
+                                            <td data-label="Status Kehadiran" class="text-center">
                                                 <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
                                                     <input type="radio"
                                                            class="btn-check"
@@ -149,7 +149,7 @@
                                                     </label>
                                                 </div>
                                             </td>
-                                            <td class="px-4">
+                                            <td data-label="Catatan" class="px-4">
                                                 <input type="text"
                                                        name="students[{{ $student->id }}][note]"
                                                        value="{{ $detail->note }}"

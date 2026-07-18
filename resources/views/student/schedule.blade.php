@@ -50,15 +50,15 @@
                                     <tbody>
                                         @foreach($schedules[$day] as $schedule)
                                             <tr>
-                                                <td>
+                                                <td data-label="Waktu">
                                                     <span class="badge bg-dark bg-opacity-10 text-dark fw-semibold px-2 py-1">
                                                         {{ substr($schedule->start_time, 0, 5) }} - {{ substr($schedule->end_time, 0, 5) }}
                                                     </span>
                                                 </td>
-                                                <td>
+                                                <td data-label="Mata Pelajaran">
                                                     <span class="fw-semibold">{{ $schedule->subject->name ?? '-' }}</span>
                                                 </td>
-                                                <td>
+                                                <td data-label="Guru">
                                                     <div class="d-flex align-items-center gap-2">
                                                         <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 28px; height: 28px; font-size: 0.7rem;">
                                                             {{ substr($schedule->teacher->name ?? '?', 0, 2) }}
@@ -66,7 +66,7 @@
                                                         <span class="fs-7">{{ $schedule->teacher->name ?? '-' }}</span>
                                                     </div>
                                                 </td>
-                                                <td>
+                                                <td data-label="Ruangan">
                                                     @if($schedule->room)
                                                         <span class="fs-7 text-muted">
                                                             <i class="bi bi-geo-alt-fill me-1"></i>{{ $schedule->room }}

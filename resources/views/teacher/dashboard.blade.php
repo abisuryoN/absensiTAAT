@@ -94,18 +94,18 @@
                                     $attendance = $todayAttendances->get($schedule->id);
                                 @endphp
                                 <tr>
-                                    <td>
+                                    <td data-label="Waktu">
                                         <span class="badge bg-dark bg-opacity-10 text-dark px-2 py-1 fw-semibold fs-8">
                                             {{ substr($schedule->start_time, 0, 5) }} - {{ substr($schedule->end_time, 0, 5) }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td data-label="Mata Pelajaran">
                                         <span class="fw-semibold text-dark">{{ $schedule->subject->name ?? '-' }}</span>
                                     </td>
-                                    <td>
+                                    <td data-label="Kelas">
                                         <span class="fw-semibold text-dark">{{ $schedule->class->name ?? '-' }}</span>
                                     </td>
-                                    <td>
+                                    <td data-label="Status Absensi">
                                         @if($attendance)
                                             @if($attendance->status === 'submitted')
                                                 <span class="badge bg-success-subtle text-success-emphasis border border-success border-opacity-25 px-2.5 py-1 fs-9">
@@ -122,7 +122,7 @@
                                             </span>
                                         @endif
                                     </td>
-                                    <td class="text-end">
+                                    <td data-label="Aksi" class="text-end">
                                         @if($attendance && $attendance->status === 'submitted')
                                             <a href="{{ route('teacher.attendance.input', $schedule->id) }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 fs-8">
                                                 <i class="bi bi-pencil me-1"></i>Ubah Absen
