@@ -82,6 +82,8 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         Route::get('/attendance/today', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'today'])->name('attendance.today');
         Route::get('/attendance/manual', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'manualIndex'])->name('attendance.manual');
         Route::post('/attendance/manual', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'manualStore'])->name('attendance.manual.post');
+        Route::post('/attendance/bulk-mark', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'bulkMark'])->name('attendance.bulk-mark');
+        Route::get('/attendance/export', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'exportAttendance'])->name('attendance.export');
     });
 
 // 2. Guru Group
