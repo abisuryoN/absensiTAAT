@@ -132,13 +132,15 @@
         {{-- Mobile card body --}}
         <div class="d-block d-md-none mobile-card-body">
             <!-- Search -->
-            <form method="GET" action="{{ route('admin.holidays.index') }}" class="mobile-filter-form">
-                <div class="mobile-filter-row">
+            <form method="GET" action="{{ route('admin.holidays.index') }}" class="mobile-search-form mb-3">
+                <div class="mobile-search-row">
                     <div class="mobile-search-group">
                         <span class="mobile-search-icon"><i class="bi bi-search"></i></span>
                         <input type="text" name="search" class="mobile-search-input" placeholder="Cari hari libur..." value="{{ request('search') }}">
                     </div>
-                    <button type="submit" class="mobile-filter-btn">Cari</button>
+                    <button type="submit" class="mobile-cari-btn">
+                        <i class="bi bi-search me-1"></i> Cari
+                    </button>
                 </div>
             </form>
 
@@ -174,8 +176,14 @@
                                     <span class="badge bg-warning">Lainnya</span>
                                 @endif
                             </div>
-                            <div class="mobile-data-detail"><span>Tahun Ajaran:</span> {{ $holiday->academicYear->name }}</div>
-                            <div class="mobile-data-detail"><span>Ket:</span> {{ Str::limit($holiday->description, 50) ?: '-' }}</div>
+                            <div class="mobile-data-detail">
+                                <span>Tahun Ajaran:</span>
+                                <span>{{ $holiday->academicYear->name }}</span>
+                            </div>
+                            <div class="mobile-data-detail">
+                                <span>Ket:</span>
+                                <span>{{ Str::limit($holiday->description, 50) ?: '-' }}</span>
+                            </div>
                         </div>
                     </div>
                 @empty
@@ -187,7 +195,7 @@
             </div>
 
             <!-- Pagination -->
-            <div class="mt-3">
+            <div class="mobile-pagination-wrapper mt-3">
                 {{ $holidays->appends(request()->all())->links('vendor.pagination.bootstrap-5') }}
             </div>
         </div>

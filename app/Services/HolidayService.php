@@ -16,7 +16,7 @@ class HolidayService
         $this->liburApiService = $liburApiService;
     }
 
-    public function getAll(array $filters = [])
+    public function getAll(array $filters = [], $perPage = 15)
     {
         $query = Holiday::with('academicYear')
             // Exclude weekend holidays (Sabtu/Minggu) from table display
@@ -30,7 +30,7 @@ class HolidayService
             $query->where('academic_year_id', $filters['academic_year_id']);
         }
 
-        return $query->orderByDesc('date')->paginate(15);
+        return $query->orderByDesc('date')->paginate($perPage);
     }
 
     public function store(array $data): Holiday

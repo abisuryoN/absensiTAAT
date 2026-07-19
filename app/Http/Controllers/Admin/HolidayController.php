@@ -20,7 +20,12 @@ class HolidayController extends Controller
 
     public function index(Request $request)
     {
-        $holidays = $this->service->getAll($request->all());
+        // Mobile: show only 5 items per page, Desktop: 15 items per page
+        $agent = $request->header('User-Agent');
+        $isMobile = preg_match('/(Mobile|Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini)/i', $agent);
+        $perPage = $isMobile ? 5 : 15;
+
+        $holidays = $this->service->getAll($request->all(), $perPage);
         $academicYears = AcademicYear::orderByDesc('start_date')->get();
         return view('admin.holidays.index', compact('holidays', 'academicYears'));
     }
