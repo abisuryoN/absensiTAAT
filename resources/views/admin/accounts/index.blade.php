@@ -93,10 +93,10 @@
                     <div class="col-md-3">
                         <label class="form-label fw-semibold small mb-1 invisible">Aksi</label>
                         <div class="d-flex gap-1">
-                            <a href="{{ route('admin.accounts.index') }}" class="btn btn-sm btn-light border flex-fill text-center">
+                            <a href="{{ route('admin.accounts.index') }}" class="btn btn-light border flex-fill text-center">
                                 <i class="bi bi-x-circle me-1"></i>Reset Filter
                             </a>
-                            <button type="submit" class="btn btn-sm btn-primary flex-fill">
+                            <button type="submit" class="btn btn-primary flex-fill">
                                 <i class="bi bi-search me-1"></i>Cari
                             </button>
                         </div>
