@@ -105,13 +105,15 @@
     {{-- ============================================================ --}}
     <div class="drawer-header">
         <a href="{{ route($role === 'super_admin' ? 'admin.dashboard' : ($role === 'guru' ? 'teacher.dashboard' : ($role === 'siswa' ? 'student.dashboard' : 'dashboard'))) }}" class="drawer-logo-link">
-            <img src="{{ asset('images/logo-sma.png') }}" alt="Logo" class="drawer-logo-img">
+            <img src="{{ asset('images.png') }}" alt="Logo" class="drawer-logo-img">
             <div class="drawer-title-container">
                 <span class="drawer-title-line1">SMAN 1</span>
                 <span class="drawer-title-line2">Tajurhalang</span>
             </div>
         </a>
-        <span class="drawer-badge">Official</span>
+        <button id="mobileDrawerClose" class="drawer-close-btn" aria-label="Tutup menu">
+            <i class="bi bi-x-lg"></i>
+        </button>
     </div>
 
     <hr class="drawer-divider">
