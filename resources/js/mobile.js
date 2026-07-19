@@ -15,23 +15,6 @@
 
     const bottomNav = document.getElementById('mobileBottomNav');
 
-    // ─── Helpers ─────────────────────────────────────────────
-    function scrollDrawerToActive() {
-        if (!drawer) return;
-        var nav = drawer.querySelector('.drawer-nav');
-        var activeItem = nav ? nav.querySelector('.drawer-nav-item.active') : null;
-        if (!nav || !activeItem) return;
-
-        // Calculate the scroll position to center the active item in the drawer-nav
-        var containerRect = nav.getBoundingClientRect();
-        var itemRect = activeItem.getBoundingClientRect();
-        var scrollTarget = nav.scrollTop + (itemRect.top - containerRect.top) - containerRect.height / 2 + itemRect.height / 2;
-        // Clamp to valid scroll range
-        scrollTarget = Math.max(0, Math.min(scrollTarget, nav.scrollHeight - containerRect.height));
-        // Position instantly — no visible scroll animation since drawer is still off-screen
-        nav.scrollTop = scrollTarget;
-    }
-
     // ─── Scrollbar width compensation ─────────────────────────
     // Cache scrollbar width once on load to ensure consistent compensation
     // across multiple open/close cycles
@@ -59,10 +42,12 @@
             document.body.style.paddingRight = scrollbarWidth + 'px';
         }
 
-        // Scroll to active item BEFORE drawer slides in (while still at translateX(-100%))
-        // so the user never sees the scroll happen — it's already positioned correctly
-        // when the slide-in animation plays
-        scrollDrawerToActive();
+        // Reset drawer scroll to top so it always opens from the beginning,
+        // no auto-scrolling / jumping to active item
+        var nav = drawer.querySelector('.drawer-nav');
+        if (nav) {
+            nav.scrollTop = 0;
+        }
 
         drawer.classList.add('open');
         drawerOverlay.classList.add('open');
