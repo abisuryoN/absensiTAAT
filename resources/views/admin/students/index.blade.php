@@ -21,22 +21,19 @@
 
                     <!-- Cari -->
                     <div class="flex-grow-1" style="min-width: 200px; max-width: 380px;">
-                        <div class="input-group" style="height: 44px;">
-                            <span class="input-group-text bg-white border-end-0 text-muted"
-                                  style="height: 44px; border-color: #d1d5db; border-radius: 8px 0 0 8px;">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted">
                                 <i class="bi bi-search"></i>
                             </span>
                             <input type="text" name="search" class="form-control border-start-0"
                                    placeholder="Cari nama, NIS, atau NISN..."
-                                   value="{{ request('search') }}"
-                                   style="height: 44px; border-color: #d1d5db; border-radius: 0 8px 8px 0; font-size: 0.875rem;">
+                                   value="{{ request('search') }}">
                         </div>
                     </div>
 
                     <!-- Filter Kelas -->
-                    <div style="min-width: 160px; flex: 1;">
-                        <select name="class_id" class="form-select" onchange="this.form.submit()"
-                                style="height: 44px; border-radius: 8px; border-color: #d1d5db; font-size: 0.875rem; color: #374151; padding: 0 12px;">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Kelas" style="min-width: 160px; flex: 1;">
+                        <select name="class_id" onchange="this.form.submit()">
                             <option value="">Semua Kelas</option>
                             @foreach($classes as $class)
                                 <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
@@ -45,9 +42,8 @@
                     </div>
 
                     <!-- Filter Jurusan -->
-                    <div style="min-width: 140px; flex: 1;">
-                        <select name="major_id" class="form-select" onchange="this.form.submit()"
-                                style="height: 44px; border-radius: 8px; border-color: #d1d5db; font-size: 0.875rem; color: #374151; padding: 0 12px;">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Jurusan" style="min-width: 140px; flex: 1;">
+                        <select name="major_id" onchange="this.form.submit()">
                             <option value="">Semua Jurusan</option>
                             @foreach($majors as $major)
                                 <option value="{{ $major->id }}" {{ request('major_id') == $major->id ? 'selected' : '' }}>{{ $major->name }}</option>
@@ -56,9 +52,8 @@
                     </div>
 
                     <!-- Filter Status -->
-                    <div style="min-width: 140px; flex: 1;">
-                        <select name="is_active" class="form-select" onchange="this.form.submit()"
-                                style="height: 44px; border-radius: 8px; border-color: #d1d5db; font-size: 0.875rem; color: #374151; padding: 0 12px;">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Status" style="min-width: 140px; flex: 1;">
+                        <select name="is_active" onchange="this.form.submit()">
                             <option value="">Semua Status</option>
                             <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
                             <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Nonaktif</option>
@@ -67,8 +62,7 @@
 
                     <!-- Tombol Filter -->
                     <div>
-                        <button type="submit" class="btn btn-primary fw-semibold"
-                                style="height: 44px; border-radius: 8px; padding: 0 20px; font-size: 0.875rem; white-space: nowrap;">
+                        <button type="submit" class="btn btn-primary fw-semibold">
                             <i class="bi bi-funnel me-1"></i> Filter
                         </button>
                     </div>

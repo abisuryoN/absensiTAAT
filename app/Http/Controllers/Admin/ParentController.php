@@ -68,7 +68,8 @@ class ParentController extends Controller
      */
     public function pickerSearch(Request $request)
     {
-        $search  = $request->get('search', '');
+        // ConvertEmptyStringsToNull middleware can turn '' into null, so cast explicitly
+        $search  = (string) ($request->get('search') ?? '');
         $parents = $this->service->pickerSearch($search, 10);
 
         // Return paginated JSON for the modal
