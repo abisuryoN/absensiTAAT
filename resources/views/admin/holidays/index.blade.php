@@ -147,43 +147,43 @@
             <!-- Cards -->
             <div class="mobile-holiday-list">
                 @forelse($holidays as $holiday)
-                    <div class="mobile-data-card">
-                        <div class="mobile-data-card-top">
-                            <div>
-                                <div class="mobile-data-name">{{ $holiday->name }}</div>
-                                <div class="mobile-date-label">{{ $holiday->date->format('d M Y') }}</div>
-                            </div>
-                            <div class="mobile-data-actions">
-                                <a href="{{ route('admin.holidays.edit', $holiday) }}" class="btn btn-light btn-sm border" title="Edit">
-                                    <i class="bi bi-pencil-square text-primary"></i>
-                                </a>
-                                <form action="{{ route('admin.holidays.destroy', $holiday) }}" method="POST" onsubmit="return confirm('Hapus hari libur ini?')" style="display:inline;">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-light btn-sm border" title="Hapus">
-                                        <i class="bi bi-trash3 text-danger"></i>
-                                    </button>
-                                </form>
-                            </div>
+                    <div class="holiday-card-item">
+                        {{-- Date badge on the left --}}
+                        <div class="holiday-date-badge">
+                            <span class="holiday-date-day">{{ $holiday->date->format('d') }}</span>
+                            <span class="holiday-date-month">{{ $holiday->date->format('M') }}</span>
+                            <span class="holiday-date-year">{{ $holiday->date->format('Y') }}</span>
                         </div>
-                        <div class="mobile-data-details">
-                            <div class="mobile-data-detail">
-                                <span>Tipe:</span>
+
+                        {{-- Info in the middle --}}
+                        <div class="holiday-info">
+                            <div class="holiday-name">{{ $holiday->name }}</div>
+                            <div class="holiday-meta">
                                 @if($holiday->type == 'national')
-                                    <span class="badge bg-danger">Nasional</span>
+                                    <span class="holiday-badge badge-national">Nasional</span>
                                 @elseif($holiday->type == 'school')
-                                    <span class="badge bg-primary">Khusus</span>
+                                    <span class="holiday-badge badge-school">Khusus</span>
                                 @else
-                                    <span class="badge bg-warning">Lainnya</span>
+                                    <span class="holiday-badge badge-other">Lainnya</span>
                                 @endif
+                                <span class="holiday-academic">{{ $holiday->academicYear->name }}</span>
                             </div>
-                            <div class="mobile-data-detail">
-                                <span>Tahun Ajaran:</span>
-                                <span>{{ $holiday->academicYear->name }}</span>
-                            </div>
-                            <div class="mobile-data-detail">
-                                <span>Ket:</span>
-                                <span>{{ Str::limit($holiday->description, 50) ?: '-' }}</span>
-                            </div>
+                            @if($holiday->description)
+                                <div class="holiday-desc">{{ Str::limit($holiday->description, 50) }}</div>
+                            @endif
+                        </div>
+
+                        {{-- Actions --}}
+                        <div class="holiday-actions">
+                            <a href="{{ route('admin.holidays.edit', $holiday) }}" class="holiday-action-btn edit-btn" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form action="{{ route('admin.holidays.destroy', $holiday) }}" method="POST" onsubmit="return confirm('Hapus hari libur ini?')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="holiday-action-btn delete-btn" title="Hapus">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 @empty

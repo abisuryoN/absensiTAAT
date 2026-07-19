@@ -134,6 +134,13 @@ $mobile-radius-lg: 12px;
         }
     }
 
+    // ─── BODY DRAWER-OPEN STATE ────────────────────────────────
+    // Prevent scrolling when drawer is open
+    // scrollbar-gutter: stable on html prevents layout shift
+    body.drawer-open {
+        overflow: hidden !important;
+    }
+
     // ─── DRAWER / SIDEBAR MOBILE ────────────────────────────────
     // Updated to match design reference: white bg, only active item is blue solid
     .mobile-drawer {
@@ -142,7 +149,6 @@ $mobile-radius-lg: 12px;
         left: 0;
         bottom: 0;
         width: 280px;
-        max-width: 80%;
         background: #eef4ff;
         z-index: 1060;
         transform: translateX(-100%);
@@ -1328,34 +1334,156 @@ $mobile-radius-lg: 12px;
             border-radius: $mobile-radius-lg;
             border: 1px solid $mobile-border;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            padding: 14px 16px;
+            padding: 12px 14px;
             margin-bottom: 10px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            align-items: stretch;
+            gap: 12px;
 
-            .holiday-info {
-                flex: 1;
-                .holiday-name {
-                    font-size: 0.9rem;
-                    font-weight: 600;
-                    color: $mobile-text;
+            // ── Date Badge (left) ─────────────────────────
+            .holiday-date-badge {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-width: 48px;
+                width: 48px;
+                padding: 6px 0;
+                background: linear-gradient(180deg, #4361ee 0%, #3a56d4 100%);
+                border-radius: 10px;
+                color: #fff;
+                flex-shrink: 0;
+                align-self: center;
+
+                .holiday-date-day {
+                    font-size: 1.15rem;
+                    font-weight: 800;
+                    line-height: 1.1;
                 }
-                .holiday-date {
-                    font-size: 0.75rem;
-                    color: $mobile-text-secondary;
-                    margin-top: 2px;
+                .holiday-date-month {
+                    font-size: 0.55rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    line-height: 1.2;
+                    margin-top: 1px;
+                }
+                .holiday-date-year {
+                    font-size: 0.45rem;
+                    font-weight: 500;
+                    line-height: 1.1;
+                    opacity: 0.8;
                 }
             }
 
+            // ── Info (center, flexible) ───────────────────
+            .holiday-info {
+                flex: 1;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+
+                .holiday-name {
+                    font-size: 0.85rem;
+                    font-weight: 700;
+                    color: $mobile-text;
+                    line-height: 1.2;
+                }
+
+                .holiday-meta {
+                    display: flex;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    margin-top: 5px;
+
+                    .holiday-badge {
+                        display: inline-block;
+                        font-size: 0.6rem;
+                        font-weight: 600;
+                        padding: 2px 8px;
+                        border-radius: 20px;
+                        line-height: 1.4;
+
+                        &.badge-national {
+                            background: #fef2f2;
+                            color: #dc2626;
+                            border: 1px solid #fecaca;
+                        }
+                        &.badge-school {
+                            background: #eff6ff;
+                            color: #2563eb;
+                            border: 1px solid #bfdbfe;
+                        }
+                        &.badge-other {
+                            background: #fffbeb;
+                            color: #d97706;
+                            border: 1px solid #fde68a;
+                        }
+                    }
+
+                    .holiday-academic {
+                        font-size: 0.6rem;
+                        color: $mobile-text-secondary;
+                        font-weight: 500;
+                    }
+                }
+
+                .holiday-desc {
+                    font-size: 0.68rem;
+                    color: $mobile-text-secondary;
+                    margin-top: 4px;
+                    line-height: 1.3;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+            }
+
+            // ── Actions (right) ───────────────────────────
             .holiday-actions {
                 display: flex;
+                flex-direction: column;
                 gap: 6px;
                 flex-shrink: 0;
-                .btn {
-                    min-height: 32px !important;
-                    padding: 6px 10px !important;
-                    font-size: 0.75rem !important;
+                justify-content: center;
+
+                .holiday-action-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 8px;
+                    border: 1px solid $mobile-border;
+                    background: #fff;
+                    cursor: pointer;
+                    transition: all 0.15s;
+                    padding: 0;
+                    line-height: 1;
+                    font-size: 0.75rem;
+
+                    i {
+                        font-size: 0.8rem;
+                    }
+
+                    &.edit-btn {
+                        color: $mobile-primary;
+                        &:hover {
+                            background: #eef2ff;
+                            border-color: #c7d2fe;
+                        }
+                    }
+
+                    &.delete-btn {
+                        color: #ef4444;
+                        &:hover {
+                            background: #fef2f2;
+                            border-color: #fecaca;
+                        }
+                    }
                 }
             }
         }

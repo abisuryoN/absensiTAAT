@@ -20,25 +20,57 @@
         if (!drawer) return;
         var nav = drawer.querySelector('.drawer-nav');
         var activeItem = nav ? nav.querySelector('.drawer-nav-item.active') : null;
-        if (nav && activeItem) {
-            var containerRect = nav.getBoundingClientRect();
-            var itemRect = activeItem.getBoundingClientRect();
-            var offset = itemRect.top - containerRect.top - containerRect.clientHeight / 2 + itemRect.clientHeight / 2;
-            nav.scrollTop += offset;
+        if (!nav || !activeItem) return;
+
+        // Calculate the scroll position to center the active item in the drawer-nav
+        var containerRect = nav.getBoundingClientRect();
+        var itemRect = activeItem.getBoundingClientRect();
+        var scrollTarget = nav.scrollTop + (itemRect.top - containerRect.top) - containerRect.height / 2 + itemRect.height / 2;
+        // Clamp to valid scroll range
+        scrollTarget = Math.max(0, Math.min(scrollTarget, nav.scrollHeight - containerRect.height));
+        // Position instantly — no visible scroll animation since drawer is still off-screen
+        nav.scrollTop = scrollTarget;
+    }
+
+    // ─── Scrollbar width compensation ─────────────────────────
+    // Cache scrollbar width once on load to ensure consistent compensation
+    // across multiple open/close cycles
+    var cachedScrollbarWidth = null;
+
+    function getScrollbarWidth() {
+        if (cachedScrollbarWidth !== null) {
+            return cachedScrollbarWidth;
         }
+        cachedScrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        // Guard: clamp to 0 if negative
+        if (cachedScrollbarWidth < 0) {
+            cachedScrollbarWidth = 0;
+        }
+        return cachedScrollbarWidth;
     }
 
     function openDrawer() {
         if (!drawer || !drawerOverlay) return;
+        // Compensate for scrollbar disappearing to prevent layout shift
+        // Use cached scrollbar width so the padding is always the same
+        // every time the drawer opens
+        var scrollbarWidth = getScrollbarWidth();
+        if (scrollbarWidth > 0) {
+            document.body.style.paddingRight = scrollbarWidth + 'px';
+        }
+
+        // Scroll to active item BEFORE drawer slides in (while still at translateX(-100%))
+        // so the user never sees the scroll happen — it's already positioned correctly
+        // when the slide-in animation plays
+        scrollDrawerToActive();
+
         drawer.classList.add('open');
         drawerOverlay.classList.add('open');
         document.body.classList.add('drawer-open');
-        // Hide bottom nav when drawer opens (third image requirement)
+        // Hide bottom nav when drawer opens
         if (bottomNav) {
             bottomNav.style.display = 'none';
         }
-        // Scroll to active menu item after drawer opens
-        setTimeout(scrollDrawerToActive, 50);
     }
 
     function closeDrawer() {
@@ -46,6 +78,8 @@
         drawer.classList.remove('open');
         drawerOverlay.classList.remove('open');
         document.body.classList.remove('drawer-open');
+        // Restore padding compensation
+        document.body.style.paddingRight = '';
         // Show bottom nav again when drawer closes
         if (bottomNav) {
             bottomNav.style.display = '';
