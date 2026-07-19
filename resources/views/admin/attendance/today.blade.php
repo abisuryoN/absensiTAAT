@@ -2,7 +2,7 @@
     @section('title', 'Rekap Absensi Hari Ini')
 
     {{-- STAT CARDS --}}
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4 stat-cards-row">
         <div class="col-6 col-md-2">
             <div class="card bg-primary text-white border-0 rounded-4 shadow-sm h-100">
                 <div class="card-body stat-card-body text-center">
@@ -375,6 +375,7 @@
         </div>
     </div>
 
+    @pushOnce('modals')
     {{-- ═══════════════════════════════════════
          MODAL: KONFIRMASI TANDAI IZIN/SAKIT
     ═══════════════════════════════════════ --}}
@@ -532,6 +533,7 @@
             </div>
         </div>
     </div>
+    @endPushOnce
 
     {{-- ═══════════════════════════════════════
          STYLES
@@ -586,6 +588,11 @@
             /* Ensure modal appears above bottom nav */
             .modal { z-index: 1060 !important; }
             .modal-backdrop { z-index: 1059 !important; }
+
+            /* Stat cards: more horizontal gap between same-row cards */
+            .stat-cards-row {
+                --bs-gutter-x: 1.25rem;
+            }
         }
 
         /* Floating Action Bar */
