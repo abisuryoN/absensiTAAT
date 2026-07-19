@@ -589,9 +589,19 @@
             .modal { z-index: 1060 !important; }
             .modal-backdrop { z-index: 1059 !important; }
 
-            /* Stat cards: more horizontal gap between same-row cards */
+            /* Stat cards: bypass Bootstrap gutter (reset by _mobile.scss) with CSS flexbox gap */
             .stat-cards-row {
-                --bs-gutter-x: 1.25rem;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 12px !important;
+                margin: 0 0 16px 0 !important;
+            }
+            .stat-cards-row > [class*="col-"] {
+                flex: 0 0 calc(50% - 6px) !important;
+                width: calc(50% - 6px) !important;
+                max-width: calc(50% - 6px) !important;
+                padding: 0 !important;
+                margin-top: 0 !important;
             }
         }
 
