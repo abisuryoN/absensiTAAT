@@ -109,34 +109,44 @@
                         <h5 class="fw-bold text-primary mb-3">Penempatan & Akun</h5>
 
                         <div class="mb-3">
-                            <label for="class_id" class="form-label fw-semibold">Kelas <span class="text-danger">*</span></label>
-                            <div class="custom-select-wrapper" data-placeholder="Pilih Kelas">
-                            <select name="class_id" id="class_id" class="form-select @error('class_id') is-invalid @enderror" required>
-                                <option value="">Pilih Kelas</option>
-                                @foreach($classes as $class)
-                                    <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
-                                @endforeach
-                            </select>
-                            </div>
-                            @error('class_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                            <label class="form-label fw-semibold">Orang Tua / Wali</label>
+                            <input type="hidden" name="parent_id" id="parent_id" value="{{ old('parent_id') }}">
 
-                        <div class="mb-3">
-                            <label for="parent_id" class="form-label fw-semibold">Orang Tua / Wali</label>
-                            <div class="custom-select-wrapper" data-placeholder="Pilih Orang Tua (Opsional)">
-                            <select name="parent_id" id="parent_id" class="form-select @error('parent_id') is-invalid @enderror">
-                                <option value="">Pilih Orang Tua (Opsional)</option>
-                                @foreach($parents as $parent)
-                                    <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>{{ $parent->name }} ({{ $parent->relationship }}) - {{ $parent->phone }}</option>
-                                @endforeach
-                            </select>
+                            <div>
+                                <button type="button" id="openParentPickerBtn"
+                                        class="btn btn-light border w-100 text-start @error('parent_id') is-invalid @enderror"
+                                        data-bs-toggle="modal" data-bs-target="#parentPickerModal">
+                                    @if(old('parent_id'))
+                                        <i class="bi bi-person-check me-1"></i>
+                                        <span id="pickerBtnLabel">Memuat...</span>
+                                        <small class="text-muted ms-1">(Ganti)</small>
+                                    @else
+                                        <i class="bi bi-plus-lg me-1"></i> Pilih Orang Tua / Wali
+                                    @endif
+                                </button>
                             </div>
-                            @error('parent_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+
+                            {{-- Selected parent info card --}}
+                            <div id="selectedParentInfo" class="mt-2 p-3 rounded border bg-light {{ old('parent_id') ? '' : 'd-none' }}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-semibold" id="selectedParentName">-</div>
+                                        <small class="text-muted">NIK: <span id="selectedParentNik">-</span></small>
+                                        <small class="text-muted ms-2">HP: <span id="selectedParentPhone">-</span></small>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2"
+                                            onclick="clearParentSelection()" title="Hapus pilihan">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                        {{-- parent_id error message --}}
+                        @error('parent_id')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+
+                        </div>{{-- end parent picker mb-3 --}}
 
                         <hr class="my-4">
                         <h6 class="fw-bold text-dark mb-3"><i class="bi bi-key me-1"></i> Akun Login Siswa</h6>
@@ -175,4 +185,29 @@
             </form>
         </div>
     </div>
+@include('admin.students._parent_picker_modal')
+
+@if(old('parent_id'))
+<script>
+// Restore picker state after validation failure
+document.addEventListener('DOMContentLoaded', function () {
+    const parentId = '{{ old('parent_id') }}';
+    if (!parentId) return;
+
+    fetch('{{ url("admin/parents") }}/' + parentId + '/detail-json', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(p => {
+        document.getElementById('selectedParentName').textContent = p.name;
+        document.getElementById('selectedParentNik').textContent  = p.nik || '-';
+        document.getElementById('selectedParentPhone').textContent = p.phone || '-';
+        document.getElementById('selectedParentInfo').classList.remove('d-none');
+        document.getElementById('openParentPickerBtn').innerHTML =
+            '<i class="bi bi-person-check me-1"></i>' + p.name + ' <small class="text-muted ms-1">(Ganti)</small>';
+    })
+    .catch(() => {});
+});
+</script>
+@endif
 </x-app-layout>

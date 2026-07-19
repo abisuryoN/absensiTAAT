@@ -11,16 +11,17 @@ class ParentService
 {
     public function getAll(array $filters = [])
     {
-        $query = StudentParent::with('user');
+        $query = StudentParent::with(['user', 'students.class'])
+            ->when(!empty($filters['search']), function ($q) use ($filters) {
+                $q->where(function ($sub) use ($filters) {
+                    $sub->where('name', 'like', "%{$filters['search']}%")
+                        ->orWhere('nik', 'like', "%{$filters['search']}%")
+                        ->orWhere('phone', 'like', "%{$filters['search']}%");
+                });
+            })
+            ->orderBy('name');
 
-        if (!empty($filters['search'])) {
-            $query->where(function ($q) use ($filters) {
-                $q->where('name', 'like', '%' . $filters['search'] . '%')
-                  ->orWhere('phone', 'like', '%' . $filters['search'] . '%');
-            });
-        }
-
-        return $query->orderBy('name')->paginate(15);
+        return $query->paginate(15)->withQueryString();
     }
 
     public function store(array $data): StudentParent
@@ -28,86 +29,122 @@ class ParentService
         return DB::transaction(function () use ($data) {
             $userId = null;
 
-            // Optional User account for parent if email is provided
+            // Create login account if email is provided
             if (!empty($data['email'])) {
+                $password = !empty($data['password'])
+                    ? $data['password']
+                    : ($data['nik'] ?? 'ortu123');
+
                 $user = User::create([
-                    'name' => $data['name'],
-                    'email' => $data['email'],
-                    'password' => Hash::make($data['password'] ?? 'parent123'),
-                    'is_active' => true,
+                    'name'      => $data['name'],
+                    'email'     => $data['email'],
+                    'password'  => Hash::make($password),
+                    'is_active' => $data['is_active'] ?? true,
                 ]);
-                $user->assignRole('siswa'); // Or parent role if defined, but we defined roles super_admin, guru, siswa
+                $user->assignRole('parent');
                 $userId = $user->id;
             }
 
-            $parent = StudentParent::create([
-                'user_id' => $userId,
-                'name' => $data['name'],
-                'phone' => $data['phone'],
-                'phone_secondary' => $data['phone_secondary'] ?? null,
-                'relationship' => $data['relationship'],
-                'address' => $data['address'] ?? null,
+            return StudentParent::create([
+                'user_id'          => $userId,
+                'name'             => $data['name'],
+                'nik'              => $data['nik'],
+                'phone'            => $data['phone'] ?? null,
+                'phone_secondary'  => $data['phone_secondary'] ?? null,
+                'relationship'     => $data['relationship'] ?? 'wali',
+                'address'          => $data['address'] ?? null,
+                'email'            => $data['email'] ?? null,
+                'is_active'        => $data['is_active'] ?? true,
             ]);
-
-            ActivityLogService::logCreate($parent, "Menambahkan Orang Tua: {$parent->name}");
-
-            return $parent;
         });
     }
 
     public function update(StudentParent $parent, array $data): StudentParent
     {
         return DB::transaction(function () use ($parent, $data) {
-            $original = $parent->getAttributes();
-            $user = $parent->user;
+            $isActive = $data['is_active'] ?? false;
 
+            // Handle login account
             if (!empty($data['email'])) {
-                if ($user) {
-                    $userData = [
-                        'name' => $data['name'],
-                        'email' => $data['email'],
+                if ($parent->user) {
+                    // Update existing account
+                    $updateData = [
+                        'name'      => $data['name'],
+                        'email'     => $data['email'],
+                        'is_active' => $isActive,
                     ];
                     if (!empty($data['password'])) {
-                        $userData['password'] = Hash::make($data['password']);
+                        $updateData['password'] = Hash::make($data['password']);
                     }
-                    $user->update($userData);
+                    $parent->user->update($updateData);
                 } else {
+                    // Create new account
+                    $password = !empty($data['password'])
+                        ? $data['password']
+                        : ($data['nik'] ?? 'ortu123');
+
                     $user = User::create([
-                        'name' => $data['name'],
-                        'email' => $data['email'],
-                        'password' => Hash::make($data['password'] ?? 'parent123'),
-                        'is_active' => true,
+                        'name'      => $data['name'],
+                        'email'     => $data['email'],
+                        'password'  => Hash::make($password),
+                        'is_active' => $isActive,
                     ]);
-                    $user->assignRole('siswa');
-                    $parent->user_id = $user->id;
+                    $user->assignRole('parent');
+                    $data['user_id'] = $user->id;
                 }
+            } else {
+                // Email removed — remove account link
+                if ($parent->user) {
+                    $parent->user->delete();
+                }
+                $data['user_id'] = null;
             }
 
-            $parent->update(array_intersect_key($data, array_flip([
-                'name', 'phone', 'phone_secondary', 'relationship', 'address', 'user_id'
-            ])));
+            $parent->update([
+                'user_id'         => $data['user_id'] ?? $parent->user_id,
+                'name'            => $data['name'],
+                'nik'             => $data['nik'],
+                'phone'           => $data['phone'] ?? null,
+                'phone_secondary' => $data['phone_secondary'] ?? null,
+                'relationship'    => $data['relationship'] ?? 'wali',
+                'address'         => $data['address'] ?? null,
+                'email'           => $data['email'] ?? null,
+                'is_active'       => $isActive,
+            ]);
 
-            ActivityLogService::logUpdate($parent, $original, "Mengubah Orang Tua: {$parent->name}");
-
-            return $parent;
+            return $parent->fresh();
         });
     }
 
     public function delete(StudentParent $parent): void
     {
         DB::transaction(function () use ($parent) {
-            if ($parent->students()->count() > 0) {
-                throw new \Exception('Orang tua tidak dapat dihapus karena memiliki data siswa terkait.');
+            // Detach students (set parent_id to null)
+            $parent->students()->update(['parent_id' => null]);
+
+            // Delete linked user account if exists
+            if ($parent->user) {
+                $parent->user->delete();
             }
 
-            $user = $parent->user;
-
-            ActivityLogService::logDelete($parent, "Menghapus Orang Tua: {$parent->name}");
             $parent->delete();
-
-            if ($user) {
-                $user->delete();
-            }
         });
+    }
+
+    /**
+     * Return paginated list for the picker modal (AJAX).
+     */
+    public function pickerSearch(string $search = '', int $perPage = 10)
+    {
+        $query = StudentParent::where('is_active', true);
+
+        if ($search) {
+            $query->where(function ($sub) use ($search) {
+                $sub->where('name', 'like', "%{$search}%")
+                    ->orWhere('nik', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->orderBy('name')->paginate($perPage);
     }
 }

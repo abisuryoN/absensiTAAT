@@ -24,7 +24,7 @@ PARAMETER:
     function isMenuItemActive($routeName)
     {
         // Exact match untuk dashboard
-        if (in_array($routeName, ['admin.dashboard', 'teacher.dashboard', 'student.dashboard', 'dashboard'])) {
+        if (in_array($routeName, ['admin.dashboard', 'teacher.dashboard', 'student.dashboard', 'parent.dashboard', 'dashboard'])) {
             return request()->routeIs($routeName);
         }
 
@@ -105,6 +105,17 @@ PARAMETER:
                 ['label' => 'QR Code Absensi',    'icon' => 'bi-qr-code',            'route' => 'student.qrcode'],
                 ['label' => 'Jadwal Pelajaran',   'icon' => 'bi-calendar3',          'route' => 'student.schedule'],
                 ['label' => 'Riwayat Hadir',      'icon' => 'bi-clock-history',      'route' => 'student.history'],
+            ],
+            'LAINNYA' => [
+                ['label' => 'Profil',             'icon' => 'bi-person-circle',      'route' => 'profile.edit'],
+            ],
+        ];
+    } elseif ($role === 'parent') {
+        $menuGroups = [
+            'MENU UTAMA' => [
+                ['label' => 'Dashboard',          'icon' => 'bi-speedometer2',       'route' => 'parent.dashboard'],
+                ['label' => 'Rekap Harian',       'icon' => 'bi-calendar-check',     'route' => 'parent.rekap_harian'],
+                ['label' => 'Rekap Bulanan',      'icon' => 'bi-calendar-month',     'route' => 'parent.rekap_bulanan'],
             ],
             'LAINNYA' => [
                 ['label' => 'Profil',             'icon' => 'bi-person-circle',      'route' => 'profile.edit'],

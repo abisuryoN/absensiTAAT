@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,34 +9,26 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StudentParent extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes;
 
-    // Use absolute table name because Model class name is StudentParent
     protected $table = 'parents';
 
     protected $fillable = [
         'user_id',
         'name',
+        'nik',
         'phone',
         'phone_secondary',
         'relationship',
         'address',
+        'email',
+        'is_active',
     ];
-    /**
-     * Set the relationship attribute to lowercase.
-     */
-    public function setRelationshipAttribute($value)
-    {
-        $this->attributes['relationship'] = strtolower($value);
-    }
 
-    /**
-     * Get the relationship attribute capitalized.
-     */
-    public function getRelationshipAttribute($value)
-    {
-        return ucfirst(strtolower($value));
-    }
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

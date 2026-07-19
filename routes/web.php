@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\HolidayController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Parent\ParentPortalController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -50,6 +51,9 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         Route::resource('classes', SchoolClassController::class);
         Route::resource('subjects', SubjectController::class);
         Route::resource('teachers', TeacherController::class);
+        // Custom parent routes MUST come before resource to avoid {parent} wildcard matching
+        Route::get('/parents/picker-search', [ParentController::class, 'pickerSearch'])->name('parents.picker');
+        Route::get('/parents/export-reference', [ParentController::class, 'exportReference'])->name('parents.export');
         Route::resource('parents', ParentController::class);
         Route::resource('students', StudentController::class);
         Route::resource('schedules', ScheduleController::class);
@@ -113,6 +117,16 @@ Route::middleware(['auth', 'active', 'role:siswa'])
 
         // Riwayat Kehadiran
         Route::get('/history', [StudentPortalController::class, 'history'])->name('history');
+    });
+
+// 4. Parent / Wali Group
+Route::middleware(['auth', 'active', 'role:parent'])
+    ->prefix('parent')
+    ->name('parent.')
+    ->group(function () {
+        Route::get('/dashboard', [ParentPortalController::class, 'dashboard'])->name('dashboard');
+        Route::get('/rekap-harian', [ParentPortalController::class, 'rekapHarian'])->name('rekap_harian');
+        Route::get('/rekap-bulanan', [ParentPortalController::class, 'rekapBulanan'])->name('rekap_bulanan');
     });
 
 require __DIR__.'/auth.php';
