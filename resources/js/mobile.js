@@ -15,6 +15,21 @@
 
     const bottomNav = document.getElementById('mobileBottomNav');
 
+    // ─── Scroll to active menu item ─────────────────────────
+    function scrollDrawerToActive() {
+        if (!drawer) return;
+        var nav = drawer.querySelector('.drawer-nav');
+        var activeItem = nav ? nav.querySelector('.drawer-nav-item.active') : null;
+        if (!nav || !activeItem) return;
+
+        // offsetTop relative to .drawer-nav — works correctly even when
+        // drawer is off-screen (translateX(-100%)) because it's a layout property,
+        // not a visual one. Matches desktop sidebar behaviour.
+        var target = activeItem.offsetTop - nav.clientHeight / 2 + activeItem.clientHeight / 2;
+        target = Math.max(0, Math.min(target, nav.scrollHeight - nav.clientHeight));
+        nav.scrollTop = target;
+    }
+
     // ─── Scrollbar width compensation ─────────────────────────
     // Cache scrollbar width once on load to ensure consistent compensation
     // across multiple open/close cycles
@@ -42,12 +57,10 @@
             document.body.style.paddingRight = scrollbarWidth + 'px';
         }
 
-        // Reset drawer scroll to top so it always opens from the beginning,
-        // no auto-scrolling / jumping to active item
-        var nav = drawer.querySelector('.drawer-nav');
-        if (nav) {
-            nav.scrollTop = 0;
-        }
+        // Scroll to active item BEFORE adding 'open' class, while drawer
+        // is still at translateX(-100%). Matches desktop sidebar behaviour
+        // where the active item is scrolled into view at page load.
+        scrollDrawerToActive();
 
         drawer.classList.add('open');
         drawerOverlay.classList.add('open');
