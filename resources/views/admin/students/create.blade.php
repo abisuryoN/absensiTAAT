@@ -194,7 +194,9 @@
             </form>
         </div>
     </div>
-@include('admin.students._parent_picker_modal')
+@pushOnce('modals')
+    @include('admin.students._parent_picker_modal')
+@endPushOnce
 
 <script>
 // Photo preview
