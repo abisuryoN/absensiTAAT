@@ -10,7 +10,7 @@
     <div class="mobile-header-right">
         {{-- Avatar with quick dropdown --}}
         <div class="mobile-avatar-wrapper dropdown">
-            <button class="mobile-avatar-btn dropdown-toggle" type="button" id="mobileUserMenu" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu pengguna" style="background:none;border:none;padding:0;cursor:pointer;">
+            <button class="mobile-avatar-btn dropdown-toggle" type="button" id="mobileUserMenu" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu pengguna" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;">
                 @if(auth()->user()->avatar)
                     <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="" class="mobile-avatar-img" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
                 @else
