@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Absensi Gerbang - SMAN 1 Tajurhalang')
+    @section('title', 'Absensi Gerbang')
 
     <!-- Style Override for Scan Page to feel immersive -->
     <style>
