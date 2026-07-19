@@ -27,6 +27,7 @@ class Student extends Model
         'photo',
         'barcode_id',
         'is_active',
+        'tahun_masuk',
     ];
 
     protected $casts = [

@@ -33,7 +33,16 @@ class TeacherService
     {
         return DB::transaction(function () use ($data) {
             // Create user account
-            $password = !empty($data['password']) ? $data['password'] : ($data['nip'] ?: 'password123');
+            if (empty($data['password'])) {
+                $tempTeacher = new Teacher([
+                    'nip'               => $data['nip'] ?? null,
+                    'tahun_masuk_kerja' => isset($data['tahun_masuk_kerja']) && $data['tahun_masuk_kerja'] !== ''
+                        ? (int) $data['tahun_masuk_kerja'] : null,
+                ]);
+                $password = (new \App\Services\PasswordGeneratorService())->generateForTeacher($tempTeacher);
+            } else {
+                $password = $data['password'];
+            }
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -48,15 +57,17 @@ class TeacherService
             }
 
             $teacher = Teacher::create([
-                'user_id' => $user->id,
-                'nip' => $data['nip'] ?? null,
-                'nuptk' => $data['nuptk'] ?? null,
-                'name' => $data['name'],
-                'phone' => $data['phone'] ?? null,
-                'gender' => $data['gender'],
-                'address' => $data['address'] ?? null,
-                'photo' => $data['photo'] ?? null,
-                'is_active' => $data['is_active'] ?? true,
+                'user_id'           => $user->id,
+                'nip'               => $data['nip'] ?? null,
+                'nuptk'             => $data['nuptk'] ?? null,
+                'name'              => $data['name'],
+                'phone'             => $data['phone'] ?? null,
+                'gender'            => $data['gender'],
+                'address'           => $data['address'] ?? null,
+                'photo'             => $data['photo'] ?? null,
+                'is_active'         => $data['is_active'] ?? true,
+                'tahun_masuk_kerja' => isset($data['tahun_masuk_kerja']) && $data['tahun_masuk_kerja'] !== ''
+                    ? (int) $data['tahun_masuk_kerja'] : null,
             ]);
 
             // Sync subjects if provided
@@ -104,8 +115,12 @@ class TeacherService
 
             // Update teacher details
             $teacher->update(array_intersect_key($data, array_flip([
-                'nip', 'nuptk', 'name', 'phone', 'gender', 'address', 'photo', 'is_active'
+                'nip', 'nuptk', 'name', 'phone', 'gender', 'address', 'photo', 'is_active', 'tahun_masuk_kerja'
             ])));
+            if (isset($data['tahun_masuk_kerja'])) {
+                $teacher->tahun_masuk_kerja = $data['tahun_masuk_kerja'] !== '' ? (int) $data['tahun_masuk_kerja'] : null;
+                $teacher->save();
+            }
 
             // Sync subjects if provided
             if (isset($data['subjects'])) {

@@ -80,6 +80,7 @@ PARAMETER:
             'LAPORAN & PENGATURAN' => [
                 ['label' => 'Laporan Absensi',    'icon' => 'bi-file-earmark-bar-graph', 'route' => 'admin.reports.index'],
                 ['label' => 'Import Data',        'icon' => 'bi-file-earmark-arrow-up',  'route' => 'admin.imports.index'],
+                ['label' => 'Manajemen Akun',     'icon' => 'bi-shield-lock',            'route' => 'admin.accounts.index'],
                 ['label' => 'Pengaturan Sistem',  'icon' => 'bi-gear',                   'route' => 'admin.settings.index'],
             ],
             'LAINNYA' => [

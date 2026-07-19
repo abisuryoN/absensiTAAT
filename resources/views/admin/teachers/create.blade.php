@@ -31,12 +31,24 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="tahun_masuk_kerja" class="form-label fw-semibold">Tahun Masuk Kerja</label>
+                            <input type="number" name="tahun_masuk_kerja" id="tahun_masuk_kerja"
+                                   class="form-control @error('tahun_masuk_kerja') is-invalid @enderror"
+                                   placeholder="Contoh: 2015" min="1980" max="2100"
+                                   value="{{ old('tahun_masuk_kerja') }}">
+                            @error('tahun_masuk_kerja')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text fs-8">Tahun mulai mengajar di sekolah ini.</div>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="password" class="form-label fw-semibold">Password</label>
-                            <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="Masukkan password (kosongkan untuk default NIP/password123)">
+                            <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="Kosongkan untuk password default otomatis">
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <div class="form-text fs-8">Default password jika dikosongkan adalah NIP guru, atau "password123" jika NIP kosong.</div>
+                            <div class="form-text fs-8">Jika dikosongkan, password default dibuat dari <strong>NIP + Tahun Masuk Kerja</strong> (contoh: <code>1985010120100110012015</code>).</div>
                         </div>
 
                         <div class="mb-3">

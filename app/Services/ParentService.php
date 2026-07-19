@@ -31,9 +31,14 @@ class ParentService
 
             // Create login account if email is provided
             if (!empty($data['email'])) {
-                $password = !empty($data['password'])
-                    ? $data['password']
-                    : ($data['nik'] ?? 'ortu123');
+                if (empty($data['password'])) {
+                    // Temporarily create the parent record to get NIK, then generate password
+                    // Since we need students linked for tahun_masuk, use NIK only at creation time
+                    $tempParent = new \App\Models\StudentParent(['nik' => $data['nik'] ?? null]);
+                    $password = (new \App\Services\PasswordGeneratorService())->generateForParent($tempParent);
+                } else {
+                    $password = $data['password'];
+                }
 
                 $user = User::create([
                     'name'      => $data['name'],
@@ -79,10 +84,12 @@ class ParentService
                     $parent->user->update($updateData);
                 } else {
                     // Create new account
-                    $password = !empty($data['password'])
-                        ? $data['password']
-                        : ($data['nik'] ?? 'ortu123');
-
+                    if (empty($data['password'])) {
+                        $tempParent = new \App\Models\StudentParent(['nik' => $data['nik'] ?? null]);
+                        $password = (new \App\Services\PasswordGeneratorService())->generateForParent($tempParent);
+                    } else {
+                        $password = $data['password'];
+                    }
                     $user = User::create([
                         'name'      => $data['name'],
                         'email'     => $data['email'],

@@ -18,7 +18,7 @@
                 @method('PUT')
 
                 <div class="row">
-                    <!-- Column 1: Identitas Siswa -->
+                    <!-- Column 1: Identitas -->
                     <div class="col-md-6 border-end pe-md-4">
                         <h5 class="fw-bold text-primary mb-3">Identitas Siswa</h5>
 
@@ -26,47 +26,37 @@
                             <div class="col-md-6">
                                 <label for="nis" class="form-label fw-semibold">NIS <span class="text-danger">*</span></label>
                                 <input type="text" name="nis" id="nis" class="form-control @error('nis') is-invalid @enderror" value="{{ old('nis', $student->nis) }}" required>
-                                @error('nis')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                @error('nis') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="nisn" class="form-label fw-semibold">NISN</label>
                                 <input type="text" name="nisn" id="nisn" class="form-control @error('nisn') is-invalid @enderror" value="{{ old('nisn', $student->nisn) }}">
-                                @error('nisn')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                @error('nisn') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="name" class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
                             <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $student->name) }}" required>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="gender" class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
                                 <div class="custom-select-wrapper" data-placeholder="Pilih Gender">
-                                <select name="gender" id="gender" class="form-select @error('gender') is-invalid @enderror" required>
-                                    <option value="">Pilih Gender</option>
-                                    <option value="L" {{ old('gender', $student->gender) == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="P" {{ old('gender', $student->gender) == 'P' ? 'selected' : '' }}>Perempuan</option>
-                                </select>
+                                    <select name="gender" id="gender" class="form-select @error('gender') is-invalid @enderror" required>
+                                        <option value="">Pilih Gender</option>
+                                        <option value="L" {{ old('gender', $student->gender) == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                                        <option value="P" {{ old('gender', $student->gender) == 'P' ? 'selected' : '' }}>Perempuan</option>
+                                    </select>
                                 </div>
-                                @error('gender')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                @error('gender') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="phone" class="form-label fw-semibold">No. HP</label>
                                 <input type="text" name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', $student->phone) }}">
-                                @error('phone')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
 
@@ -74,25 +64,19 @@
                             <div class="col-md-6">
                                 <label for="birth_place" class="form-label fw-semibold">Tempat Lahir</label>
                                 <input type="text" name="birth_place" id="birth_place" class="form-control @error('birth_place') is-invalid @enderror" value="{{ old('birth_place', $student->birth_place) }}">
-                                @error('birth_place')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                @error('birth_place') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="birth_date" class="form-label fw-semibold">Tanggal Lahir</label>
                                 <input type="date" name="birth_date" id="birth_date" class="form-control @error('birth_date') is-invalid @enderror" value="{{ old('birth_date', $student->birth_date?->format('Y-m-d')) }}">
-                                @error('birth_date')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                @error('birth_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="address" class="form-label fw-semibold">Alamat</label>
                             <textarea name="address" id="address" class="form-control @error('address') is-invalid @enderror" rows="2">{{ old('address', $student->address) }}</textarea>
-                            @error('address')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="mb-3">
@@ -101,16 +85,13 @@
                                 <div id="photoPreviewWrapper" class="{{ $student->photo ? '' : 'd-none' }}">
                                     <img id="photoPreview"
                                          src="{{ $student->photo ? Storage::url($student->photo) : '#' }}"
-                                         alt="Preview foto"
-                                         class="rounded-circle object-fit-cover border"
-                                         style="width: 80px; height: 80px;">
+                                         alt="Preview" class="rounded-circle object-fit-cover border"
+                                         style="width:80px;height:80px;">
                                 </div>
                                 <div class="flex-grow-1">
                                     <input type="file" name="photo" id="photo" class="form-control @error('photo') is-invalid @enderror" accept="image/*">
-                                    @error('photo')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                    <div class="form-text fs-8">Format JPG/PNG, Maksimal 2MB. Kosongkan jika tidak ingin mengubah foto.</div>
+                                    @error('photo') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                    <div class="form-text fs-8">Format JPG/PNG, Maks 2MB. Kosongkan jika tidak ingin mengubah foto.</div>
                                 </div>
                             </div>
                         </div>
@@ -123,63 +104,45 @@
                         <div class="mb-3">
                             <label for="class_id" class="form-label fw-semibold">Kelas <span class="text-danger">*</span></label>
                             <div class="custom-select-wrapper" data-placeholder="Pilih Kelas">
-                            <select name="class_id" id="class_id" class="form-select @error('class_id') is-invalid @enderror" required>
-                                <option value="">Pilih Kelas</option>
-                                @foreach($classes as $class)
-                                    <option value="{{ $class->id }}" {{ old('class_id', $student->class_id) == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
-                                @endforeach
-                            </select>
+                                <select name="class_id" id="class_id" class="form-select @error('class_id') is-invalid @enderror" required>
+                                    <option value="">Pilih Kelas</option>
+                                    @foreach($classes as $class)
+                                        <option value="{{ $class->id }}" {{ old('class_id', $student->class_id) == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-                            @error('class_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            @error('class_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             <div class="form-text fs-8">Mengubah kelas akan otomatis mencatat riwayat pemindahan kelas siswa.</div>
                         </div>
 
-                        {{-- ── Parent Picker ──────────────────────────────── --}}
                         @php $currentParentId = old('parent_id', $student->parent_id); @endphp
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Orang Tua / Wali</label>
                             <input type="hidden" name="parent_id" id="parent_id" value="{{ $currentParentId }}">
-
                             <button type="button" id="openParentPickerBtn"
-                                    class="btn btn-light border w-100 text-start @error('parent_id') is-invalid @enderror"
+                                    class="btn btn-light border w-100 text-start"
                                     data-bs-toggle="modal" data-bs-target="#parentPickerModal">
                                 @if($currentParentId && $student->parent)
-                                    <i class="bi bi-person-check me-1"></i>
-                                    {{ $student->parent->name }}
-                                    <small class="text-muted ms-1">(Ganti)</small>
-                                @elseif($currentParentId)
-                                    <i class="bi bi-person-check me-1"></i>
-                                    <span id="pickerBtnLabel">Memuat...</span>
+                                    <i class="bi bi-person-check me-1"></i> {{ $student->parent->name }}
                                     <small class="text-muted ms-1">(Ganti)</small>
                                 @else
                                     <i class="bi bi-plus-lg me-1"></i> Pilih Orang Tua / Wali
                                 @endif
                             </button>
-
-                            {{-- Selected info card --}}
                             <div id="selectedParentInfo" class="mt-2 p-3 rounded border bg-light {{ $currentParentId ? '' : 'd-none' }}">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <div class="fw-semibold" id="selectedParentName">
-                                            {{ $student->parent->name ?? '-' }}
-                                        </div>
+                                        <div class="fw-semibold" id="selectedParentName">{{ $student->parent->name ?? '-' }}</div>
                                         <small class="text-muted">NIK: <span id="selectedParentNik">{{ $student->parent->nik ?? '-' }}</span></small>
                                         <small class="text-muted ms-2">HP: <span id="selectedParentPhone">{{ $student->parent->phone ?? '-' }}</span></small>
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2"
-                                            onclick="clearParentSelection()" title="Hapus pilihan">
+                                    <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" onclick="clearParentSelection()">
                                         <i class="bi bi-x-lg"></i>
                                     </button>
                                 </div>
                             </div>
-
-                            @error('parent_id')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
+                            @error('parent_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                         </div>
-                        {{-- ── End Parent Picker ──────────────────────────── --}}
 
                         <hr class="my-4">
                         <h6 class="fw-bold text-dark mb-3"><i class="bi bi-key me-1"></i> Akun Login Siswa</h6>
@@ -187,17 +150,26 @@
                         <div class="mb-3">
                             <label for="email" class="form-label fw-semibold">Alamat Email <span class="text-danger">*</span></label>
                             <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $student->user->email) }}" required>
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tahun_masuk" class="form-label fw-semibold">Tahun Masuk</label>
+                            <input type="number" name="tahun_masuk" id="tahun_masuk"
+                                   class="form-control @error('tahun_masuk') is-invalid @enderror"
+                                   placeholder="Contoh: 2024" min="2000" max="2100"
+                                   value="{{ old('tahun_masuk', $student->tahun_masuk) }}">
+                            @error('tahun_masuk') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <div class="form-text fs-8">Digunakan untuk generate password default.</div>
                         </div>
 
                         <div class="mb-3">
                             <label for="password" class="form-label fw-semibold">Ganti Password</label>
-                            <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="Biarkan kosong jika tidak ingin mengubah">
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="password" name="password" id="password"
+                                   class="form-control @error('password') is-invalid @enderror"
+                                   placeholder="Biarkan kosong jika tidak ingin mengubah">
+                            @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <div class="form-text fs-8">Password default: <strong>NISN + Tahun Masuk</strong> (contoh: <code>12345678902024</code>).</div>
                         </div>
 
                         <div class="mb-3">
@@ -223,42 +195,15 @@
 @endPushOnce
 
 <script>
-// Photo preview on new file selection
 document.getElementById('photo').addEventListener('change', function () {
     const file = this.files[0];
     const wrapper = document.getElementById('photoPreviewWrapper');
     const preview = document.getElementById('photoPreview');
     if (file && file.type.startsWith('image/')) {
         const reader = new FileReader();
-        reader.onload = function (e) {
-            preview.src = e.target.result;
-            wrapper.classList.remove('d-none');
-        };
+        reader.onload = e => { preview.src = e.target.result; wrapper.classList.remove('d-none'); };
         reader.readAsDataURL(file);
     }
 });
 </script>
-
-@if($currentParentId && !$student->parent)
-{{-- old('parent_id') set but no eager-loaded parent: restore via AJAX --}}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const parentId = '{{ $currentParentId }}';
-    if (!parentId) return;
-    fetch('{{ url("admin/parents") }}/' + parentId + '/detail-json', {
-        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-    })
-    .then(r => r.json())
-    .then(p => {
-        document.getElementById('selectedParentName').textContent = p.name;
-        document.getElementById('selectedParentNik').textContent  = p.nik || '-';
-        document.getElementById('selectedParentPhone').textContent = p.phone || '-';
-        document.getElementById('selectedParentInfo').classList.remove('d-none');
-        document.getElementById('openParentPickerBtn').innerHTML =
-            '<i class="bi bi-person-check me-1"></i>' + p.name + ' <small class="text-muted ms-1">(Ganti)</small>';
-    })
-    .catch(() => {});
-});
-</script>
-@endif
 </x-app-layout>

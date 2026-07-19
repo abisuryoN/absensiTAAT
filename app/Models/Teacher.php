@@ -23,6 +23,7 @@ class Teacher extends Model
         'address',
         'photo',
         'is_active',
+        'tahun_masuk_kerja',
     ];
 
     protected $casts = [

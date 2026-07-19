@@ -169,12 +169,24 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="tahun_masuk" class="form-label fw-semibold">Tahun Masuk</label>
+                            <input type="number" name="tahun_masuk" id="tahun_masuk"
+                                   class="form-control @error('tahun_masuk') is-invalid @enderror"
+                                   placeholder="Contoh: 2024" min="2000" max="2100"
+                                   value="{{ old('tahun_masuk', date('Y')) }}">
+                            @error('tahun_masuk')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text fs-8">Tahun masuk siswa ke sekolah ini.</div>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="password" class="form-label fw-semibold">Password</label>
-                            <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="Kosongkan untuk default NIS/siswa123">
+                            <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="Kosongkan untuk password default otomatis">
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <div class="form-text fs-8">Default password jika dikosongkan adalah NIS siswa, atau "siswa123" jika NIS kosong.</div>
+                            <div class="form-text fs-8">Jika dikosongkan, password default akan otomatis dibuat dari <strong>NISN + Tahun Masuk</strong> (contoh: <code>12345678902024</code>).</div>
                         </div>
 
                         <div class="mb-3">

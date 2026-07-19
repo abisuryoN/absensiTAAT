@@ -98,12 +98,15 @@
             @if($editing)
                 <small class="text-muted fw-normal">(kosongkan jika tidak diubah)</small>
             @else
-                <small class="text-muted fw-normal">(default: NIK jika dikosongkan)</small>
+                <small class="text-muted fw-normal">(opsional)</small>
             @endif
         </label>
         <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
-               placeholder="{{ $editing ? 'Kosongkan untuk tidak diubah' : 'Default: NIK' }}"
+               placeholder="{{ $editing ? 'Kosongkan untuk tidak diubah' : 'Kosongkan untuk password default otomatis' }}"
                autocomplete="new-password">
         @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        @if(!$editing)
+            <div class="form-text fs-8">Jika dikosongkan, password default dibuat dari <strong>NIK + Tahun Masuk anak</strong> yang terhubung (contoh: <code>3201xxxxxxxxxxxx2024</code>).</div>
+        @endif
     </div>
 </div>

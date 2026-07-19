@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\HolidayController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AccountManagementController;
 use App\Http\Controllers\Parent\ParentPortalController;
 
 Route::get('/', function () {
@@ -76,6 +77,10 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         Route::post('/imports/commit', [\App\Http\Controllers\Admin\ImportController::class, 'commit'])->name('imports.commit');
         Route::post('/imports/cancel', [\App\Http\Controllers\Admin\ImportController::class, 'cancel'])->name('imports.cancel');
 
+        // Manajemen Akun Login
+        Route::get('/accounts', [AccountManagementController::class, 'index'])->name('accounts.index');
+        Route::post('/accounts/reset-password', [AccountManagementController::class, 'resetPassword'])->name('accounts.reset-password');
+
         // Absensi Gerbang
         Route::get('/attendance/scan', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'index'])->name('attendance.scan');
         Route::post('/attendance/scan', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'scan'])->name('attendance.scan.post');
@@ -93,11 +98,11 @@ Route::middleware(['auth', 'active', 'role:guru'])
     ->group(function () {
         Route::get('/dashboard', [TeacherPortalController::class, 'dashboard'])->name('dashboard');
         Route::get('/schedules', [TeacherPortalController::class, 'schedules'])->name('schedules');
-        
+
         // Absensi Mapel
         Route::get('/attendance/{schedule}', [TeacherPortalController::class, 'attendanceInput'])->name('attendance.input');
         Route::post('/attendance/store', [TeacherPortalController::class, 'attendanceStore'])->name('attendance.store');
-        
+
         // Rekap Mengajar
         Route::get('/recap', [TeacherPortalController::class, 'recap'])->name('recap');
     });

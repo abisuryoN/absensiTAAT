@@ -49,8 +49,24 @@ class StudentService
     public function store(array $data): Student
     {
         return DB::transaction(function () use ($data) {
-            // Create user account
-            $password = !empty($data['password']) ? $data['password'] : ($data['nis'] ?: 'siswa123');
+            // Build a temporary Student-like object to generate the default password
+            // (the real Student record is created below, after the User)
+            $tahunMasuk = isset($data['tahun_masuk']) && $data['tahun_masuk'] !== ''
+                ? (int) $data['tahun_masuk']
+                : null;
+
+            if (empty($data['password'])) {
+                // We need nisn/nis + tahun_masuk for the generator, build a temp model
+                $tempStudent = new Student([
+                    'nis'         => $data['nis'] ?? null,
+                    'nisn'        => $data['nisn'] ?? null,
+                    'tahun_masuk' => $tahunMasuk,
+                ]);
+                $password = (new \App\Services\PasswordGeneratorService())->generateForStudent($tempStudent);
+            } else {
+                $password = $data['password'];
+            }
+
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -68,20 +84,21 @@ class StudentService
             $barcodeId = $data['barcode_id'] ?? $data['nis'];
 
             $student = Student::create([
-                'user_id' => $user->id,
-                'parent_id' => $data['parent_id'] ?? null,
-                'class_id' => $data['class_id'],
-                'nis' => $data['nis'],
-                'nisn' => $data['nisn'] ?? null,
-                'name' => $data['name'],
-                'gender' => $data['gender'],
-                'phone' => $data['phone'] ?? null,
-                'birth_date' => $data['birth_date'] ?? null,
+                'user_id'     => $user->id,
+                'parent_id'   => $data['parent_id'] ?? null,
+                'class_id'    => $data['class_id'],
+                'nis'         => $data['nis'],
+                'nisn'        => $data['nisn'] ?? null,
+                'name'        => $data['name'],
+                'gender'      => $data['gender'],
+                'phone'       => $data['phone'] ?? null,
+                'birth_date'  => $data['birth_date'] ?? null,
                 'birth_place' => $data['birth_place'] ?? null,
-                'address' => $data['address'] ?? null,
-                'photo' => $data['photo'] ?? null,
-                'barcode_id' => $barcodeId,
-                'is_active' => $data['is_active'] ?? true,
+                'address'     => $data['address'] ?? null,
+                'photo'       => $data['photo'] ?? null,
+                'barcode_id'  => $barcodeId,
+                'is_active'   => $data['is_active'] ?? true,
+                'tahun_masuk' => $tahunMasuk,
             ]);
 
             // Save history of student class
@@ -131,21 +148,23 @@ class StudentService
             // Generate unique barcode_id
             $barcodeId = $data['barcode_id'] ?? $data['nis'];
 
-            // Update student
             $student->update([
-                'parent_id' => $data['parent_id'] ?? $student->parent_id,
-                'class_id' => $data['class_id'],
-                'nis' => $data['nis'],
-                'nisn' => $data['nisn'] ?? $student->nisn,
-                'name' => $data['name'],
-                'gender' => $data['gender'],
-                'phone' => $data['phone'] ?? $student->phone,
-                'birth_date' => $data['birth_date'] ?? $student->birth_date,
+                'parent_id'   => $data['parent_id'] ?? $student->parent_id,
+                'class_id'    => $data['class_id'],
+                'nis'         => $data['nis'],
+                'nisn'        => $data['nisn'] ?? $student->nisn,
+                'name'        => $data['name'],
+                'gender'      => $data['gender'],
+                'phone'       => $data['phone'] ?? $student->phone,
+                'birth_date'  => $data['birth_date'] ?? $student->birth_date,
                 'birth_place' => $data['birth_place'] ?? $student->birth_place,
-                'address' => $data['address'] ?? $student->address,
-                'photo' => $data['photo'] ?? $student->photo,
-                'barcode_id' => $barcodeId,
-                'is_active' => $data['is_active'] ?? $student->is_active,
+                'address'     => $data['address'] ?? $student->address,
+                'photo'       => $data['photo'] ?? $student->photo,
+                'barcode_id'  => $barcodeId,
+                'is_active'   => $data['is_active'] ?? $student->is_active,
+                'tahun_masuk' => isset($data['tahun_masuk']) && $data['tahun_masuk'] !== ''
+                    ? (int) $data['tahun_masuk']
+                    : $student->tahun_masuk,
             ]);
 
             // Save history of student class if changed

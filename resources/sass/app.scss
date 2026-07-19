@@ -390,6 +390,18 @@ body {
     100% { top: 0%; }
 }
 
+// Table header normalization — applies to all .table instances
+.table thead th {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #64748b;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    padding-top: 0.875rem;
+    padding-bottom: 0.875rem;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
 // Premium Table
 .table-premium {
     background: #ffffff;
