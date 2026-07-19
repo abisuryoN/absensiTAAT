@@ -94,7 +94,7 @@
     // ─── Auto-close drawer on route change / link click ──────
     // Close drawer when a navigation link inside it is clicked
     if (drawer) {
-        drawer.querySelectorAll('a.mobile-drawer-link, a.mobile-drawer-action-btn').forEach(function(link) {
+        drawer.querySelectorAll('.drawer-nav-item, a.drawer-logout-btn').forEach(function(link) {
             link.addEventListener('click', function() {
                 // Small delay for visual feedback
                 setTimeout(closeDrawer, 150);

@@ -1,4 +1,4 @@
-{{-- Mobile Drawer — IDENTIK dengan sidebar desktop --}}
+{{-- Mobile Drawer — Updated styling to match desktop sidebar --}}
 @php
     $currentRoute = request()->route()->getName();
     $user = auth()->user();
@@ -100,7 +100,7 @@
 
 <aside class="mobile-drawer" id="mobileDrawer">
     {{-- ============================================================ --}}
-    {{-- HEADER SIDEBAR — Logo & Branding (IDENTIK desktop)            --}}
+    {{-- HEADER — Logo, School Name & Official Badge                  --}}
     {{-- ============================================================ --}}
     <div class="drawer-header">
         <a href="{{ route($role === 'super_admin' ? 'admin.dashboard' : ($role === 'guru' ? 'teacher.dashboard' : ($role === 'siswa' ? 'student.dashboard' : 'dashboard'))) }}" class="drawer-logo-link">
@@ -110,38 +110,14 @@
                 <span class="drawer-title-line2">Tajurhalang</span>
             </div>
         </a>
+        <span class="badge badge-official drawer-badge">Official</span>
         <button id="mobileDrawerClose" class="drawer-close-btn" aria-label="Tutup menu">
             <i class="bi bi-x-lg"></i>
         </button>
     </div>
 
-    <hr class="drawer-divider">
-
     {{-- ============================================================ --}}
-    {{-- USER PROFILE SECTION (IDENTIK desktop)                       --}}
-    {{-- ============================================================ --}}
-    <div class="drawer-profile">
-        <div class="drawer-avatar-wrap">
-            @if($user->avatar)
-                <img src="{{ Storage::url($user->avatar) }}" alt="" class="drawer-avatar-img">
-            @else
-                <div class="drawer-avatar-placeholder">
-                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                </div>
-            @endif
-            <span class="drawer-online-dot"></span>
-        </div>
-        <div class="drawer-profile-text">
-            <p class="drawer-profile-name">{{ $user->name }}</p>
-            <span class="drawer-profile-role">{{ $role ?? 'User' }}</span>
-            @if($identityNumber)
-                <span class="drawer-profile-role" style="font-size:0.65rem;color:#94a3b8;">{{ $identityNumber }}</span>
-            @endif
-        </div>
-    </div>
-
-    {{-- ============================================================ --}}
-    {{-- NAVIGATION — Grouped with section titles (IDENTIK desktop)   --}}
+    {{-- NAVIGATION — Grouped with section titles                     --}}
     {{-- ============================================================ --}}
     <nav class="drawer-nav">
         @foreach($menuGroups as $sectionTitle => $items)
@@ -150,7 +126,7 @@
                 @php
                     $isActive = isActiveRoute($item['route'], $currentRoute);
                 @endphp
-                <a href="{{ route($item['route']) }}" class="drawer-nav-item mobile-drawer-link {{ $isActive ? 'active' : '' }}">
+                <a href="{{ route($item['route']) }}" class="drawer-nav-item {{ $isActive ? 'active' : '' }}">
                     <i class="bi {{ $item['icon'] }}"></i>
                     <span>{{ $item['label'] }}</span>
                 </a>
@@ -159,12 +135,31 @@
     </nav>
 
     {{-- ============================================================ --}}
-    {{-- BOTTOM — Logout (IDENTIK desktop)                            --}}
+    {{-- BOTTOM — User Profile & Logout                               --}}
     {{-- ============================================================ --}}
-    <div class="drawer-actions">
+    <div class="drawer-footer">
+        {{-- User Profile --}}
+        <div class="drawer-profile">
+            <div class="drawer-avatar-wrap">
+                @if($user->avatar)
+                    <img src="{{ Storage::url($user->avatar) }}" alt="" class="drawer-avatar-img">
+                @else
+                    <div class="drawer-avatar-placeholder">
+                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                    </div>
+                @endif
+                <span class="drawer-online-dot"></span>
+            </div>
+            <div class="drawer-profile-text">
+                <p class="drawer-profile-name">{{ $user->name }}</p>
+                <span class="drawer-profile-role">{{ $role ?? 'User' }}</span>
+            </div>
+        </div>
+
+        {{-- Logout --}}
         <form method="POST" action="{{ route('logout') }}" class="w-100">
             @csrf
-            <button type="submit" class="drawer-action-btn mobile-drawer-action-btn">
+            <button type="submit" class="drawer-logout-btn">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Keluar</span>
             </button>
