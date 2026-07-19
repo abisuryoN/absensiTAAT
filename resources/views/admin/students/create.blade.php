@@ -222,7 +222,7 @@ document.getElementById('photo').addEventListener('change', function () {
 <script>
 // Restore picker state after validation failure
 document.addEventListener('DOMContentLoaded', function () {
-    const parentId = '{{ old('parent_id') }}';
+    const parentId = '{{ old("parent_id") }}';
     if (!parentId) return;
 
     fetch('{{ url("admin/parents") }}/' + parentId + '/detail-json', {

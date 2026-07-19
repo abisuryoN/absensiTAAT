@@ -2,28 +2,28 @@
     @section('title', 'Rekap Absensi Hari Ini')
 
     {{-- STAT CARDS --}}
-    <div class="row g-2 mb-4">
+    <div class="row g-3 mb-4">
         <div class="col-6 col-md-2">
             <div class="card bg-primary text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body p-3 text-center">
-                    <div class="fw-bold fs-4" id="stat-total">{{ number_format($totalSiswa) }}</div>
-                    <div class="fs-8 text-white-50">Total Siswa</div>
+                <div class="card-body stat-card-body text-center">
+                    <div class="fw-bold fs-4 stat-number" id="stat-total">{{ number_format($totalSiswa) }}</div>
+                    <div class="fs-8 text-white-50 stat-label">Total Siswa</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-2">
             <div class="card bg-success text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body p-3 text-center">
-                    <div class="fw-bold fs-4" id="stat-hadir">{{ number_format($hadirCount) }}</div>
-                    <div class="fs-8 text-white-50">Hadir</div>
+                <div class="card-body stat-card-body text-center">
+                    <div class="fw-bold fs-4 stat-number" id="stat-hadir">{{ number_format($hadirCount) }}</div>
+                    <div class="fs-8 text-white-50 stat-label">Hadir</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-2">
             <div class="card bg-warning text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body p-3 text-center">
-                    <div class="fw-bold fs-4" id="stat-terlambat">{{ number_format($terlambatCount) }}</div>
-                    <div class="fs-8 text-white-50">Terlambat</div>
+                <div class="card-body stat-card-body text-center">
+                    <div class="fw-bold fs-4 stat-number" id="stat-terlambat">{{ number_format($terlambatCount) }}</div>
+                    <div class="fs-8 text-white-50 stat-label">Terlambat</div>
                 </div>
             </div>
         </div>
@@ -31,8 +31,8 @@
             <a href="{{ request()->fullUrlWithQuery(['status' => 'izin']) }}" class="text-decoration-none">
                 <div class="card bg-info text-white border-0 rounded-4 shadow-sm h-100">
                     <div class="card-body p-3 text-center">
-                        <div class="fw-bold fs-4" id="stat-izin">{{ number_format($izinCount) }}</div>
-                        <div class="fs-8 text-white-50">Izin</div>
+                    <div class="fw-bold fs-4 stat-number" id="stat-izin">{{ number_format($izinCount) }}</div>
+                    <div class="fs-8 text-white-50 stat-label">Izin</div>
                     </div>
                 </div>
             </a>
@@ -41,8 +41,8 @@
             <a href="{{ request()->fullUrlWithQuery(['status' => 'sakit']) }}" class="text-decoration-none">
                 <div class="card bg-secondary text-white border-0 rounded-4 shadow-sm h-100">
                     <div class="card-body p-3 text-center">
-                        <div class="fw-bold fs-4" id="stat-sakit">{{ number_format($sakitCount) }}</div>
-                        <div class="fs-8 text-white-50">Sakit</div>
+                    <div class="fw-bold fs-4 stat-number" id="stat-sakit">{{ number_format($sakitCount) }}</div>
+                    <div class="fs-8 text-white-50 stat-label">Sakit</div>
                     </div>
                 </div>
             </a>
@@ -51,8 +51,8 @@
             <a href="{{ request()->fullUrlWithQuery(['status' => 'tidak_hadir']) }}" class="text-decoration-none">
                 <div class="card bg-danger text-white border-0 rounded-4 shadow-sm h-100">
                     <div class="card-body p-3 text-center">
-                        <div class="fw-bold fs-4" id="stat-tidak-hadir">{{ number_format($tidakHadir) }}</div>
-                        <div class="fs-8 text-white-50">Tidak Hadir</div>
+                    <div class="fw-bold fs-4 stat-number" id="stat-tidak-hadir">{{ number_format($tidakHadir) }}</div>
+                    <div class="fs-8 text-white-50 stat-label">Tidak Hadir</div>
                     </div>
                 </div>
             </a>
@@ -112,21 +112,21 @@
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <div class="custom-select-wrapper" data-placeholder="Semua Jurusan">
-                        <select name="major_id" class="form-select" onchange="this.form.submit()">
-                            <option value="">Semua Jurusan</option>
-                            @foreach($majors as $major)
-                                <option value="{{ $major->id }}" {{ request('major_id') == $major->id ? 'selected' : '' }}>{{ $major->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-2">
                     <div class="custom-select-wrapper" data-placeholder="Semua Kelas">
                         <select name="class_id" class="form-select" onchange="this.form.submit()">
                             <option value="">Semua Kelas</option>
                             @foreach($classes as $class)
                                 <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="custom-select-wrapper" data-placeholder="Semua Jurusan">
+                        <select name="major_id" class="form-select" onchange="this.form.submit()">
+                            <option value="">Semua Jurusan</option>
+                            @foreach($majors as $major)
+                                <option value="{{ $major->id }}" {{ request('major_id') == $major->id ? 'selected' : '' }}>{{ $major->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -252,19 +252,19 @@
                         <button type="submit" class="mobile-cari-btn">Cari</button>
                     </div>
                     <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
-                        <div class="custom-select-wrapper" data-placeholder="Jurusan" style="flex:1; min-width:90px;">
-                            <select name="major_id" onchange="this.form.submit()">
-                                <option value="">Semua Jurusan</option>
-                                @foreach($majors as $major)
-                                    <option value="{{ $major->id }}" {{ request('major_id') == $major->id ? 'selected' : '' }}>{{ $major->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
                         <div class="custom-select-wrapper" data-placeholder="Kelas" style="flex:1; min-width:90px;">
                             <select name="class_id" onchange="this.form.submit()">
                                 <option value="">Semua Kelas</option>
                                 @foreach($classes as $class)
                                     <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="custom-select-wrapper" data-placeholder="Jurusan" style="flex:1; min-width:90px;">
+                            <select name="major_id" onchange="this.form.submit()">
+                                <option value="">Semua Jurusan</option>
+                                @foreach($majors as $major)
+                                    <option value="{{ $major->id }}" {{ request('major_id') == $major->id ? 'selected' : '' }}>{{ $major->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -421,7 +421,7 @@
          MODAL: DOWNLOAD REKAP
     ═══════════════════════════════════════ --}}
     <div class="modal fade" id="modalExport" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
@@ -538,6 +538,56 @@
     ═══════════════════════════════════════ --}}
     @push('styles')
     <style>
+        /* Stat cards mobile */
+        .stat-card-body {
+            padding: 14px 10px;
+        }
+        @media (max-width: 767.98px) {
+            .stat-card-body {
+                padding: 16px 12px;
+            }
+            .stat-number {
+                font-size: 1.5rem !important;
+                line-height: 1.2;
+            }
+            .stat-label {
+                font-size: 0.7rem !important;
+                margin-top: 2px;
+                display: block;
+            }
+            /* Prevent stat label overflow */
+            .card.rounded-4 { border-radius: 12px !important; }
+            /* Mobile action buttons spacing */
+            .d-block.d-md-none .mobile-page-content > div[style*="gap:8px"] {
+                margin-top: 4px;
+            }
+            /* Mobile search/filter area spacing */
+            .mobile-search-card {
+                margin-top: 12px !important;
+            }
+            /* Modal mobile fixes */
+            #modalExport .modal-body {
+                max-height: 70vh;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            #modalExport .modal-dialog {
+                margin: 8px;
+                max-width: calc(100vw - 16px);
+            }
+            #modalExport .modal-footer .btn {
+                min-height: 44px;
+                font-size: 1rem;
+            }
+            #modalMarkStatus .modal-dialog {
+                margin: 8px;
+                max-width: calc(100vw - 16px);
+            }
+            /* Ensure modal appears above bottom nav */
+            .modal { z-index: 1060 !important; }
+            .modal-backdrop { z-index: 1059 !important; }
+        }
+
         /* Floating Action Bar */
         .floating-action-bar {
             position: fixed;

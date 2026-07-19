@@ -13,6 +13,7 @@ use App\Services\AttendanceGateService;
 use App\Exports\AttendanceGateExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
@@ -47,9 +48,9 @@ class AttendanceGateController extends Controller
 
         try {
             if (strlen($value) >= 32) {
-                $attendance = $this->service->processQrScan($value, auth()->id());
+                $attendance = $this->service->processQrScan($value, Auth::id());
             } else {
-                $attendance = $this->service->processBarcodeScan($value, auth()->id());
+                $attendance = $this->service->processBarcodeScan($value, Auth::id());
             }
 
             $student = $attendance->student;
@@ -188,7 +189,7 @@ class AttendanceGateController extends Controller
                         'status'     => $status,
                         'method'     => 'manual',
                         'note'       => $note,
-                        'scanned_by' => auth()->id(),
+                        'scanned_by' => Auth::id(),
                     ]);
                 } else {
                     if (!$academicYear || !$semester) {
@@ -203,7 +204,7 @@ class AttendanceGateController extends Controller
                         'status'           => $status,
                         'method'           => 'manual',
                         'note'             => $note,
-                        'scanned_by'       => auth()->id(),
+                        'scanned_by'       => Auth::id(),
                     ]);
                 }
 
@@ -422,7 +423,7 @@ class AttendanceGateController extends Controller
                 $request->student_id,
                 $request->status,
                 $request->note,
-                auth()->id()
+                Auth::id()
             );
 
             return redirect()->route('admin.attendance.today')
