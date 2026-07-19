@@ -53,12 +53,14 @@ $mobile-radius-lg: 12px;
             align-items: center;
             gap: 12px;
             flex: 1;
+            min-height: 0;
         }
 
         .mobile-header-right {
             display: flex;
             align-items: center;
             gap: 8px;
+            min-height: 0;
         }
 
         .mobile-hamburger {
@@ -75,6 +77,7 @@ $mobile-radius-lg: 12px;
             border-radius: 8px;
             flex-shrink: 0;
             padding: 0;
+            line-height: 1;
 
             &:hover, &:active {
                 background: $mobile-bg;
@@ -83,6 +86,7 @@ $mobile-radius-lg: 12px;
             i, svg {
                 color: $mobile-text;
                 font-size: 1.5rem;
+                line-height: 1;
             }
         }
 
@@ -95,6 +99,9 @@ $mobile-radius-lg: 12px;
             text-overflow: ellipsis;
             flex: 1;
             line-height: 1.2;
+            margin: 0;
+            padding: 0;
+            vertical-align: middle;
         }
     }
 

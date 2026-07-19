@@ -15,11 +15,11 @@
     </div>
 
     <!-- Stats Cards - Unified Grid (2 kolom mobile, 4 kolom desktop) -->
-    <div class="row g-3 mb-4">
+    <div class="row g-5 mb-5 stats-row">
         <!-- Total Siswa -->
         <div class="col-6 col-md-3">
             <div class="card card-stat bg-primary text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body position-relative p-3 p-md-4">
+                <div class="card-body position-relative p-4">
                     <div class="position-absolute top-0 end-0 p-3">
                         <i class="bi bi-people-fill fs-3 opacity-50"></i>
                     </div>
@@ -32,7 +32,7 @@
         <!-- Hadir Hari Ini -->
         <div class="col-6 col-md-3">
             <div class="card card-stat bg-success text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body position-relative p-3 p-md-4">
+                <div class="card-body position-relative p-4">
                     <div class="position-absolute top-0 end-0 p-3">
                         <i class="bi bi-check-circle-fill fs-3 opacity-50"></i>
                     </div>
@@ -45,7 +45,7 @@
         <!-- Terlambat -->
         <div class="col-6 col-md-3">
             <div class="card card-stat bg-warning text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body position-relative p-3 p-md-4">
+                <div class="card-body position-relative p-4">
                     <div class="position-absolute top-0 end-0 p-3">
                         <i class="bi bi-clock-history fs-3 opacity-50"></i>
                     </div>
@@ -58,7 +58,7 @@
         <!-- Belum Absen -->
         <div class="col-6 col-md-3">
             <div class="card card-stat bg-danger text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body position-relative p-3 p-md-4">
+                <div class="card-body position-relative p-4">
                     <div class="position-absolute top-0 end-0 p-3">
                         <i class="bi bi-exclamation-triangle-fill fs-3 opacity-50"></i>
                     </div>
@@ -207,14 +207,16 @@
     <style>
         .bg-indigo { background-color: #6366f1; color: white; }
 
-        /* Card Statistik - Grid rapi dengan rounded corner */
+        /* Card Statistik - Grid rapi dengan rounded corner & floating effect */
         .card-stat {
+            border-radius: 16px !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10) !important;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             overflow: hidden;
         }
         .card-stat:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.18) !important;
         }
         .card-stat .stat-value {
             font-size: clamp(1.5rem, 5vw, 2.5rem);
@@ -227,8 +229,18 @@
             min-height: 110px;
         }
         @media (max-width: 767.98px) {
+            /* Protect stats row from global mobile override that kills Bootstrap gutters */
+            .stats-row {
+                margin-left: -12px !important;
+                margin-right: -12px !important;
+            }
+            .row.stats-row [class*="col-"] {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+
             .card-stat .card-body {
-                padding: 0.75rem !important;
+                padding: 1rem !important;
                 min-height: 100px;
             }
             .card-stat .stat-value {
