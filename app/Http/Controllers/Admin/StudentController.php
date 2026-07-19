@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StudentRequest;
 use App\Models\Student;
 use App\Models\SchoolClass;
+use App\Models\Major;
 use App\Models\StudentParent;
 use App\Services\StudentService;
 use Illuminate\Http\Request;
@@ -23,7 +24,8 @@ class StudentController extends Controller
     {
         $students = $this->service->getAll($request->all());
         $classes = SchoolClass::where('is_active', true)->orderBy('grade_level')->orderBy('name')->get();
-        return view('admin.students.index', compact('students', 'classes'));
+        $majors = Major::orderBy('name')->get();
+        return view('admin.students.index', compact('students', 'classes', 'majors'));
     }
 
     public function create()

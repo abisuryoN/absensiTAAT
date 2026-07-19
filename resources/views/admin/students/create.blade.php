@@ -96,11 +96,20 @@
 
                         <div class="mb-3">
                             <label for="photo" class="form-label fw-semibold">Foto Profil</label>
-                            <input type="file" name="photo" id="photo" class="form-control @error('photo') is-invalid @enderror" accept="image/*">
-                            @error('photo')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <div class="form-text fs-8">Format JPG/PNG, Maksimal 2MB.</div>
+                            <div class="d-flex align-items-start gap-3">
+                                <div id="photoPreviewWrapper" class="d-none">
+                                    <img id="photoPreview" src="#" alt="Preview"
+                                         class="rounded-circle object-fit-cover border"
+                                         style="width: 80px; height: 80px;">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="file" name="photo" id="photo" class="form-control @error('photo') is-invalid @enderror" accept="image/*">
+                                    @error('photo')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <div class="form-text fs-8">Format JPG/PNG, Maksimal 2MB.</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -186,6 +195,26 @@
         </div>
     </div>
 @include('admin.students._parent_picker_modal')
+
+<script>
+// Photo preview
+document.getElementById('photo').addEventListener('change', function () {
+    const file = this.files[0];
+    const wrapper = document.getElementById('photoPreviewWrapper');
+    const preview = document.getElementById('photoPreview');
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            wrapper.classList.remove('d-none');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        wrapper.classList.add('d-none');
+        preview.src = '#';
+    }
+});
+</script>
 
 @if(old('parent_id'))
 <script>

@@ -97,15 +97,22 @@
 
                         <div class="mb-3">
                             <label for="photo" class="form-label fw-semibold">Foto Profil</label>
-                            <div class="d-flex align-items-center gap-3 mb-2">
-                                @if($student->photo)
-                                    <img src="{{ Storage::url($student->photo) }}" alt="" class="rounded-circle object-fit-cover" style="width: 50px; height: 50px;">
-                                @endif
-                                <input type="file" name="photo" id="photo" class="form-control @error('photo') is-invalid @enderror" accept="image/*">
+                            <div class="d-flex align-items-start gap-3">
+                                <div id="photoPreviewWrapper" class="{{ $student->photo ? '' : 'd-none' }}">
+                                    <img id="photoPreview"
+                                         src="{{ $student->photo ? Storage::url($student->photo) : '#' }}"
+                                         alt="Preview foto"
+                                         class="rounded-circle object-fit-cover border"
+                                         style="width: 80px; height: 80px;">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="file" name="photo" id="photo" class="form-control @error('photo') is-invalid @enderror" accept="image/*">
+                                    @error('photo')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                    <div class="form-text fs-8">Format JPG/PNG, Maksimal 2MB. Kosongkan jika tidak ingin mengubah foto.</div>
+                                </div>
                             </div>
-                            @error('photo')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
                         </div>
                     </div>
 
@@ -212,6 +219,23 @@
     </div>
 
 @include('admin.students._parent_picker_modal')
+
+<script>
+// Photo preview on new file selection
+document.getElementById('photo').addEventListener('change', function () {
+    const file = this.files[0];
+    const wrapper = document.getElementById('photoPreviewWrapper');
+    const preview = document.getElementById('photoPreview');
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            wrapper.classList.remove('d-none');
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
 
 @if($currentParentId && !$student->parent)
 {{-- old('parent_id') set but no eager-loaded parent: restore via AJAX --}}

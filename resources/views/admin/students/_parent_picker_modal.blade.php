@@ -119,7 +119,8 @@
     });
 
     // ── Load parents via AJAX ──────────────────────────────────────────────────
-    function loadParents() {
+    // Exposed globally so inline onclick="loadParents()" on the retry button works
+    window.loadParents = function loadParents() {
         const tbody = document.getElementById('parentPickerBody');
         tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4"><div class="spinner-border spinner-border-sm me-2" role="status"></div>Memuat data...</td></tr>';
 
@@ -128,10 +129,14 @@
         fetch(API_URL + '?' + params.toString(), {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
         .then(data => renderParents(data))
         .catch(() => {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Gagal memuat data. Silakan coba lagi.</td></tr>';
+            const retryBtn = `<button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="loadParents()"><i class="bi bi-arrow-clockwise me-1"></i>Coba Lagi</button>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4"><i class="bi bi-exclamation-triangle fs-3 d-block mb-2"></i>Gagal memuat data. Silakan coba lagi.${retryBtn}</td></tr>`;
         });
     }
 
@@ -141,7 +146,28 @@
         const pages = document.getElementById('parentPickerPages');
 
         if (!data.data || data.data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-5"><i class="bi bi-person-x fs-3 d-block mb-2"></i>Tidak ada orang tua ditemukan.</td></tr>';
+            const addUrl = '{{ route("admin.parents.create") }}';
+            let emptyMsg;
+            if (searchQuery === '') {
+                // Truly no data in the system
+                emptyMsg = `
+                    <i class="bi bi-people fs-2 d-block mb-2 text-muted"></i>
+                    <div class="fw-semibold mb-1">Belum ada data Orang Tua / Wali yang terdaftar.</div>
+                    <div class="text-muted small mb-3">Silakan tambah data terlebih dahulu.</div>
+                    <a href="${addUrl}" class="btn btn-sm btn-primary" target="_blank">
+                        <i class="bi bi-plus-lg me-1"></i>Tambah Orang Tua / Wali
+                    </a>`;
+            } else {
+                // Search returned no results
+                emptyMsg = `
+                    <i class="bi bi-search fs-2 d-block mb-2 text-muted"></i>
+                    <div class="fw-semibold mb-1">Tidak ada orang tua / wali yang cocok dengan pencarian.</div>
+                    <div class="text-muted small mb-3">Coba kata kunci lain, atau</div>
+                    <a href="${addUrl}" class="btn btn-sm btn-primary" target="_blank">
+                        <i class="bi bi-plus-lg me-1"></i>Tambah Orang Tua / Wali Baru
+                    </a>`;
+            }
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-5">${emptyMsg}</td></tr>`;
             info.textContent = '';
             pages.innerHTML = '';
             return;

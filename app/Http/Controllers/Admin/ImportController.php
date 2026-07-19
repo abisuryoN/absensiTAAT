@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\ImportService;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\Templates\StudentImportTemplate;
+use App\Exports\Templates\StudentImportWithParentsExport;
 use App\Exports\Templates\TeacherImportTemplate;
 use App\Exports\Templates\ClassImportTemplate;
 use App\Exports\Templates\ScheduleImportTemplate;
@@ -84,7 +84,7 @@ class ImportController extends Controller
     {
         $templates = [
             'students' => [
-                'class' => StudentImportTemplate::class,
+                'class' => StudentImportWithParentsExport::class,
                 'filename' => 'Template_Import_Siswa.xlsx'
             ],
             'teachers' => [

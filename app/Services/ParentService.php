@@ -136,7 +136,7 @@ class ParentService
      */
     public function pickerSearch(string $search = '', int $perPage = 10)
     {
-        $query = StudentParent::where('is_active', true);
+        $query = StudentParent::withCount('students')->where('is_active', true);
 
         if ($search) {
             $query->where(function ($sub) use ($search) {

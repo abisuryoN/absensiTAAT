@@ -16,34 +16,63 @@
     <div class="card glass-card border-0">
         <div class="card-body p-4">
             <!-- Search & Filters -->
-            <form method="GET" action="{{ route('admin.students.index') }}" class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                        <input type="text" name="search" class="form-control border-start-0" placeholder="Cari nama, NIS, atau NISN..." value="{{ request('search') }}">
+            <form method="GET" action="{{ route('admin.students.index') }}" class="mb-4">
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+
+                    <!-- Cari -->
+                    <div class="flex-grow-1" style="min-width: 200px; max-width: 380px;">
+                        <div class="input-group" style="height: 44px;">
+                            <span class="input-group-text bg-white border-end-0 text-muted"
+                                  style="height: 44px; border-color: #d1d5db; border-radius: 8px 0 0 8px;">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" name="search" class="form-control border-start-0"
+                                   placeholder="Cari nama, NIS, atau NISN..."
+                                   value="{{ request('search') }}"
+                                   style="height: 44px; border-color: #d1d5db; border-radius: 0 8px 8px 0; font-size: 0.875rem;">
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="custom-select-wrapper" data-placeholder="Semua Kelas">
-                    <select name="class_id" class="form-select" onchange="this.form.submit()">
-                        <option value="">Semua Kelas</option>
-                        @foreach($classes as $class)
-                            <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
-                        @endforeach
-                    </select>
+
+                    <!-- Filter Kelas -->
+                    <div style="min-width: 160px; flex: 1;">
+                        <select name="class_id" class="form-select" onchange="this.form.submit()"
+                                style="height: 44px; border-radius: 8px; border-color: #d1d5db; font-size: 0.875rem; color: #374151; padding: 0 12px;">
+                            <option value="">Semua Kelas</option>
+                            @foreach($classes as $class)
+                                <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="custom-select-wrapper" data-placeholder="Semua Status">
-                    <select name="is_active" class="form-select" onchange="this.form.submit()">
-                        <option value="">Semua Status</option>
-                        <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
-                        <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Tidak Aktif</option>
-                    </select>
+
+                    <!-- Filter Jurusan -->
+                    <div style="min-width: 140px; flex: 1;">
+                        <select name="major_id" class="form-select" onchange="this.form.submit()"
+                                style="height: 44px; border-radius: 8px; border-color: #d1d5db; font-size: 0.875rem; color: #374151; padding: 0 12px;">
+                            <option value="">Semua Jurusan</option>
+                            @foreach($majors as $major)
+                                <option value="{{ $major->id }}" {{ request('major_id') == $major->id ? 'selected' : '' }}>{{ $major->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                </div>
-                <div class="col-md-2 d-grid">
-                    <button type="submit" class="btn btn-light border fw-semibold">Filter</button>
+
+                    <!-- Filter Status -->
+                    <div style="min-width: 140px; flex: 1;">
+                        <select name="is_active" class="form-select" onchange="this.form.submit()"
+                                style="height: 44px; border-radius: 8px; border-color: #d1d5db; font-size: 0.875rem; color: #374151; padding: 0 12px;">
+                            <option value="">Semua Status</option>
+                            <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Nonaktif</option>
+                        </select>
+                    </div>
+
+                    <!-- Tombol Filter -->
+                    <div>
+                        <button type="submit" class="btn btn-primary fw-semibold"
+                                style="height: 44px; border-radius: 8px; padding: 0 20px; font-size: 0.875rem; white-space: nowrap;">
+                            <i class="bi bi-funnel me-1"></i> Filter
+                        </button>
+                    </div>
+
                 </div>
             </form>
 
@@ -52,7 +81,6 @@
                 <table class="table table-premium align-middle">
                     <thead>
                         <tr>
-                            <th>Foto</th>
                             <th>NIS / NISN</th>
                             <th>Nama Lengkap</th>
                             <th>Gender</th>
@@ -65,15 +93,6 @@
                     <tbody>
                         @forelse($students as $student)
                             <tr>
-                                <td data-label="Foto">
-                                    @if($student->photo)
-                                        <img src="{{ Storage::url($student->photo) }}" alt="" class="rounded-circle object-fit-cover" style="width: 40px; height: 40px;">
-                                    @else
-                                        <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px; font-size: 0.9rem;">
-                                            {{ substr($student->name, 0, 2) }}
-                                        </div>
-                                    @endif
-                                </td>
                                 <td data-label="NIS / NISN">
                                     <span class="d-block fw-semibold text-dark fs-7">NIS: {{ $student->nis }}</span>
                                     <span class="text-muted fs-8">NISN: {{ $student->nisn ?: '-' }}</span>
@@ -121,7 +140,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center py-4 text-muted">
+                                <td colspan="7" class="text-center py-4 text-muted">
                                     <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                                     Tidak ada data siswa ditemukan.
                                 </td>

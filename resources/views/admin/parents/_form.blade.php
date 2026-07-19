@@ -23,16 +23,8 @@
     {{-- Hubungan --}}
     <div class="col-md-4">
         <label class="form-label fw-semibold">Hubungan</label>
-        <div class="custom-select-wrapper" data-placeholder="-- Pilih Hubungan --">
-        <select name="relationship" class="form-select @error('relationship') is-invalid @enderror">
-            <option value="">-- Pilih --</option>
-            @foreach(['ayah' => 'Ayah', 'ibu' => 'Ibu', 'wali' => 'Wali'] as $val => $label)
-                <option value="{{ $val }}" {{ old('relationship', $parent->relationship ?? '') === $val ? 'selected' : '' }}>
-                    {{ $label }}
-                </option>
-            @endforeach
-        </select>
-        </div>
+        <input type="hidden" name="relationship" value="wali">
+        <input type="text" class="form-control bg-light" value="Wali" readonly>
         @error('relationship') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
     </div>
 

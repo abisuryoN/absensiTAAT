@@ -27,6 +27,18 @@ class StudentService
             $query->where('class_id', $filters['class_id']);
         }
 
+        if (!empty($filters['grade_level'])) {
+            $query->whereHas('class', function ($q) use ($filters) {
+                $q->where('grade_level', $filters['grade_level']);
+            });
+        }
+
+        if (!empty($filters['major_id'])) {
+            $query->whereHas('class', function ($q) use ($filters) {
+                $q->where('major_id', $filters['major_id']);
+            });
+        }
+
         if (isset($filters['is_active'])) {
             $query->where('is_active', $filters['is_active']);
         }

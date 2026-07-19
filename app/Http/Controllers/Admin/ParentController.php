@@ -77,6 +77,8 @@ class ParentController extends Controller
             'current_page'  => $parents->currentPage(),
             'last_page'     => $parents->lastPage(),
             'total'         => $parents->total(),
+            'from'          => $parents->firstItem(),
+            'to'            => $parents->lastItem(),
         ]);
     }
 
