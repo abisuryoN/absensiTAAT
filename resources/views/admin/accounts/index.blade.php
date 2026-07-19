@@ -30,7 +30,7 @@
             <form method="GET" action="{{ route('admin.accounts.index') }}" id="filterForm">
                 <div class="row g-2 align-items-end">
                     {{-- Search --}}
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label fw-semibold small mb-1">Cari Nama</label>
                         <div style="position: relative;">
                             <span style="position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%); color: #9ca3af; z-index: 5; pointer-events: none; font-size: 0.875rem;">
@@ -43,10 +43,10 @@
                     </div>
 
                     {{-- Role Filter --}}
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label fw-semibold small mb-1">Filter Role</label>
                         <div class="custom-select-wrapper">
-                            <select name="role" onchange="this.form.submit()">
+                            <select name="role" id="roleFilter">
                                 <option value="">Semua Role</option>
                                 <option value="siswa" {{ request('role') == 'siswa' ? 'selected' : '' }}>Siswa</option>
                                 <option value="guru" {{ request('role') == 'guru' ? 'selected' : '' }}>Guru</option>
@@ -55,12 +55,13 @@
                         </div>
                     </div>
 
-                    {{-- Kelas Filter (visible only when role=siswa or all) --}}
-                    @if(request('role') != 'guru' && request('role') != 'parent')
-                    <div class="col-md-3" id="classFilterWrapper">
+                    {{-- Kelas Filter (disabled when role is not siswa) --}}
+                    <div class="col-md-2" id="classFilterWrapper">
                         <label class="form-label fw-semibold small mb-1">Filter Kelas</label>
                         <div class="custom-select-wrapper">
-                            <select name="class_id" onchange="this.form.submit()">
+                            <select name="class_id" id="classFilter"
+                                    onchange="this.form.submit()"
+                                    @if(request('role') != 'siswa') disabled @endif>
                                 <option value="">Semua Kelas</option>
                                 @foreach($classes as $class)
                                     <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>
@@ -70,13 +71,30 @@
                             </select>
                         </div>
                     </div>
-                    @endif
 
-                    <div class="col-auto ms-auto">
+                    {{-- Jurusan Filter (disabled when role is not siswa) --}}
+                    <div class="col-md-2" id="majorFilterWrapper">
+                        <label class="form-label fw-semibold small mb-1">Filter Jurusan</label>
+                        <div class="custom-select-wrapper">
+                            <select name="major_id" id="majorFilter"
+                                    onchange="this.form.submit()"
+                                    @if(request('role') != 'siswa') disabled @endif>
+                                <option value="">Semua Jurusan</option>
+                                @foreach($majors as $major)
+                                    <option value="{{ $major->id }}" {{ request('major_id') == $major->id ? 'selected' : '' }}>
+                                        {{ $major->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Buttons --}}
+                    <div class="col-md-3 d-flex align-items-end justify-content-end gap-2">
                         <a href="{{ route('admin.accounts.index') }}" class="btn btn-light border">
                             <i class="bi bi-x-circle me-1"></i>Reset Filter
                         </a>
-                        <button type="submit" class="btn btn-primary ms-1">
+                        <button type="submit" class="btn btn-primary">
                             <i class="bi bi-search me-1"></i>Cari
                         </button>
                     </div>
@@ -261,6 +279,30 @@
     @endif
 
 <script>
+// Toggle kelas/jurusan disabled state when role changes (no page reload needed)
+(function () {
+    var roleSelect  = document.getElementById('roleFilter');
+    var classSelect = document.getElementById('classFilter');
+    var majorSelect = document.getElementById('majorFilter');
+    if (!roleSelect) return;
+
+    roleSelect.addEventListener('change', function () {
+        var disabled = this.value !== 'siswa';
+        classSelect.disabled = disabled;
+        majorSelect.disabled = disabled;
+        // Also update custom-select UI element disabled state if present
+        [classSelect, majorSelect].forEach(function (sel) {
+            var cs = sel.closest('.custom-select-wrapper') && sel.closest('.custom-select-wrapper').querySelector('.custom-select');
+            if (cs) cs.classList.toggle('disabled', disabled);
+        });
+        // Clear values when disabling so they don't filter silently
+        if (disabled) {
+            classSelect.value = '';
+            majorSelect.value = '';
+        }
+    });
+})();
+
 function confirmReset(id, userName, role) {
     document.getElementById('resetId').value = id;
     document.getElementById('resetType').value = role;

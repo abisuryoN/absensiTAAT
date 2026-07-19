@@ -23,7 +23,6 @@
         </span>
     </div>
     
-    <!-- Sidebar Navigation Menu (Scrollable container) -->
     <div class="sidebar-nav-container flex-grow-1">
         <ul class="nav nav-pills flex-column sidebar-menu">
             @include('layouts.partials.sidebar-menu-items', ['variant' => 'desktop'])
@@ -123,31 +122,17 @@
         var activeItem = container.querySelector('.nav-link.active');
         if (!activeItem) return;
 
-        // Calculate using getBoundingClientRect relative to container
-        var containerRect = container.getBoundingClientRect();
-        var itemRect = activeItem.getBoundingClientRect();
-        var scrollTarget = container.scrollTop + (itemRect.top - containerRect.top) - container.clientHeight / 2 + itemRect.height / 2;
-        // Clamp to valid scroll range
-        scrollTarget = Math.max(0, Math.min(scrollTarget, container.scrollHeight - container.clientHeight));
-        container.scrollTop = scrollTarget;
-
-        // Verify: if still not visible, scrollIntoView as fallback
-        setTimeout(function() {
-            var newItemRect = activeItem.getBoundingClientRect();
-            var newContainerRect = container.getBoundingClientRect();
-            if (newItemRect.bottom > newContainerRect.bottom || newItemRect.top < newContainerRect.top) {
-                activeItem.scrollIntoView({ block: 'center', behavior: 'auto' });
-            }
-        }, 100);
+        // Use offsetTop — same approach as mobile drawer, works before first paint
+        var target = activeItem.offsetTop - container.clientHeight / 2 + activeItem.clientHeight / 2;
+        target = Math.max(0, Math.min(target, container.scrollHeight - container.clientHeight));
+        container.scrollTop = target;
     }
 
-    // Run after layout settles
-    if (document.readyState === 'complete') {
-        requestAnimationFrame(scrollToActive);
+    // Run as early as possible so the scroll is set before the browser paints
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', scrollToActive);
     } else {
-        window.addEventListener('load', function() {
-            requestAnimationFrame(scrollToActive);
-        });
+        scrollToActive();
     }
 })();
 </script>
