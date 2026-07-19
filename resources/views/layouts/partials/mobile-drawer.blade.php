@@ -49,17 +49,16 @@
                 ['label' => 'Mata Pelajaran', 'icon' => 'bi-book', 'route' => 'admin.subjects.index'],
                 ['label' => 'Jadwal Pelajaran', 'icon' => 'bi-calendar3', 'route' => 'admin.schedules.index'],
                 ['label' => 'Hari Libur', 'icon' => 'bi-calendar-event', 'route' => 'admin.holidays.index'],
+            ],
+            'LAPORAN & PENGATURAN' => [
                 ['label' => 'Laporan Absensi', 'icon' => 'bi-file-earmark-bar-graph', 'route' => 'admin.reports.index'],
                 ['label' => 'Import Data', 'icon' => 'bi-file-earmark-arrow-up', 'route' => 'admin.imports.index'],
+                ['label' => 'Pengaturan Sistem', 'icon' => 'bi-gear', 'route' => 'admin.settings.index'],
             ],
             'LAINNYA' => [
                 ['label' => 'Profil', 'icon' => 'bi-person-circle', 'route' => 'profile.edit'],
             ],
         ];
-
-        if (class_exists(\App\Models\Settings::class) && \App\Models\Settings::count() > 0) {
-            $menuGroups['LAINNYA'][] = ['label' => 'Pengaturan', 'icon' => 'bi-gear', 'route' => 'admin.settings.index'];
-        }
     } elseif ($role === 'guru') {
         $menuGroups = [
             'MENU UTAMA' => [
