@@ -40,20 +40,17 @@
         @php
             $isActive = false;
             if (isset($menu['route'])) {
-                // Exact route match - no prefix matching to avoid false positives
                 if ($menu['route'] === 'profile.edit') {
-                    // Profile matches all profile.* routes
                     $isActive = str_starts_with($currentRoute ?? '', 'profile.');
                 } else {
-                    // Exact match for specific route
                     $isActive = $currentRoute === $menu['route'];
                 }
             }
         @endphp
 
-        <a href="{{ route($menu['route']) }}" class="mobile-bottom-nav-item {{ $isActive ? 'active' : '' }}">
-            <span class="mobile-bottom-nav-icon"><i class="bi {{ $menu['icon'] }}"></i></span>
-            <span class="mobile-bottom-nav-label">{{ $menu['label'] }}</span>
+        <a href="{{ route($menu['route']) }}" class="bottom-nav-item {{ $isActive ? 'active' : '' }}">
+            <i class="bi {{ $menu['icon'] }}"></i>
+            <span>{{ $menu['label'] }}</span>
         </a>
     @endforeach
 </nav>

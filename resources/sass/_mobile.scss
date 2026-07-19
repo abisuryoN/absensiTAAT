@@ -1,999 +1,1330 @@
-// ============================================================
-// MOBILE STYLES (max-width: 768px)
-// ============================================================
-@media (max-width: 768px) {
+// ─── MOBILE LAYOUT VARIABLES ─────────────────────────────────
+$mobile-primary: #4361ee;
+$mobile-primary-dark: #3a56d4;
+$mobile-bg: #f1f4f9;
+$mobile-card: #ffffff;
+$mobile-text: #1e293b;
+$mobile-text-secondary: #64748b;
+$mobile-border: #e2e8f0;
+$mobile-sidebar-bg: #ffffff;
+$mobile-header-bg: #ffffff;
+$mobile-radius-sm: 8px;
+$mobile-radius-lg: 12px;
 
-    // ─── COLOR VARIABLES (Blueprint baru, tanpa ungu) ─────────
-    $mobile-primary: #2563EB;
-    $mobile-primary-hover: #1D4ED8;
-    $mobile-bg: #F8FAFC;
-    $mobile-card: #FFFFFF;
-    $mobile-border: #E5E7EB;
-    $mobile-text: #1E293B;
-    $mobile-text-secondary: #64748B;
-    $mobile-danger: #EF4444;
-    $mobile-success: #22C55E;
-    $mobile-warning: #F59E0B;
-    $mobile-radius: 12px;
-    $mobile-radius-sm: 10px;
-    $mobile-radius-lg: 16px;
-
-    // ─── MOBILE LAYOUT WRAPPER ───────────────────────────────
+// ─── MOBILE LAYOUT (<768px) ─────────────────────────────────────
+@media (max-width: 767.98px) {
+    // ─── LAYOUT ───────────────────────────────────────────────
     .mobile-layout {
-        background: $mobile-bg;
         min-height: 100vh;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        color: $mobile-text;
-        -webkit-font-smoothing: antialiased;
+        background: $mobile-bg;
+
+        // Main content area: gives bottom nav safe zone
+        .mobile-main-content {
+            padding: 12px 16px !important;
+            padding-top: 64px !important; // account for fixed header
+            padding-bottom: 82px !important; // account for bottom nav
+            min-height: 100vh;
+            display: block !important;
+            margin: 0 !important;
+            width: 100% !important;
+            overflow-x: hidden;
+        }
     }
 
-    // ─── TOP HEADER / NAVBAR ─────────────────────────────────
+    // ─── FIXED HEADER (sticky top) ───────────────────────────
     .mobile-header {
-        position: sticky;
+        position: fixed !important;
         top: 0;
-        z-index: 1030;
+        left: 0;
+        right: 0;
+        z-index: 1050 !important; // above drawer backdrop
+        background: $mobile-header-bg;
+        border-bottom: 1px solid $mobile-border;
+        padding: 0 16px;
+        height: 56px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 16px;
-        background: $mobile-card;
-        border-bottom: 1px solid $mobile-border;
-        height: 56px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+        width: 100%;
 
         .mobile-header-left {
             display: flex;
             align-items: center;
-            gap: 10px;
-
-            .mobile-header-menu-btn {
-                background: none;
-                border: none;
-                font-size: 1.3rem;
-                color: $mobile-text;
-                cursor: pointer;
-                padding: 4px;
-                display: flex;
-                align-items: center;
-                i { display: block; }
-            }
-
-            .mobile-header-title {
-                font-size: 1rem;
-                font-weight: 700;
-                color: $mobile-text;
-                letter-spacing: -0.02em;
-            }
+            gap: 12px;
+            flex: 1;
         }
 
         .mobile-header-right {
             display: flex;
             align-items: center;
             gap: 8px;
+        }
 
-            .mobile-header-icon {
-                background: none;
-                border: none;
-                font-size: 1.2rem;
-                color: $mobile-text-secondary;
-                cursor: pointer;
-                padding: 6px;
-                display: flex;
-                align-items: center;
-                i { display: block; }
+        .mobile-hamburger {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            color: $mobile-text;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 8px;
+            flex-shrink: 0;
+            padding: 0;
+
+            &:hover, &:active {
+                background: $mobile-bg;
             }
 
-            .mobile-header-avatar {
-                width: 32px;
-                height: 32px;
-                border-radius: 10px;
-                overflow: hidden;
-                cursor: pointer;
-                background: $mobile-primary;
-                color: #fff;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: 700;
-                font-size: 0.75rem;
-
-                img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                }
+            i, svg {
+                color: $mobile-text;
+                font-size: 1.5rem;
             }
+        }
+
+        .mobile-header-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: $mobile-text;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+            line-height: 1.2;
         }
     }
 
-    // ─── DRAWER OVERLAY ─────────────────────────────────────
+    // ─── DRAWER OVERLAY ────────────────────────────────────────
     .mobile-drawer-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.4);
+        background: rgba(0, 0, 0, 0.4);
         z-index: 1040;
         opacity: 0;
         visibility: hidden;
-        transition: all 0.3s ease;
+        transition: opacity 0.3s, visibility 0.3s;
 
-        &.show {
+        &.open {
             opacity: 1;
             visibility: visible;
         }
     }
 
-    // ─── DRAWER / SIDEBAR ────────────────────────────────────
+    // ─── DRAWER / SIDEBAR MOBILE ────────────────────────────────
+    // IDENTIK dengan sidebar desktop
     .mobile-drawer {
         position: fixed;
         top: 0;
         left: 0;
-        width: 300px;
-        max-width: 85%;
-        height: 100%;
-        background: $mobile-card;
-        z-index: 1050;
+        bottom: 0;
+        width: 280px;
+        max-width: 80%;
+        background: #ffffff;
+        z-index: 1060;
         transform: translateX(-100%);
         transition: transform 0.3s ease;
+        overflow-y: auto;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.12);
         display: flex;
         flex-direction: column;
-        overflow: hidden;
-        box-shadow: 4px 0 20px rgba(0,0,0,0.1);
 
         &.open {
             transform: translateX(0);
         }
 
-        // Close button (X)
-        .mobile-drawer-header-close {
-            position: absolute;
-            top: 14px;
-            right: 14px;
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            background: $mobile-bg;
-            border: 1px solid $mobile-border;
+        // ─── DRAWER HEADER ───────────────────────────────────────
+        // Sama persis seperti sidebar desktop
+        .drawer-header {
+            padding: 16px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: $mobile-text-secondary;
-            font-size: 0.9rem;
-            z-index: 2;
-            transition: all 0.15s;
+            justify-content: space-between;
+            gap: 12px;
+            flex-shrink: 0;
 
-            &:hover {
-                background: darken($mobile-bg, 3%);
-                color: $mobile-text;
-            }
-            i { display: block; }
-        }
-
-        // Profile Header
-        .mobile-drawer-profile {
-            padding: 40px 20px 20px;
-            background: $mobile-bg;
-            border-bottom: 1px solid $mobile-border;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-
-            .mobile-drawer-avatar {
-                width: 72px;
-                height: 72px;
-                border-radius: 16px;
-                overflow: hidden;
-                margin-bottom: 12px;
-                background: $mobile-primary;
-                color: #fff;
+            .drawer-logo-link {
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                font-weight: 700;
-                font-size: 1.5rem;
-                box-shadow: 0 4px 12px rgba($mobile-primary, 0.2);
+                text-decoration: none;
+                color: #1e293b;
+                gap: 8px;
+                min-width: 0;
+            }
 
-                img {
-                    width: 100%;
-                    height: 100%;
+            .drawer-logo-img {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                object-fit: cover;
+                flex-shrink: 0;
+            }
+
+            .drawer-title-container {
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+            }
+
+            .drawer-title-line1 {
+                font-weight: 700;
+                font-size: 0.95rem;
+                line-height: 1.1;
+                color: #1e293b;
+                white-space: nowrap;
+            }
+
+            .drawer-title-line2 {
+                font-size: 0.75rem;
+                line-height: 1;
+                color: #64748b;
+            }
+
+            .drawer-badge {
+                font-size: 0.7rem;
+                font-weight: 600;
+                background: rgba(255, 193, 7, 0.1);
+                color: #ffc107;
+                border: 1px solid rgba(255, 193, 7, 0.25);
+                border-radius: 8px;
+                padding: 2px 10px;
+                flex-shrink: 0;
+                margin-left: auto;
+                line-height: 1.4;
+            }
+
+            .drawer-close {
+                display: none; // hidden, we use overlay to close
+            }
+        }
+
+        // ─── DIVIDER AFTER HEADER ────────────────────────────────
+        .drawer-divider {
+            border: 0;
+            border-top: 1px solid #e2e8f0;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        // ─── USER PROFILE SECTION ────────────────────────────────
+        // Sama persis seperti desktop
+        .drawer-profile {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            background: rgba(248, 249, 250, 0.25);
+
+            .drawer-avatar-wrap {
+                position: relative;
+                flex-shrink: 0;
+
+                .drawer-avatar-img {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    border: 2px solid #fff;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                     object-fit: cover;
                 }
 
-                .mobile-drawer-avatar-placeholder {
-                    width: 100%;
-                    height: 100%;
+                .drawer-avatar-placeholder {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    background: $mobile-primary;
+                    color: #fff;
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    font-weight: 600;
+                    font-size: 0.95rem;
+                    border: 2px solid #fff;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+
+                .drawer-online-dot {
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    width: 10px;
+                    height: 10px;
+                    background: #10b981;
+                    border: 2px solid #fff;
+                    border-radius: 50%;
+                    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
                 }
             }
 
-            .mobile-drawer-userinfo {
-                display: flex;
-                flex-direction: column;
-                gap: 2px;
+            .drawer-profile-text {
+                overflow: hidden;
+                min-width: 0;
+                flex: 1;
 
-                .mobile-drawer-name {
-                    font-size: 1.1rem;
+                .drawer-profile-name {
                     font-weight: 700;
-                    color: $mobile-text;
+                    font-size: 0.85rem;
+                    color: #1e293b;
+                    margin: 0;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 175px;
                     line-height: 1.3;
                 }
 
-                .mobile-drawer-role {
+                .drawer-profile-role {
                     font-size: 0.75rem;
-                    color: $mobile-text-secondary;
-                    font-weight: 500;
-                }
-
-                .mobile-drawer-nisnip {
-                    font-size: 0.8rem;
-                    color: $mobile-text-secondary;
-                    font-weight: 500;
+                    color: #64748b;
+                    display: block;
+                    line-height: 1.2;
+                    margin-top: 1px;
                 }
             }
         }
 
-        // Navigation
-        .mobile-drawer-nav {
+        // ─── NAVIGATION MENU ─────────────────────────────────────
+        .drawer-nav {
+            padding: 8px 0;
             flex: 1;
-            padding: 16px 16px 8px;
             overflow-y: auto;
 
-            .mobile-drawer-menu {
-                list-style: none;
-                padding: 0;
-                margin: 0;
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-
-                li {
-                    .mobile-drawer-link {
-                        display: flex;
-                        align-items: center;
-                        gap: 12px;
-                        padding: 13px 16px;
-                        border-radius: 14px;
-                        font-size: 0.9rem;
-                        font-weight: 500;
-                        color: $mobile-text;
-                        text-decoration: none;
-                        transition: all 0.15s ease;
-                        background: $mobile-card;
-                        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-                        border: 1px solid $mobile-border;
-
-                        i {
-                            font-size: 1.15rem;
-                            width: 22px;
-                            text-align: center;
-                            color: $mobile-text-secondary;
-                        }
-
-                        &:hover {
-                            background: lighten($mobile-primary, 45%);
-                            border-color: $mobile-primary;
-                        }
-
-                        &.active {
-                            background: $mobile-primary;
-                            color: #fff;
-                            box-shadow: 0 2px 10px rgba($mobile-primary, 0.25);
-                            border-color: $mobile-primary;
-                            i { color: #fff; }
-                        }
-                    }
-                }
+            .drawer-section-label {
+                font-size: 0.75rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: #64748b;
+                padding: 12px 16px 6px;
+                line-height: 1.2;
             }
-        }
 
-        // Bottom actions
-        .mobile-drawer-actions {
-            border-top: 1px solid $mobile-border;
-            padding: 12px 16px 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: $mobile-card;
-
-            .mobile-drawer-action-btn {
+            .drawer-nav-item {
                 display: flex;
                 align-items: center;
-                gap: 10px;
-                width: 100%;
-                padding: 13px 16px;
-                border-radius: 14px;
-                font-size: 0.9rem;
-                font-weight: 500;
-                border: 1px solid $mobile-border;
-                cursor: pointer;
-                transition: all 0.15s;
-                background: $mobile-card;
-                color: $mobile-text;
+                gap: 12px;
+                padding: 10px 16px;
+                color: #1e293b;
                 text-decoration: none;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+                font-size: 0.85rem;
+                font-weight: 500;
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                border-radius: 0;
+                margin: 0;
+                line-height: 1.4;
 
-                i {
-                    font-size: 1.15rem;
-                    width: 22px;
+                i, svg {
+                    width: 20px;
                     text-align: center;
+                    color: #64748b;
+                    font-size: 1rem;
+                    flex-shrink: 0;
+                    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                span {
+                    flex: 1;
                 }
 
                 &:hover {
-                    background: lighten($mobile-primary, 45%);
-                    border-color: $mobile-primary;
+                    background: #f1f4f9;
+                    color: #1e293b;
+
+                    i { color: #64748b; }
                 }
 
-                &.logout {
-                    color: $mobile-danger;
-                    i { color: $mobile-danger; }
+                // ACTIVE MENU: background biru, tulisan putih, icon putih
+                &.active {
+                    background: $mobile-primary;
+                    color: #fff;
+                    font-weight: 600;
+
+                    i, svg { color: #fff; }
+
                     &:hover {
-                        background: rgba($mobile-danger, 0.06);
-                        border-color: rgba($mobile-danger, 0.2);
+                        background: $mobile-primary-dark;
                     }
                 }
+            }
+        }
 
-                &.settings {
-                    color: $mobile-text;
-                    i { color: $mobile-text-secondary; }
+        // ─── DRAWER BOTTOM ACTIONS ───────────────────────────────
+        .drawer-actions {
+            padding: 12px 16px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            background: rgba(248, 249, 250, 0.25);
+            flex-shrink: 0;
+
+            .drawer-action-btn {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                width: 100%;
+                padding: 8px 0;
+                border: none;
+                background: transparent;
+                color: #dc3545;
+                font-size: 0.85rem;
+                font-weight: 500;
+                cursor: pointer;
+                text-align: left;
+                transition: all 0.15s;
+
+                i { font-size: 1rem; width: 20px; text-align: center; }
+
+                &:hover {
+                    opacity: 0.8;
                 }
             }
         }
     }
 
-    // ─── DRAWER INLINE BOTTOM NAV ──────────────────────────────
-    .drawer-inline-bottomnav {
-        display: flex;
-        gap: 6px;
-        padding: 4px 0 12px;
-
-        .drawer-inline-bn-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            padding: 8px 4px;
-            border-radius: $mobile-radius;
-            text-decoration: none;
-            color: $mobile-text-secondary;
-            font-size: 0.65rem;
-            font-weight: 500;
-            transition: all 0.15s;
-            background: transparent;
-
-            i {
-                font-size: 1.1rem;
-                color: $mobile-text-secondary;
-            }
-
-            &:hover {
-                background: lighten($mobile-primary, 45%);
-                color: $mobile-primary;
-                i { color: $mobile-primary; }
-            }
-
-            &.active {
-                color: $mobile-primary;
-                i { color: $mobile-primary; }
-            }
-        }
-    }
-
-    // Body no scroll when drawer open
-    body.drawer-open {
-        overflow: hidden;
-    }
-
-    // ─── BOTTOM NAV ───────────────────────────────────────────
+    // ─── BOTTOM NAVIGATION ──────────────────────────────────
     .mobile-bottom-nav {
         position: fixed;
         bottom: 0;
         left: 0;
-        width: 100%;
-        height: 66px;
-        background: $mobile-card;
+        right: 0;
+        z-index: 1040;
+        background: #ffffff;
         border-top: 1px solid $mobile-border;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        z-index: 1020;
         display: flex;
-        align-items: stretch;
-        padding: 0 4px;
+        align-items: center;
+        justify-content: space-around;
+        padding: 6px 0 env(safe-area-inset-bottom, 6px) 0;
+        box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+        height: auto;
+        min-height: 64px;
 
-        .mobile-bottom-nav-item {
-            flex: 1;
+        .bottom-nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             gap: 2px;
+            padding: 4px 8px;
+            color: $mobile-text-secondary;
             text-decoration: none;
-            color: #94A3B8;
-            transition: all 0.15s ease;
-            padding: 6px 0 4px;
-            position: relative;
+            font-size: 0.6rem;
+            font-weight: 500;
+            transition: all 0.15s;
+            border: none;
+            background: transparent;
+            cursor: pointer;
 
-            .mobile-bottom-nav-icon {
-                font-size: 1.2rem;
-                line-height: 1;
-                i { display: block; }
+            i, svg {
+                font-size: 1.3rem;
+                color: $mobile-text-secondary;
             }
 
-            .mobile-bottom-nav-label {
+            span {
                 font-size: 0.6rem;
-                font-weight: 500;
                 line-height: 1;
             }
 
             &.active {
                 color: $mobile-primary;
-                .mobile-bottom-nav-icon i {
-                    color: $mobile-primary;
-                }
-                .mobile-bottom-nav-label {
-                    color: $mobile-primary;
-                    font-weight: 600;
-                }
+
+                i, svg { color: $mobile-primary; }
             }
 
-            // Non-active items stay gray
-            &:not(.active) {
-                .mobile-bottom-nav-icon i,
-                .mobile-bottom-nav-label {
-                    color: #94A3B8;
-                }
-                &:hover {
-                    color: $mobile-primary;
-                    .mobile-bottom-nav-icon i,
-                    .mobile-bottom-nav-label {
-                        color: $mobile-primary;
-                    }
-                }
+            &:hover {
+                color: $mobile-primary;
+                i { color: $mobile-primary; }
             }
         }
     }
 
-    // ─── MOBILE PAGE CONTENT ─────────────────────────────────
-    .mobile-page-content {
-        padding: 16px;
-        padding-bottom: 82px; // space for bottom nav
-        min-height: calc(100vh - 56px);
+    // ─── DASHBOARD STATS GRID (2 columns) ─────────────────────
+    .mobile-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
     }
 
-    // ─── SECTION HEADER ──────────────────────────────────────
+    .mobile-stat-card {
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 110px;
+        position: relative;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+
+        .mobile-stat-icon {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 1.3rem;
+            opacity: 0.3;
+            color: inherit;
+        }
+
+        .mobile-stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.1;
+            margin-top: auto;
+        }
+
+        .mobile-stat-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.8);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+            line-height: 1.2;
+        }
+
+        // Warna sesuai card masing-masing
+        &.stat-primary {
+            background: linear-gradient(135deg, #4361ee, #3a56d4);
+        }
+
+        &.stat-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        &.stat-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        &.stat-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+    }
+
+    // ─── SECTION HEADER (page title area) ────────────────────
     .mobile-section-header {
         margin-bottom: 16px;
-        h1, h2, h3, h4 {
-            font-weight: 700;
-            color: $mobile-text;
-            margin: 0 0 4px;
-            font-size: 1.2rem;
-            letter-spacing: -0.02em;
-        }
-        p {
-            color: $mobile-text-secondary;
-            font-size: 0.8rem;
-            margin: 0;
-            font-weight: 400;
-        }
-    }
-
-    // ─── PAGE HEADER WITH FLEX (e.g. Data Orang Tua) ────────
-    .mobile-page-header {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 16px;
 
-        .mobile-page-header-text {
+        .mobile-heading-wrap {
             flex: 1;
             min-width: 0;
-            h1, h2, h3, h4 {
-                font-weight: 700;
-                color: $mobile-text;
-                margin: 0 0 3px;
-                font-size: 1.2rem;
-                letter-spacing: -0.02em;
-            }
-            p {
-                color: $mobile-text-secondary;
-                font-size: 0.8rem;
-                margin: 0;
-            }
         }
 
-        .mobile-page-header-action {
-            flex-shrink: 0;
-        }
-    }
-
-    // ─── RECAP TODAY HEADER ─────────────────────────────────
-    .mobile-recap-header {
-        margin-top: 0;
-        margin-bottom: 24px;
-        padding: 0;
-
-        .mobile-recap-title {
-            font-weight: 700;
-            margin-bottom: 4px;
+        .mobile-heading {
             font-size: 1.2rem;
-            letter-spacing: -0.02em;
+            font-weight: 700;
             color: $mobile-text;
+            margin: 0;
+            line-height: 1.3;
         }
 
-        .mobile-recap-subtitle {
-            color: $mobile-text-secondary;
+        .mobile-subtitle {
             font-size: 0.8rem;
-            margin-bottom: 0;
+            color: $mobile-text-secondary;
+            margin: 4px 0 0 0;
         }
 
-        .mobile-recap-actions {
+        .mobile-btn {
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-height: 38px;
             display: flex;
-            gap: 10px;
-            margin-top: 16px;
-
-            .btn, .mobile-btn {
-                flex: 1;
-                justify-content: center;
-                min-height: 44px;
-            }
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 8px 14px;
         }
     }
 
-    // ─── CARDS ───────────────────────────────────────────────
-    .mobile-card {
+    // ─── CARD ────────────────────────────────────────────────
+    .mobile-card,
+    .card.glass-card.border-0 {
         background: $mobile-card;
         border-radius: $mobile-radius-lg;
+        border: 1px solid $mobile-border !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        padding: 16px;
+        width: 100%;
+        margin-bottom: 14px;
+
+        .card-body {
+            padding: 0 !important;
+            width: 100%;
+        }
+    }
+
+    // Fix inline card-body
+    .card.glass-card.border-0 > .card-body.p-4 {
+        padding: 0 !important;
+    }
+
+    .card.glass-card.border-0 > .card-body {
+        padding: 0 !important;
+    }
+
+    // ─── MOBILE CONTENT WRAPPER ─────────────────────────────
+    .mobile-page-content {
+        width: 100%;
+    }
+
+    // ─── SEARCH FILTER (mobile) ─────────────────────────────
+    .mobile-search-card {
+        background: #fff;
+        border-radius: 16px;
         border: 1px solid $mobile-border;
         box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         padding: 16px;
         margin-bottom: 16px;
-    }
-
-    // Override glass-card on mobile
-    .card.glass-card {
-        background: $mobile-card !important;
-        border: 1px solid $mobile-border !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        border-radius: $mobile-radius-lg !important;
-        .card-body {
-            padding: 16px !important;
-        }
-        &:hover {
-            transform: none !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
-            border-color: $mobile-border !important;
-        }
-    }
-
-    // ─── BUTTONS ─────────────────────────────────────────────
-    .mobile-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 12px 20px;
-        border-radius: $mobile-radius;
-        font-weight: 600;
-        font-size: 0.85rem;
-        border: none;
-        cursor: pointer;
-        transition: all 0.15s;
-        min-height: 44px;
-        text-decoration: none;
-
-        i { font-size: 1.1rem; }
-
-        &.mobile-btn-primary {
-            background: $mobile-primary;
-            color: #fff;
-            box-shadow: 0 2px 8px rgba($mobile-primary, 0.2);
-            &:hover { background: $mobile-primary-hover; }
-        }
-        &.mobile-btn-secondary {
-            background: #F1F5F9;
-            color: #475569;
-            &:hover { background: darken(#F1F5F9, 5%); }
-        }
-        &.mobile-btn-outline {
-            background: transparent;
-            border: 1.5px solid $mobile-border;
-            color: $mobile-text;
-            &:hover { border-color: $mobile-primary; color: $mobile-primary; }
-        }
-        &.mobile-btn-danger {
-            background: $mobile-danger;
-            color: #fff;
-            &:hover { background: darken($mobile-danger, 5%); }
-        }
-        &.mobile-btn-success {
-            background: $mobile-success;
-            color: #fff;
-            &:hover { background: darken($mobile-success, 5%); }
-        }
-        &:active { transform: scale(0.97); }
-    }
-
-    // Override all buttons in mobile
-    .btn, .btn-primary, button.btn, a.btn {
-        border-radius: $mobile-radius !important;
-        min-height: 44px !important;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        font-weight: 600 !important;
-        font-size: 0.85rem !important;
-        padding: 10px 18px !important;
-        transition: all 0.15s !important;
-        i { font-size: 1.1rem; }
-        &:active { transform: scale(0.97); }
-
-        // Buttons that use gradient on desktop
-        &.btn-primary {
-            background: $mobile-primary !important;
-            background-image: none !important;
-            border: none !important;
-            box-shadow: 0 2px 8px rgba($mobile-primary, 0.2) !important;
-            &:hover, &:focus {
-                background: $mobile-primary-hover !important;
-                background-image: none !important;
-                box-shadow: 0 4px 12px rgba($mobile-primary, 0.3) !important;
-                transform: none !important;
-            }
-        }
-
-        &.btn-outline-primary {
-            color: $mobile-primary !important;
-            border: 1.5px solid $mobile-primary !important;
-            background: transparent !important;
-            &:hover {
-                background: $mobile-primary !important;
-                color: #fff !important;
-            }
-        }
-
-        &.btn-light {
-            background: #F1F5F9 !important;
-            border: 1px solid $mobile-border !important;
-            color: #475569 !important;
-        }
-
-        &.btn-danger {
-            background: $mobile-danger !important;
-            border: none !important;
-        }
-
-        &.btn-success {
-            background: $mobile-success !important;
-            border: none !important;
-        }
-
-        &.btn-sm {
-            min-height: 36px !important;
-            padding: 8px 14px !important;
-            font-size: 0.8rem !important;
-        }
-    }
-
-    // ─── FORM INPUTS ─────────────────────────────────────────
-    .form-control, .form-select, input[type="text"], input[type="number"],
-    input[type="date"], input[type="time"], input[type="email"], input[type="password"],
-    select, textarea {
         width: 100%;
-        padding: 12px 14px !important;
-        border-radius: $mobile-radius-sm !important;
-        border: 1.5px solid $mobile-border !important;
-        background: $mobile-card !important;
-        font-size: 0.9rem !important;
-        color: $mobile-text !important;
-        min-height: 44px !important;
-        transition: all 0.2s;
-        &:focus {
-            border-color: $mobile-primary !important;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba($mobile-primary, 0.1) !important;
-        }
-        &::placeholder {
-            color: #9CA3AF !important;
-        }
     }
 
-    // Form labels
-    label, .form-label {
-        font-size: 0.8rem !important;
-        font-weight: 600 !important;
-        color: $mobile-text !important;
-        margin-bottom: 5px !important;
-    }
-
-    // Switch
-    .form-check-input {
-        &:checked {
-            background-color: $mobile-primary !important;
-            border-color: $mobile-primary !important;
-        }
-        &:focus {
-            border-color: $mobile-primary !important;
-            box-shadow: 0 0 0 3px rgba($mobile-primary, 0.1) !important;
-        }
-    }
-
-    // ─── FORM GRID ON MOBILE ────────────────────────────────
-    // Make col-6 items appear as 2-column grid on mobile
-    .row.mobile-form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin: 0;
-        > [class*="col-"] {
-            max-width: 100% !important;
-            flex: 0 0 100% !important;
-            width: 100% !important;
-            padding: 0;
-        }
-        > .mobile-full-width {
-            grid-column: span 2;
-        }
-    }
-
-    // Mobile form card adjustments
-    .mobile-form-card .card-body {
-        padding: 16px;
-    }
-    .mobile-form-card .form-control,
-    .mobile-form-card .form-select {
-        height: 44px;
-        font-size: 14px;
-        border-radius: 10px;
-        border: 1.5px solid $mobile-border;
-    }
-    .mobile-form-card .form-control:focus,
-    .mobile-form-card .form-select:focus {
-        border-color: $mobile-primary;
-        box-shadow: 0 0 0 3px rgba($mobile-primary, 0.1);
-    }
-    .mobile-form-card textarea.form-control {
-        height: auto;
-        min-height: 80px;
-    }
-    .mobile-form-card .form-label {
-        font-size: 13px;
-        font-weight: 600;
-        color: $mobile-text;
-        margin-bottom: 6px;
-    }
-    .mobile-form-card .form-text {
-        font-size: 11px;
-        color: #94A3B8;
-        margin-top: 4px;
-    }
-    .mobile-form-card .invalid-feedback {
-        font-size: 11px;
-    }
-    .mobile-form-card .mobile-submit-btn {
+    .mobile-search-form {
         width: 100%;
-        height: 46px;
-        border-radius: 12px;
-        font-size: 15px;
-        font-weight: 600;
-        margin-top: 8px;
-    }
-    .mobile-form-card .form-check {
-        min-height: 24px;
-        padding-left: 28px;
-        margin-bottom: 8px;
-    }
-    .mobile-form-card .form-check-input {
-        width: 18px;
-        height: 18px;
-        margin-left: -28px;
-    }
-    .mobile-form-card .form-check-input:checked {
-        background-color: $mobile-primary;
-        border-color: $mobile-primary;
-    }
-    .mobile-form-card .form-switch {
-        padding-left: 44px;
-    }
-    .mobile-form-card .form-switch .form-check-input {
-        width: 36px;
-        height: 20px;
-        margin-left: -44px;
-        border-radius: 20px;
-    }
-    .mobile-form-card .form-switch .form-check-input:checked {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
-    }
 
-    // ─── GRID LAYOUT FOR FORM (2 columns) ───────────────────
-    .mobile-form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        .full-width {
-            grid-column: 1 / -1;
-        }
-        .form-group, .mb-3, [class*="mb-"] {
-            margin-bottom: 0 !important;
-        }
-    }
-
-    // ─── FORM SUBMIT BUTTON ──────────────────────────────────
-    .mobile-form-submit {
-        margin-top: 16px;
-        .btn {
-            width: 100%;
-            justify-content: center;
-        }
-    }
-
-    // ─── ACTION ROW ──────────────────────────────────────────
-    .mobile-action-row {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 16px;
-        .btn, .mobile-btn {
-            flex: 1;
-            justify-content: center;
-        }
-    }
-
-    // ─── FILTER FORM ─────────────────────────────────────────
-    .mobile-filter-form {
-        .filter-group {
-            margin-bottom: 10px;
-            label {
-                font-size: 0.75rem;
-                font-weight: 600;
-                color: $mobile-text-secondary;
-                margin-bottom: 4px;
-                display: block;
-            }
-        }
-        .filter-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-            .btn { flex: 1; justify-content: center; }
-        }
-    }
-
-    // ─── FILTER WRAPPER ─────────────────────────────────────
-    .mobile-filter-wrapper {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 16px;
-        align-items: flex-end;
-
-        .filter-field {
-            flex: 1;
-            min-width: calc(50% - 4px);
-            label {
-                font-size: 0.7rem;
-                font-weight: 600;
-                color: $mobile-text-secondary;
-                margin-bottom: 3px;
-                display: block;
-                text-transform: uppercase;
-                letter-spacing: 0.3px;
-            }
-            .form-control, .form-select {
-                min-height: 40px;
-                padding: 8px 12px !important;
-                font-size: 0.85rem !important;
-            }
-        }
-
-        .filter-actions {
-            width: 100%;
+        .mobile-search-row {
             display: flex;
             gap: 8px;
-            .btn {
+            width: 100%;
+        }
+
+        .mobile-search-group {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 1px solid $mobile-border;
+            border-radius: 8px;
+            padding: 0 12px;
+            min-height: 42px;
+
+            .mobile-search-icon {
+                color: $mobile-text-secondary;
+                font-size: 0.9rem;
+                margin-right: 8px;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+            }
+
+            .mobile-search-input {
                 flex: 1;
-                justify-content: center;
-                min-height: 40px;
+                border: none;
+                outline: none;
+                font-size: 0.85rem;
+                padding: 8px 0;
+                background: transparent;
+                color: $mobile-text;
+                min-height: 36px;
+
+                &::placeholder {
+                    color: #94a3b8;
+                }
+            }
+        }
+
+        .mobile-search-btn {
+            min-height: 42px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid $mobile-border;
+            background: #fff;
+            color: $mobile-text;
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+
+            &:hover {
+                background: $mobile-bg;
             }
         }
     }
 
-    // ─── ATTENDANCE GATE GRID ───────────────────────────────
+    // ─── PARENT DATA CARDS (mobile) ─────────────────────────
+        .mobile-parent-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+
+            // Empty state inside grid spans both columns
+            .mobile-empty-state {
+                grid-column: 1 / -1;
+            }
+
+            .mobile-parent-card {
+                background: #fff;
+                border-radius: 12px;
+                border: 1px solid $mobile-border;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+                padding: 12px;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+
+            .parent-card-header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 6px;
+                margin-bottom: 8px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid $mobile-border;
+
+                .parent-card-name-area {
+                    flex: 1;
+                    min-width: 0;
+
+                    .parent-card-name {
+                        font-size: 0.85rem;
+                        font-weight: 700;
+                        color: $mobile-text;
+                        line-height: 1.2;
+                    }
+
+                    .parent-card-badge {
+                        margin-top: 3px;
+                        display: inline-block;
+
+                        .badge {
+                            font-size: 0.6rem;
+                            font-weight: 600;
+                            padding: 2px 8px;
+                            border-radius: 20px;
+                        }
+                    }
+                }
+
+                .parent-card-actions {
+                    display: flex;
+                    gap: 4px;
+                    flex-shrink: 0;
+
+                    .btn-sm-icon {
+                        width: 28px;
+                        height: 28px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 6px;
+                        border: 1px solid $mobile-border;
+                        background: #fff;
+                        color: $mobile-text-secondary;
+                        font-size: 0.75rem;
+                        cursor: pointer;
+                        transition: all 0.15s;
+                        padding: 0;
+                        text-decoration: none;
+
+                        &:hover {
+                            background: $mobile-bg;
+                        }
+
+                        &.btn-edit i { color: $mobile-primary; }
+                        &.btn-delete i { color: #dc3545; }
+                    }
+                }
+            }
+
+            .parent-card-body {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+
+                .parent-info-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 0.75rem;
+
+                    .info-icon {
+                        width: 14px;
+                        text-align: center;
+                        color: $mobile-text-secondary;
+                        font-size: 0.7rem;
+                        flex-shrink: 0;
+                    }
+
+                    .info-value {
+                        color: $mobile-text;
+                        flex: 1;
+                        word-break: break-word;
+                        font-size: 0.75rem;
+                    }
+                }
+            }
+
+            .parent-card-students {
+                margin-top: auto;
+                padding-top: 8px;
+                border-top: 1px solid $mobile-border;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 3px;
+
+                .student-badge {
+                    font-size: 0.6rem;
+                    padding: 2px 6px;
+                    background: $mobile-bg;
+                    color: $mobile-text;
+                    border-radius: 4px;
+                    border: 1px solid $mobile-border;
+                    display: inline-block;
+                    line-height: 1.3;
+                }
+            }
+        }
+    }
+
+    // ─── EMPTY STATE ────────────────────────────────────────
+    .mobile-empty-state {
+        text-align: center;
+        padding: 48px 24px;
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid $mobile-border;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        width: 100%;
+
+        .empty-icon-wrap {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: $mobile-bg;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+
+            i {
+                font-size: 2rem;
+                color: $mobile-text-secondary;
+            }
+        }
+
+        .empty-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: $mobile-text;
+            margin: 0 0 4px;
+        }
+
+        .empty-desc {
+            font-size: 0.8rem;
+            color: $mobile-text-secondary;
+            margin: 0;
+        }
+    }
+
+    // ─── FORM ELEMENTS ───────────────────────────────────────
+    .mobile-form-card {
+        padding: 16px !important;
+
+        .card-body {
+            padding: 0 !important;
+        }
+
+        // Make form rows stack vertically on mobile
+        .row.mobile-form-row,
+        .row.mb-3 {
+            display: block !important;
+            margin: 0 0 14px 0 !important;
+            width: 100%;
+
+            > [class*="col-"] {
+                width: 100% !important;
+                padding: 0 !important;
+                margin-bottom: 12px;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
+
+        // Full width elements
+        .mobile-full-width,
+        .col-md-12 {
+            width: 100% !important;
+            padding: 0 !important;
+            margin-bottom: 14px;
+        }
+
+        // Labels
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: $mobile-text;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        // Inputs
+        .form-control,
+        .form-select {
+            font-size: 0.9rem;
+            padding: 10px 12px;
+            border-radius: $mobile-radius-sm;
+            border: 1px solid $mobile-border;
+            width: 100%;
+            background: #fff;
+
+            &:focus {
+                border-color: $mobile-primary;
+                box-shadow: 0 0 0 2px rgba($mobile-primary, 0.1);
+            }
+        }
+
+        // Submit button area
+        .mobile-form-submit,
+        .d-flex.justify-content-between.align-items-center {
+            margin-top: 8px;
+            width: 100%;
+
+            .btn {
+                width: 100%;
+                min-height: 44px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                border-radius: $mobile-radius-sm;
+            }
+        }
+
+        // Select wrapper
+        .custom-select-wrapper {
+            width: 100%;
+        }
+
+        // Form switch
+        .form-check.form-switch {
+            padding-left: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .form-check-input {
+                margin: 0;
+                flex-shrink: 0;
+                width: 40px;
+                height: 22px;
+                cursor: pointer;
+            }
+
+            .form-check-label {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: $mobile-text;
+                cursor: pointer;
+            }
+        }
+
+        // Form text
+        .form-text.fs-8 {
+            font-size: 0.7rem;
+            color: $mobile-text-secondary;
+            margin-top: 2px;
+        }
+
+        // Invalid feedback
+        .invalid-feedback {
+            font-size: 0.75rem;
+            color: #dc3545;
+            display: block;
+            margin-top: 2px;
+        }
+    }
+
+    // ─── TABLE ON MOBILE → CARD LAYOUT ──────────────────────
+    // This targets any table inside mobile layout
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        margin-bottom: 12px;
+    }
+
+    // For tables with .table-premium - convert to card layout on mobile
+    .table-premium {
+        width: 100%;
+
+        thead {
+            display: none;
+        }
+
+        tbody, tr, td {
+            display: block;
+            width: 100%;
+        }
+
+        tr {
+            background: $mobile-card;
+            border-radius: $mobile-radius-lg;
+            border: 1px solid $mobile-border;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+
+        td {
+            padding: 4px 0;
+            border: none;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: $mobile-text;
+        }
+
+        td::before {
+            content: attr(data-label);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: $mobile-text-secondary;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+    }
+
+    // ─── DEFAULT/REGULAR TABLES (bootstrap styling) ─────────
+    // Show regular tables normally with horizontal scroll
+    table:not(.table-premium) {
+        width: 100%;
+        font-size: 0.8rem;
+
+        th, td {
+            padding: 8px 10px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        th {
+            font-weight: 600;
+            background: $mobile-bg;
+        }
+
+        td {
+            .btn-group, .d-flex.gap-1 {
+                flex-wrap: nowrap;
+                gap: 4px !important;
+            }
+
+            .btn-sm {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+                min-height: 28px;
+            }
+        }
+    }
+
+    // ─── ACTION BUTTONS ROW ──────────────────────────────────
+    .mobile-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+        width: 100%;
+
+        .btn {
+            flex: 1;
+            min-height: 44px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: $mobile-radius-sm;
+        }
+    }
+
+    // ─── SEARCH & FILTER BAR ─────────────────────────────────
+    .mobile-search-filter {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+        width: 100%;
+
+        .input-group {
+            flex: 1;
+        }
+
+        .form-control,
+        .form-select {
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border-radius: $mobile-radius-sm;
+            border: 1px solid $mobile-border;
+        }
+
+        .btn {
+            font-size: 0.8rem;
+            min-height: 38px;
+            white-space: nowrap;
+        }
+    }
+
+    // ─── DATA CARD (for list items) ──────────────────────────
+    .mobile-data-card {
+        background: $mobile-card;
+        border-radius: $mobile-radius-lg;
+        border: 1px solid $mobile-border;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        padding: 14px;
+        margin-bottom: 10px;
+    }
+
+    .mobile-data-card-row {
+        display: flex;
+        align-items: flex-start;
+        padding: 5px 0;
+        gap: 8px;
+        .data-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: $mobile-text-secondary;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+        .data-value {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: $mobile-text;
+            flex: 1;
+        }
+    }
+
+    .mobile-data-card-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid $mobile-border;
+        justify-content: flex-end;
+        .btn {
+            min-height: 32px !important;
+            padding: 6px 12px !important;
+            font-size: 0.75rem !important;
+        }
+    }
+
+    // ─── PAGINATION ─────────────────────────────────────────
+    .mobile-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 16px;
+        padding: 12px 0;
+    }
+
+    // Override default pagination
+    nav[role="navigation"] {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        p { font-size: 0.75rem; color: $mobile-text-secondary; }
+
+        > div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        a, span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border-radius: $mobile-radius-sm;
+            background: $mobile-card;
+            border: 1px solid $mobile-border;
+            color: $mobile-text;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.15s;
+            &:hover {
+                border-color: $mobile-primary;
+                color: $mobile-primary;
+                background: lighten($mobile-primary, 45%);
+            }
+        }
+
+        span[aria-current="page"] {
+            background: $mobile-primary !important;
+            border-color: $mobile-primary !important;
+            color: #fff !important;
+            font-weight: 600;
+        }
+    }
+
+    // ─── SPACING UTILITIES ─────────────────────────────────
+    .mobile-px { padding-left: 16px !important; padding-right: 16px !important; }
+    .mobile-px-sm { padding-left: 12px !important; padding-right: 12px !important; }
+    .mobile-p { padding: 16px !important; }
+    .mobile-pb-nav { padding-bottom: 82px !important; }
+    .mobile-mb-section { margin-bottom: 20px !important; }
+    .mobile-mb-card { margin-bottom: 16px !important; }
+    .mobile-gap { gap: 16px !important; }
+    .mobile-gap-sm { gap: 10px !important; }
+    .mobile-mt-section { margin-top: 12px !important; }
+    .w-100-mobile { width: 100% !important; }
+    .text-center-mobile { text-align: center !important; }
+    .d-none-mobile { display: none !important; }
+    .d-block-mobile { display: block !important; }
+
+    // ─── RESPONSIVE FIXES ──────────────────────────────────
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    // Fix horizontal scroll issues - reset grid 
+    .row:not(.g-0) {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        > [class*="col-"] {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    }
+
+    // ─── HOLIDAY CARD LIST ────────────────────────────────
+    .mobile-holiday-list {
+        .holiday-card-item {
+            background: $mobile-card;
+            border-radius: $mobile-radius-lg;
+            border: 1px solid $mobile-border;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .holiday-info {
+                flex: 1;
+                .holiday-name {
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    color: $mobile-text;
+                }
+                .holiday-date {
+                    font-size: 0.75rem;
+                    color: $mobile-text-secondary;
+                    margin-top: 2px;
+                }
+            }
+
+            .holiday-actions {
+                display: flex;
+                gap: 6px;
+                flex-shrink: 0;
+                .btn {
+                    min-height: 32px !important;
+                    padding: 6px 10px !important;
+                    font-size: 0.75rem !important;
+                }
+            }
+        }
+    }
+
+    // ─── SCAN PAGE - GATE GRID ───────────────────────────────
     .mobile-gate-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 0 !important;
+        width: 100%;
 
         .gate-card {
             background: $mobile-card;
             border-radius: $mobile-radius-lg;
             border: 1px solid $mobile-border;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
+            padding: 14px;
+            width: 100%;
 
-            .gate-card-title {
-                font-size: 0.8rem;
-                font-weight: 600;
-                color: $mobile-text-secondary;
-                margin-bottom: 10px;
-                text-transform: uppercase;
-                letter-spacing: 0.3px;
-            }
-
-            .gate-card-value {
-                font-size: 1.1rem;
-                font-weight: 700;
-                color: $mobile-text;
-            }
-
-            // Scanner card specific
             &.gate-scanner {
                 .scanner-placeholder {
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 12px 0;
-                    gap: 8px;
+                    text-align: center;
+                    padding: 20px 10px;
                     .scanner-icon {
                         font-size: 2rem;
                         color: $mobile-primary;
+                        margin-bottom: 8px;
                     }
                     .scanner-text {
                         font-size: 0.8rem;
                         color: $mobile-text-secondary;
-                        text-align: center;
                     }
                 }
             }
 
-            // Result card
             &.gate-result {
                 .result-profile {
                     display: flex;
                     align-items: center;
-                    gap: 10px;
-                    margin-bottom: 8px;
+                    gap: 12px;
                     .result-avatar {
-                        width: 40px;
-                        height: 40px;
-                        border-radius: 10px;
-                        background: lighten($mobile-primary, 42%);
-                        color: $mobile-primary;
+                        width: 44px;
+                        height: 44px;
+                        border-radius: 50%;
+                        background: $mobile-bg;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        font-weight: 700;
-                        font-size: 0.9rem;
+                        color: $mobile-text-secondary;
+                        font-size: 1.3rem;
                         flex-shrink: 0;
                     }
                     .result-info {
-                        flex: 1;
                         .result-name {
-                            font-size: 0.9rem;
+                            font-size: 0.95rem;
                             font-weight: 600;
                             color: $mobile-text;
                         }
                         .result-class {
-                            font-size: 0.7rem;
+                            font-size: 0.75rem;
                             color: $mobile-text-secondary;
                         }
                     }
                 }
             }
 
-            // Status & Stats
+            .gate-card-title {
+                font-size: 0.7rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: $mobile-text-secondary;
+                margin-bottom: 10px;
+                padding-bottom: 6px;
+                border-bottom: 1px solid $mobile-border;
+            }
+
             &.gate-status {
                 .status-item {
                     display: flex;
@@ -1039,256 +1370,10 @@
         }
     }
 
-    // ─── DATA CARDS (holidays, etc) ──────────────────────────
-    .mobile-data-card {
-        background: $mobile-card;
-        border-radius: $mobile-radius-lg;
-        border: 1px solid $mobile-border;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        padding: 14px;
-        margin-bottom: 10px;
+    // ─── OVERFLOW HIDE ──────────────────────────────────────
+    .overflow-hidden-mobile {
+        overflow: hidden !important;
     }
-
-    .mobile-data-card-row {
-        display: flex;
-        align-items: flex-start;
-        padding: 5px 0;
-        gap: 8px;
-        .data-label {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: $mobile-text-secondary;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            min-width: 80px;
-            flex-shrink: 0;
-        }
-        .data-value {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: $mobile-text;
-            flex: 1;
-        }
-    }
-
-    // ─── DATA CARD ACTIONS ──────────────────────────────────
-    .mobile-data-card-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid $mobile-border;
-        justify-content: flex-end;
-        .btn {
-            min-height: 32px !important;
-            padding: 6px 12px !important;
-            font-size: 0.75rem !important;
-        }
-    }
-
-    // ─── STATS GRID ──────────────────────────────────────────
-    .mobile-stats-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 16px;
-    }
-
-    .mobile-stat-card {
-        background: $mobile-card;
-        border-radius: $mobile-radius-lg;
-        padding: 14px;
-        border: 1px solid $mobile-border;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        .stat-value {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: $mobile-text;
-            line-height: 1.2;
-        }
-        .stat-label {
-            font-size: 0.7rem;
-            color: $mobile-text-secondary;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .stat-icon {
-            font-size: 1.1rem;
-            opacity: 0.6;
-            margin-bottom: 2px;
-            color: $mobile-text-secondary;
-        }
-    }
-
-    // ─── PAGINATION ─────────────────────────────────────────
-    .mobile-pagination {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        margin-top: 16px;
-        padding: 12px 0;
-
-        .page-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 36px;
-            height: 36px;
-            padding: 0 10px;
-            border-radius: $mobile-radius-sm;
-            background: $mobile-card;
-            border: 1px solid $mobile-border;
-            color: $mobile-text;
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.15s;
-
-            &:hover {
-                border-color: $mobile-primary;
-                color: $mobile-primary;
-                background: lighten($mobile-primary, 45%);
-            }
-
-            &.active {
-                background: $mobile-primary;
-                border-color: $mobile-primary;
-                color: #fff;
-                font-weight: 600;
-            }
-
-            i { font-size: 0.8rem; }
-        }
-
-        .page-disabled {
-            opacity: 0.4;
-            pointer-events: none;
-        }
-    }
-
-    // Override default pagination
-    nav[role="navigation"] {
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        p { font-size: 0.75rem; color: $mobile-text-secondary; }
-
-        // Wrap the links in our mobile pagination
-        > div {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        a, span {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 36px;
-            height: 36px;
-            padding: 0 10px;
-            border-radius: $mobile-radius-sm;
-            background: $mobile-card;
-            border: 1px solid $mobile-border;
-            color: $mobile-text;
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.15s;
-            &:hover {
-                border-color: $mobile-primary;
-                color: $mobile-primary;
-                background: lighten($mobile-primary, 45%);
-            }
-        }
-
-        span[aria-current="page"] {
-            background: $mobile-primary !important;
-            border-color: $mobile-primary !important;
-            color: #fff !important;
-            font-weight: 600;
-        }
-    }
-
-    // ─── MOBILE-SPECIFIC TABLE → CARD ON MOBILE ────────────
-    .table-responsive table.table-premium {
-        thead { display: none; }
-        tbody, tr, td { display: block; }
-        tr {
-            background: $mobile-card;
-            border-radius: $mobile-radius-lg;
-            border: 1px solid $mobile-border;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            padding: 14px;
-            margin-bottom: 10px;
-        }
-        td {
-            padding: 4px 0;
-            border: none;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            font-size: 0.85rem;
-            color: $mobile-text;
-            &::before {
-                content: attr(data-label);
-                font-size: 0.7rem;
-                font-weight: 600;
-                color: $mobile-text-secondary;
-                text-transform: uppercase;
-                letter-spacing: 0.3px;
-                min-width: 80px;
-                flex-shrink: 0;
-            }
-        }
-    }
-
-    // ─── SPACING UTILITIES ─────────────────────────────────
-    .mobile-px { padding-left: 16px !important; padding-right: 16px !important; }
-    .mobile-px-sm { padding-left: 12px !important; padding-right: 12px !important; }
-    .mobile-p { padding: 16px !important; }
-    .mobile-pb-nav { padding-bottom: 82px !important; }
-    .mobile-mb-section { margin-bottom: 20px !important; }
-    .mobile-mb-card { margin-bottom: 16px !important; }
-    .mobile-gap { gap: 16px !important; }
-    .mobile-gap-sm { gap: 10px !important; }
-    .mobile-mt-section { margin-top: 12px !important; }
-
-    // ─── RESPONSIVE FIXES ──────────────────────────────────
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    // Fix horizontal scroll issues
-    .row, .row.g-3, .row.g-4, .row.mb-4, .row.mb-3 {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        > [class*="col-"] {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-    }
-
-    // Hide desktop elements
-    .d-none-mobile { display: none !important; }
-    .d-block-mobile { display: block !important; }
-    .w-100-mobile { width: 100% !important; }
-    .text-center-mobile { text-align: center !important; }
-
-    // Scrollbar
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-
-    // Utility
-    .fs-7 { font-size: 0.8rem !important; }
-    .fs-8 { font-size: 0.7rem !important; }
 
     // ─── FLOATING BUTTON ───────────────────────────────────
     .mobile-fab {
@@ -1313,66 +1398,29 @@
         &:active { transform: scale(0.92); }
     }
 
-    // ─── WEBKIT OVERFLOW FIX ──────────────────────────────
+    // ─── SCROLLBAR ──────────────────────────────────────────
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+
+    // ─── FONT SIZES ─────────────────────────────────────────
+    .fs-7 { font-size: 0.8rem !important; }
+    .fs-8 { font-size: 0.7rem !important; }
+
+    // ─── WEBKIT OVERFLOW FIX ───────────────────────────────
     * {
         -webkit-overflow-scrolling: touch;
     }
 
-    // ─── OVERFLOW HIDE FOR MOBILE ──────────────────────────
-    .overflow-hidden-mobile {
-        overflow: hidden !important;
-    }
-
-    // ─── NO WRAP TEXT ──────────────────────────────────────
-    .text-nowrap-mobile {
-        white-space: nowrap;
-    }
-
-    // ─── HOLIDAY CARD GRID (max 5 items per page) ──────────
-    .mobile-holiday-list {
-        .holiday-card-item {
-            background: $mobile-card;
-            border-radius: $mobile-radius-lg;
-            border: 1px solid $mobile-border;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            padding: 14px 16px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            .holiday-info {
-                flex: 1;
-                .holiday-name {
-                    font-size: 0.9rem;
-                    font-weight: 600;
-                    color: $mobile-text;
-                }
-                .holiday-date {
-                    font-size: 0.75rem;
-                    color: $mobile-text-secondary;
-                    margin-top: 2px;
-                }
-            }
-
-            .holiday-actions {
-                display: flex;
-                gap: 6px;
-                flex-shrink: 0;
-                .btn {
-                    min-height: 32px !important;
-                    padding: 6px 10px !important;
-                    font-size: 0.75rem !important;
-                }
-            }
-        }
-    }
-
-    // ─── FORM EQUAL HEIGHT BUTTONS ─────────────────────────
+    // ─── EQUAL HEIGHT BUTTONS ──────────────────────────────
     .mobile-equal-buttons {
         .btn, button, a.btn {
             min-height: 44px;
         }
+    }
+
+    // ─── ANIMATIONS ─────────────────────────────────────────
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
     }
 }
 

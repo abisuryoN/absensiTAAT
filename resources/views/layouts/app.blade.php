@@ -55,7 +55,7 @@
         @include('layouts.partials.mobile-drawer')
 
         <!-- Mobile Content -->
-        <main class="mobile-page-content">
+        <main class="mobile-main-content">
             @if(session('success'))
                 <div class="alert alert-success d-flex align-items-center gap-2 mb-3 fade show" role="alert">
                     <i class="bi bi-check-circle-fill"></i>

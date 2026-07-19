@@ -121,65 +121,84 @@
         </div>
 
         {{-- Mobile Body --}}
-        <div class="d-block d-md-none mobile-card-body">
+        <div class="d-block d-md-none mobile-card-body" style="padding:0;">
             <!-- Search -->
-            <form method="GET" action="{{ route('admin.parents.index') }}" class="mobile-filter-form">
-                <div class="mobile-filter-row">
-                    <div class="mobile-search-group">
-                        <span class="mobile-search-icon"><i class="bi bi-search"></i></span>
-                        <input type="text" name="search" class="mobile-search-input" placeholder="Cari nama atau nomor HP..." value="{{ request('search') }}">
+            <div class="mobile-search-card">
+                <form method="GET" action="{{ route('admin.parents.index') }}" class="mobile-search-form">
+                    <div class="mobile-search-row">
+                        <div class="mobile-search-group">
+                            <span class="mobile-search-icon"><i class="bi bi-search"></i></span>
+                            <input type="text" name="search" class="mobile-search-input" placeholder="Cari nama atau nomor HP..." value="{{ request('search') }}">
+                        </div>
+                        <button type="submit" class="mobile-search-btn">Cari</button>
                     </div>
-                    <button type="submit" class="mobile-filter-btn">Cari</button>
-                </div>
-            </form>
+                </form>
+            </div>
 
-            <!-- Cards -->
+            <!-- Data Cards (2-column grid) -->
             <div class="mobile-parent-list">
                 @forelse($parents as $parent)
-                    <div class="mobile-data-card">
-                        <div class="mobile-data-card-top">
-                            <div>
-                                <div class="mobile-data-name">{{ $parent->name }}</div>
-                                <div class="mobile-data-sub">
+                    <div class="mobile-parent-card">
+                        {{-- Header: Nama + Badge + Actions --}}
+                        <div class="parent-card-header">
+                            <div class="parent-card-name-area">
+                                <div class="parent-card-name">{{ $parent->name }}</div>
+                                <div class="parent-card-badge">
                                     @if($parent->relationship == 'Ayah')
                                         <span class="badge bg-primary">Ayah</span>
                                     @elseif($parent->relationship == 'Ibu')
                                         <span class="badge bg-danger">Ibu</span>
                                     @else
-                                        <span class="badge bg-warning">Wali</span>
+                                        <span class="badge bg-warning text-dark">Wali</span>
                                     @endif
                                 </div>
                             </div>
-                            <div class="mobile-data-actions">
-                                <a href="{{ route('admin.parents.edit', $parent) }}" class="btn btn-light btn-sm border" title="Edit">
-                                    <i class="bi bi-pencil-square text-primary"></i>
+                            <div class="parent-card-actions">
+                                <a href="{{ route('admin.parents.edit', $parent) }}" class="btn-sm-icon btn-edit" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
                                 </a>
                                 <form action="{{ route('admin.parents.destroy', $parent) }}" method="POST" onsubmit="return confirm('Hapus data orang tua ini?')" style="display:inline;">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-light btn-sm border" title="Hapus">
-                                        <i class="bi bi-trash3 text-danger"></i>
+                                    <button type="submit" class="btn-sm-icon btn-delete" title="Hapus">
+                                        <i class="bi bi-trash3"></i>
                                     </button>
                                 </form>
                             </div>
                         </div>
-                        <div class="mobile-data-details">
-                            <div class="mobile-data-detail"><i class="bi bi-whatsapp"></i> {{ $parent->phone }}</div>
-                            <div class="mobile-data-detail"><i class="bi bi-telephone"></i> {{ $parent->phone_secondary ?: '-' }}</div>
-                            <div class="mobile-data-detail"><i class="bi bi-geo-alt"></i> {{ Str::limit($parent->address, 30) ?: '-' }}</div>
-                            <div class="mobile-data-detail"><i class="bi bi-envelope"></i> {{ $parent->user->email ?? 'Tidak Ada Akun' }}</div>
-                            <div class="mobile-data-detail"><i class="bi bi-people"></i>
-                                @forelse($parent->students as $student)
-                                    {{ $student->name }}@if(!$loop->last), @endif
-                                @empty
-                                    -
-                                @endforelse
+
+                        {{-- Compact Info --}}
+                        <div class="parent-card-body">
+                            <div class="parent-info-row">
+                                <i class="bi bi-whatsapp info-icon"></i>
+                                <span class="info-value">{{ $parent->phone }}</span>
                             </div>
+                            <div class="parent-info-row">
+                                <i class="bi bi-telephone info-icon"></i>
+                                <span class="info-value">{{ $parent->phone_secondary ?: '-' }}</span>
+                            </div>
+                            <div class="parent-info-row">
+                                <i class="bi bi-geo-alt info-icon"></i>
+                                <span class="info-value">{{ Str::limit($parent->address, 25) ?: '-' }}</span>
+                            </div>
+                        </div>
+
+                        {{-- Siswa Terkait --}}
+                        <div class="parent-card-students">
+                            @forelse($parent->students as $student)
+                                <span class="student-badge">{{ $student->name }}</span>
+                            @empty
+                                <span class="student-badge" style="color:#94a3b8;">-</span>
+                            @endforelse
                         </div>
                     </div>
                 @empty
+                    {{-- Modern Empty State --}}
                     <div class="mobile-empty-state">
-                        <i class="bi bi-inbox"></i>
-                        <p>Tidak ada data orang tua ditemukan.</p>
+                        <div class="empty-icon-wrap">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h4 class="empty-title">Belum Ada Data Orang Tua</h4>
+                        <p class="empty-desc">Data wali siswa akan tampil di sini setelah ditambahkan.</p>
                     </div>
                 @endforelse
             </div>

@@ -14,64 +14,56 @@
         </div>
     </div>
 
-    <!-- Stats Cards Row -->
-    <div class="row g-4 mb-4">
-        <!-- Stat Card 1: Total Siswa -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stat-card glass-card text-white bg-primary border-0 shadow-sm h-100">
-                <div class="card-body d-flex align-items-center justify-content-between p-4">
-                    <div>
-                        <span class="fs-8 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Total Siswa</span>
-                        <h2 class="fw-bold mb-0 mt-1">{{ number_format($totalSiswa) }}</h2>
+    <!-- Stats Cards - Unified Grid (2 kolom mobile, 4 kolom desktop) -->
+    <div class="row g-3 mb-4">
+        <!-- Total Siswa -->
+        <div class="col-6 col-md-3">
+            <div class="card card-stat bg-primary text-white border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body position-relative p-3 p-md-4">
+                    <div class="position-absolute top-0 end-0 p-3">
+                        <i class="bi bi-people-fill fs-3 opacity-50"></i>
                     </div>
-                    <div class="bg-white bg-opacity-15 rounded-3 p-3">
-                        <i class="bi bi-people-fill fs-2"></i>
-                    </div>
+                    <div class="stat-value display-6 fw-bold mb-0">{{ number_format($totalSiswa) }}</div>
+                    <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Total Siswa</div>
                 </div>
             </div>
         </div>
 
-        <!-- Stat Card 2: Hadir Hari Ini -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stat-card glass-card text-white bg-success border-0 shadow-sm h-100">
-                <div class="card-body d-flex align-items-center justify-content-between p-4">
-                    <div>
-                        <span class="fs-8 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Hadir Hari Ini</span>
-                        <h2 class="fw-bold mb-0 mt-1">{{ number_format($hadir) }}</h2>
+        <!-- Hadir Hari Ini -->
+        <div class="col-6 col-md-3">
+            <div class="card card-stat bg-success text-white border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body position-relative p-3 p-md-4">
+                    <div class="position-absolute top-0 end-0 p-3">
+                        <i class="bi bi-check-circle-fill fs-3 opacity-50"></i>
                     </div>
-                    <div class="bg-white bg-opacity-15 rounded-3 p-3">
-                        <i class="bi bi-check-circle-fill fs-2"></i>
-                    </div>
+                    <div class="stat-value display-6 fw-bold mb-0">{{ number_format($hadir) }}</div>
+                    <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Hadir Hari Ini</div>
                 </div>
             </div>
         </div>
 
-        <!-- Stat Card 3: Terlambat -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stat-card glass-card text-white bg-warning border-0 shadow-sm h-100">
-                <div class="card-body d-flex align-items-center justify-content-between p-4">
-                    <div>
-                        <span class="fs-8 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Terlambat</span>
-                        <h2 class="fw-bold mb-0 mt-1">{{ number_format($terlambat) }}</h2>
+        <!-- Terlambat -->
+        <div class="col-6 col-md-3">
+            <div class="card card-stat bg-warning text-white border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body position-relative p-3 p-md-4">
+                    <div class="position-absolute top-0 end-0 p-3">
+                        <i class="bi bi-clock-history fs-3 opacity-50"></i>
                     </div>
-                    <div class="bg-white bg-opacity-15 rounded-3 p-3">
-                        <i class="bi bi-clock-history fs-2"></i>
-                    </div>
+                    <div class="stat-value display-6 fw-bold mb-0">{{ number_format($terlambat) }}</div>
+                    <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Terlambat</div>
                 </div>
             </div>
         </div>
 
-        <!-- Stat Card 4: Belum Absen -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stat-card glass-card text-white bg-danger border-0 shadow-sm h-100">
-                <div class="card-body d-flex align-items-center justify-content-between p-4">
-                    <div>
-                        <span class="fs-8 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Belum Absen</span>
-                        <h2 class="fw-bold mb-0 mt-1">{{ number_format($belumAbsen) }}</h2>
+        <!-- Belum Absen -->
+        <div class="col-6 col-md-3">
+            <div class="card card-stat bg-danger text-white border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body position-relative p-3 p-md-4">
+                    <div class="position-absolute top-0 end-0 p-3">
+                        <i class="bi bi-exclamation-triangle-fill fs-3 opacity-50"></i>
                     </div>
-                    <div class="bg-white bg-opacity-15 rounded-3 p-3">
-                        <i class="bi bi-exclamation-triangle-fill fs-2"></i>
-                    </div>
+                    <div class="stat-value display-6 fw-bold mb-0">{{ number_format($belumAbsen) }}</div>
+                    <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Belum Absen</div>
                 </div>
             </div>
         </div>
@@ -86,7 +78,11 @@
                     <i class="bi bi-bar-chart-line-fill me-2 text-primary"></i>Tren Kehadiran Mingguan
                 </h5>
                 <div style="position: relative; height: 320px; width: 100%;">
-                    <canvas id="weeklyTrendChart"></canvas>
+                    <canvas id="weeklyTrendChart"
+                        data-labels='{{ json_encode($chartLabels ?? []) }}'
+                        data-hadir='{{ json_encode($chartHadir ?? []) }}'
+                        data-terlambat='{{ json_encode($chartTerlambat ?? []) }}'
+                        data-alpha='{{ json_encode($chartAlpha ?? []) }}'></canvas>
                 </div>
             </div>
         </div>
@@ -136,12 +132,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('weeklyTrendChart').getContext('2d');
+            const canvas = document.getElementById('weeklyTrendChart');
+            const ctx = canvas.getContext('2d');
             
-            const labels = @json($chartLabels);
-            const dataHadir = @json($chartHadir);
-            const dataTerlambat = @json($chartTerlambat);
-            const dataAlpha = @json($chartAlpha);
+            const labels = JSON.parse(canvas.dataset.labels);
+            const dataHadir = JSON.parse(canvas.dataset.hadir);
+            const dataTerlambat = JSON.parse(canvas.dataset.terlambat);
+            const dataAlpha = JSON.parse(canvas.dataset.alpha);
 
             new Chart(ctx, {
                 type: 'bar',
@@ -209,5 +206,43 @@
 
     <style>
         .bg-indigo { background-color: #6366f1; color: white; }
+
+        /* Card Statistik - Grid rapi dengan rounded corner */
+        .card-stat {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden;
+        }
+        .card-stat:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        }
+        .card-stat .stat-value {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            line-height: 1.1;
+        }
+        .card-stat .stat-label {
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+        }
+        .card-stat .card-body {
+            min-height: 110px;
+        }
+        @media (max-width: 767.98px) {
+            .card-stat .card-body {
+                padding: 0.75rem !important;
+                min-height: 100px;
+            }
+            .card-stat .stat-value {
+                font-size: 1.6rem;
+            }
+            .card-stat .stat-label {
+                font-size: 0.7rem;
+            }
+            .card-stat .position-absolute.p-3 {
+                padding: 0.65rem !important;
+            }
+            .card-stat .position-absolute i {
+                font-size: 1.4rem !important;
+            }
+        }
     </style>
 </x-app-layout>

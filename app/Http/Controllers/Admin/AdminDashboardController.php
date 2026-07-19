@@ -39,7 +39,7 @@ class AdminDashboardController extends Controller
             ->select('date', 'status', DB::raw('count(*) as count'))
             ->groupBy('date', 'status')
             ->get()
-            ->groupBy(fn($row) => $row->date->format('Y-m-d'));
+            ->groupBy(fn($row) => $row->date);
 
         $chartLabels = [];
         $chartHadir = [];
