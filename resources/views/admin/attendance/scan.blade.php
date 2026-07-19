@@ -552,13 +552,7 @@
     <!-- Profile Backdrop for mobile -->
     <div class="profile-backdrop" id="profileBackdrop" onclick="hideStudentProfile()"></div>
 
-    <!-- Audio Beep -->
-    <audio id="beepSuccess" preload="auto" style="display:none;">
-        <source src="{{ asset('sounds/beep-success.mp3') }}" type="audio/mpeg">
-    </audio>
-    <audio id="beepError" preload="auto" style="display:none;">
-        <source src="{{ asset('sounds/beep-error.mp3') }}" type="audio/mpeg">
-    </audio>
+    <!-- No audio files needed - beep sounds are generated via Web Audio API -->
 
     @push('scripts')
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -575,66 +569,115 @@
         let scannerTimeout = null;
         let soundEnabled = true;
         let recentScanCount = 0;
+        let audioCtx = null;
 
         // ============================================================
-        // DOM REFS
+        // DOM HELPERS
         // ============================================================
-        const cameraContainer = document.getElementById('camera-container');
-        const qrReaderContainer = document.getElementById('qr-reader-container');
-        const cameraPlaceholder = document.getElementById('cameraPlaceholder');
-        const cameraActiveControls = document.getElementById('cameraActiveControls');
-        const cameraOverlayLoading = document.getElementById('camera-overlay-loading');
-        const btnStartCamera = document.getElementById('btnStartCamera');
-        const btnStopCamera = document.getElementById('btnStopCamera');
-        const btnSwitchCamera = document.getElementById('btnSwitchCamera');
-        const cameraSelector = document.getElementById('camera-selector');
-        const btnCameraSelectShow = document.getElementById('camera-selector');
-        const btnToggleSound = document.getElementById('btnToggleSound');
-        const scannerBox = document.getElementById('scannerBox');
-        const visualIndicator = document.getElementById('visualIndicator');
-        const indicatorIcon = document.getElementById('indicatorIcon');
-        const statusTitle = document.getElementById('statusTitle');
-        const statusText = document.getElementById('statusText');
-        const tabCamera = document.getElementById('tabCamera');
-        const tabUsb = document.getElementById('tabUsb');
-        const cameraMode = document.getElementById('cameraMode');
-        const usbMode = document.getElementById('usbMode');
-        const usbScannerInput = document.getElementById('usb-scanner-input');
-        const recentScansList = document.getElementById('recentScansList');
-        const noScansYet = document.getElementById('noScansYet');
-        const profileBackdrop = document.getElementById('profileBackdrop');
-        const studentProfileContainer = document.getElementById('studentProfileContainer');
-        const beepSuccess = document.getElementById('beepSuccess');
-        const beepError = document.getElementById('beepError');
+        // The app layout renders the slot content in both a desktop container
+        // (d-none d-lg-flex) and a mobile container (d-lg-none).
+        // Bootstrap lg breakpoint = 992px.
+        // Using offsetParent is unreliable for initially-hidden elements (d-none),
+        // so we use window.innerWidth to pick the correct container instead.
+        function getEl(id) {
+            var isMobile = window.innerWidth < 992;
+            var mobileWrap = document.querySelector('.mobile-layout');
+            var desktopWrap = document.querySelector('.d-lg-flex.container-fluid');
+            var container = (isMobile && mobileWrap) ? mobileWrap
+                          : (desktopWrap ? desktopWrap : document.body);
+            var el = container.querySelector('[id="' + id + '"]');
+            if (el) return el;
+            return document.getElementById(id); // fallback
+        }
 
+        // ============================================================
+        // DOM REFS  (resolved at script run-time → correct for current viewport)
+        // ============================================================
+        const cameraContainer        = getEl('camera-container');
+        const qrReaderContainer      = getEl('qr-reader-container');
+        const cameraPlaceholder      = getEl('cameraPlaceholder');
+        const cameraActiveControls   = getEl('cameraActiveControls');
+        const cameraOverlayLoading   = getEl('camera-overlay-loading');
+        const btnStartCamera         = getEl('btnStartCamera');
+        const btnStopCamera          = getEl('btnStopCamera');
+        const btnSwitchCamera        = getEl('btnSwitchCamera');
+        const cameraSelector         = getEl('camera-selector');
+        const btnToggleSound         = getEl('btnToggleSound');
+        const scannerBox             = getEl('scannerBox');
+        const visualIndicator        = getEl('visualIndicator');
+        const indicatorIcon          = getEl('indicatorIcon');
+        const statusTitle            = getEl('statusTitle');
+        const statusText             = getEl('statusText');
+        const tabCamera              = getEl('tabCamera');
+        const tabUsb                 = getEl('tabUsb');
+        const cameraMode             = getEl('cameraMode');
+        const usbMode                = getEl('usbMode');
+        const usbScannerInput        = getEl('usb-scanner-input');
+        const recentScansList        = getEl('recentScansList');
+        const profileBackdrop        = getEl('profileBackdrop');
+        const studentProfileContainer= getEl('studentProfileContainer');
         // Profile fields
-        const profileAvatar = document.getElementById('profileAvatar');
-        const profileName = document.getElementById('profileName');
-        const profileNis = document.getElementById('profileNis');
-        const profileKelas = document.getElementById('profileKelas');
-        const profileJurusan = document.getElementById('profileJurusan');
-        const profileStatus = document.getElementById('profileStatus');
-        const profileWaktu = document.getElementById('profileWaktu');
+        const profileAvatar   = getEl('profileAvatar');
+        const profileName     = getEl('profileName');
+        const profileNis      = getEl('profileNis');
+        const profileKelas    = getEl('profileKelas');
+        const profileJurusan  = getEl('profileJurusan');
+        const profileStatus   = getEl('profileStatus');
+        const profileWaktu    = getEl('profileWaktu');
 
         // Live clock
         function updateClock() {
             var now = new Date();
             var dateOpts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('liveDate').innerText = now.toLocaleDateString('id-ID', dateOpts);
-            document.getElementById('liveTime').innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            var liveDateEl = document.getElementById('liveDate');
+            var liveTimeEl = document.getElementById('liveTime');
+            if (liveDateEl) liveDateEl.innerText = now.toLocaleDateString('id-ID', dateOpts);
+            if (liveTimeEl) liveTimeEl.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
         updateClock();
         setInterval(updateClock, 1000);
 
         // ============================================================
-        // SOUND
+        // SOUND - generated via Web Audio API, no files needed
         // ============================================================
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            // iOS/Android may suspend context until a user gesture resumes it
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
         function playBeep(success) {
             if (!soundEnabled) return;
             try {
-                var audio = success ? beepSuccess : beepError;
-                audio.currentTime = 0;
-                audio.play().catch(function(e) {});
+                var ctx = getAudioContext();
+                var oscillator = ctx.createOscillator();
+                var gainNode = ctx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                if (success) {
+                    // Two short rising tones for success
+                    oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+                    oscillator.frequency.setValueAtTime(1320, ctx.currentTime + 0.1);
+                    oscillator.type = 'sine';
+                    gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.35);
+                } else {
+                    // Low descending tone for error
+                    oscillator.frequency.setValueAtTime(440, ctx.currentTime);
+                    oscillator.frequency.setValueAtTime(220, ctx.currentTime + 0.15);
+                    oscillator.type = 'sawtooth';
+                    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.4);
+                }
             } catch(e) {}
         }
 
@@ -738,7 +781,7 @@
 
         function addToRecentFeed(data) {
             if (!data) return;
-            var noMsg = document.getElementById('noScansYet');
+            var noMsg = getEl('noScansYet');
             if (noMsg) noMsg.remove();
 
             var statusIcon = (data.status && data.status.toLowerCase() === 'terlambat')
@@ -755,11 +798,11 @@
             recentScansList.insertBefore(item, recentScansList.firstChild);
 
             if (data.status && data.status.toLowerCase() === 'terlambat') {
-                const telatEl = document.getElementById('mobile-stat-terlambat');
-                telatEl.innerText = parseInt(telatEl.innerText || 0) + 1;
+                const telatEl = getEl('mobile-stat-terlambat');
+                if (telatEl) telatEl.innerText = parseInt(telatEl.innerText || 0) + 1;
             } else {
-                const hadirEl = document.getElementById('mobile-stat-hadir');
-                hadirEl.innerText = parseInt(hadirEl.innerText || 0) + 1;
+                const hadirEl = getEl('mobile-stat-hadir');
+                if (hadirEl) hadirEl.innerText = parseInt(hadirEl.innerText || 0) + 1;
             }
         }
 
@@ -770,13 +813,17 @@
             if (method === currentMethod) return;
             currentMethod = method;
 
-            document.querySelectorAll('.method-tab').forEach(function(t) {
-                t.classList.remove('active');
-            });
+            // Only toggle tabs inside the same visible container
+            var visibleTab = getEl('tabCamera');
+            if (visibleTab) {
+                visibleTab.closest('.method-tabs').querySelectorAll('.method-tab').forEach(function(t) {
+                    t.classList.remove('active');
+                });
+            }
             if (method === 'camera') {
-                tabCamera.classList.add('active');
+                if (tabCamera) tabCamera.classList.add('active');
             } else {
-                tabUsb.classList.add('active');
+                if (tabUsb) tabUsb.classList.add('active');
             }
 
             if (method === 'camera') {
@@ -809,42 +856,72 @@
         // CAMERA ENGINE
         // ============================================================
         function enumerateCameras() {
-            return navigator.mediaDevices.enumerateDevices()
-                .then(function(devices) {
-                    availableCameras = devices.filter(function(d) {
-                        return d.kind === 'videoinput';
-                    });
-                    return availableCameras;
-                });
+            // Use Html5Qrcode.getCameras() which works better across mobile browsers
+            return Html5Qrcode.getCameras().then(function(cameras) {
+                availableCameras = cameras || [];
+                return availableCameras;
+            }).catch(function() {
+                availableCameras = [];
+                return availableCameras;
+            });
         }
 
         function populateCameraSelector() {
             cameraSelector.innerHTML = '';
             if (availableCameras.length <= 1) {
                 cameraSelector.classList.add('d-none');
-                btnCameraSelectShow.classList.add('d-none');
                 return;
             }
             cameraSelector.classList.remove('d-none');
-            btnCameraSelectShow.classList.remove('d-none');
 
             availableCameras.forEach(function(cam, idx) {
                 var opt = document.createElement('option');
-                opt.value = cam.deviceId;
+                // Html5Qrcode.getCameras() returns {id, label}, not {deviceId, label}
+                opt.value = cam.id;
                 opt.text = cam.label || ('Kamera ' + (idx + 1));
-                if (cam.deviceId === selectedCameraId) {
+                if (cam.id === selectedCameraId) {
                     opt.selected = true;
                 }
                 cameraSelector.appendChild(opt);
             });
         }
 
-        function getCameraConfig() {
-            if (selectedCameraId) {
-                return { deviceId: { exact: selectedCameraId } };
+        function applyMirrorFix() {
+            var videoEl = qrReaderContainer.querySelector('video');
+            if (!videoEl) return;
+
+            function forceNonMirror() {
+                var el = qrReaderContainer.querySelector('video');
+                if (!el) return;
+                var t = el.style.transform || '';
+                var wt = el.style.webkitTransform || '';
+                if (t.indexOf('scaleX(-') !== -1 || t.indexOf('scale(-1') !== -1 ||
+                    wt.indexOf('scaleX(-') !== -1 || wt.indexOf('scale(-1') !== -1) {
+                    el.style.setProperty('transform', 'scaleX(1)', 'important');
+                    el.style.setProperty('-webkit-transform', 'scaleX(1)', 'important');
+                    el.style.setProperty('-moz-transform', 'scaleX(1)', 'important');
+                }
             }
-            // Prefer environment (rear) camera with no mirror effect
-            return { facingMode: 'environment' };
+
+            forceNonMirror();
+
+            var mirrorObserver = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                        forceNonMirror();
+                    }
+                });
+            });
+            mirrorObserver.observe(videoEl, { attributes: true, attributeFilter: ['style'] });
+
+            if (window._nonmirrorInterval) clearInterval(window._nonmirrorInterval);
+            window._nonmirrorInterval = setInterval(function() {
+                if (!isCameraActive) {
+                    clearInterval(window._nonmirrorInterval);
+                    return;
+                }
+                forceNonMirror();
+            }, 1000);
         }
 
         function startCameraScanner() {
@@ -856,96 +933,71 @@
             cameraOverlayLoading.classList.add('show');
             cameraPlaceholder.style.display = 'none';
 
-            // Hapus container lama untuk mencegah double <video>
             qrReaderContainer.innerHTML = '';
+            // Html5Qrcode uses getElementById internally, which always finds the
+            // first element in the DOM (the hidden desktop copy).
+            // Give the VISIBLE container a temporary unique ID so the library
+            // injects the video stream into the correct (visible) element.
+            var qrScanId = 'qr-scan-active';
+            qrReaderContainer.id = qrScanId;
+            html5QrCode = new Html5Qrcode(qrScanId);
 
-            html5QrCode = new Html5Qrcode('qr-reader-container');
-
-            var config = getCameraConfig();
-
-            // Ukuran QR box proporsional ~65% dari lebar container
             var containerW = cameraContainer.offsetWidth;
             if (containerW < 200) containerW = 280;
             var qrSize = Math.round(containerW * 0.65);
 
-            html5QrCode.start(
-                config,
-                {
-                    fps: 10,
-                    qrbox: { width: qrSize, height: qrSize }
-                },
-                function(decodedText) {
-                    if (!isProcessing) {
-                        processScanValue(decodedText);
-                    }
-                },
-                function(err) {
-                    // ignore
+            // getCameras() triggers the permission prompt on mobile and returns real device IDs.
+            // Starting with a device ID string is more reliable than facingMode constraints
+            // across Android and iOS browsers.
+            Html5Qrcode.getCameras().then(function(cameras) {
+                if (!cameras || cameras.length === 0) {
+                    throw new Error('Tidak ada kamera yang ditemukan di perangkat ini');
                 }
-            ).then(function() {
+
+                availableCameras = cameras;
+                populateCameraSelector();
+
+                // Pick camera: use selectedCameraId if set, otherwise prefer rear camera
+                var cameraId = selectedCameraId;
+                if (!cameraId) {
+                    var rearCam = cameras.find(function(c) {
+                        var label = (c.label || '').toLowerCase();
+                        return label.includes('back') || label.includes('rear') ||
+                               label.includes('environment') || label.includes('belakang');
+                    });
+                    // On mobile, the last camera in the list is typically rear
+                    cameraId = rearCam ? rearCam.id : cameras[cameras.length - 1].id;
+                    selectedCameraId = cameraId;
+                    cameraSelector.value = cameraId;
+                }
+
+                return html5QrCode.start(
+                    cameraId,
+                    { fps: 10, qrbox: { width: qrSize, height: qrSize } },
+                    function(decodedText) {
+                        if (!isProcessing) {
+                            processScanValue(decodedText);
+                        }
+                    },
+                    function(err) { /* ignore scan errors */ }
+                );
+            }).then(function() {
                 isCameraActive = true;
                 cameraOverlayLoading.classList.remove('show');
-
-                // FORCE NON-MIRROR: html5-qrcode library sering set scaleX(-1) inline
-                function forceNonMirror() {
-                    var videoEl = qrReaderContainer.querySelector('video');
-                    if (!videoEl) return;
-                    // Cek apakah library telah set mirror
-                    var t = videoEl.style.transform || '';
-                    var wt = videoEl.style.webkitTransform || '';
-                    if (t.indexOf('scaleX(-1)') !== -1 || t.indexOf('scale(-1') !== -1 || 
-                        wt.indexOf('scaleX(-1)') !== -1 || wt.indexOf('scale(-1') !== -1 ||
-                        t.indexOf('scaleX(-') !== -1 || wt.indexOf('scaleX(-') !== -1) {
-                        videoEl.style.setProperty('transform', 'scaleX(1)');
-                        videoEl.style.setProperty('-webkit-transform', 'scaleX(1)');
-                        videoEl.style.setProperty('-moz-transform', 'scaleX(1)');
-                    }
-                    // Set CSS custom property to override any library magic
-                    videoEl.style.setProperty('--mirror', '1');
-                }
-
-                var videoEl = qrReaderContainer.querySelector('video');
-                if (videoEl) {
-                    forceNonMirror();
-                }
-
-                // MutationObserver: reset mirror inline style kapanpun library mengubahnya
-                if (videoEl) {
-                    var mirrorObserver = new MutationObserver(function(mutations) {
-                        mutations.forEach(function(mutation) {
-                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                                var t = videoEl.style.transform || '';
-                                var wt = videoEl.style.webkitTransform || '';
-                                if (t.indexOf('scaleX') !== -1 || t.indexOf('scale(-1') !== -1 || 
-                                    wt.indexOf('scaleX') !== -1 || wt.indexOf('scale(-1') !== -1 ||
-                                    t.indexOf('scaleX(-') !== -1 || wt.indexOf('scaleX(-') !== -1) {
-                                    videoEl.style.setProperty('transform', 'scaleX(1)', 'important');
-                                    videoEl.style.setProperty('-webkit-transform', 'scaleX(1)', 'important');
-                                    videoEl.style.setProperty('-moz-transform', 'scaleX(1)', 'important');
-                                }
-                            }
-                        });
-                    });
-                    mirrorObserver.observe(videoEl, { attributes: true, attributeFilter: ['style'] });
-                }
-
-                // Interval periodik sebagai fallback (library mungkin rewrite style terus)
-                if (window._nonmirrorInterval) clearInterval(window._nonmirrorInterval);
-                window._nonmirrorInterval = setInterval(function() {
-                    if (!isCameraActive) {
-                        clearInterval(window._nonmirrorInterval);
-                        return;
-                    }
-                    forceNonMirror();
-                }, 1000);
+                applyMirrorFix();
             }).catch(function(err) {
                 console.error('Camera start error:', err);
                 stopCameraScanner(true);
-                alert('Gagal mengakses kamera: ' + err.message);
+                var msg = (err && err.message) ? err.message
+                        : (typeof err === 'string' ? err : 'Periksa izin kamera di browser Anda');
+                cameraActiveControls.classList.remove('d-none');
+                updateScannerUI(false, 'Gagal Membuka Kamera', msg);
             });
         }
 
         function stopCameraScanner(resetUI) {
+            // Restore the original ID so getEl() / CSS work correctly after stop
+            if (qrReaderContainer) qrReaderContainer.id = 'qr-reader-container';
             if (html5QrCode) {
                 try {
                     html5QrCode.stop().then(function() {
@@ -976,10 +1028,10 @@
         btnSwitchCamera.addEventListener('click', function() {
             if (availableCameras.length <= 1) return;
             var currentIdx = availableCameras.findIndex(function(cam) {
-                return cam.deviceId === selectedCameraId;
+                return cam.id === selectedCameraId;
             });
             var nextIdx = (currentIdx + 1) % availableCameras.length;
-            selectedCameraId = availableCameras[nextIdx].deviceId;
+            selectedCameraId = availableCameras[nextIdx].id;
             cameraSelector.value = selectedCameraId;
 
             if (isCameraActive) {
@@ -1042,9 +1094,9 @@
         // ============================================================
         // INIT
         // ============================================================
-        enumerateCameras().then(function() {
-            populateCameraSelector();
-        });
+        // Camera permission is only requested when the user explicitly clicks Start.
+        // Do NOT call getCameras() here — it triggers a permission prompt on mobile
+        // before the user has indicated they want to use the camera.
     </script>
     @endpush
 </x-app-layout>
