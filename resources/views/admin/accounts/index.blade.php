@@ -73,10 +73,10 @@
                     @endif
 
                     <div class="col-auto ms-auto">
-                        <a href="{{ route('admin.accounts.index') }}" class="btn btn-sm btn-light border">
+                        <a href="{{ route('admin.accounts.index') }}" class="btn btn-light border">
                             <i class="bi bi-x-circle me-1"></i>Reset Filter
                         </a>
-                        <button type="submit" class="btn btn-sm btn-primary ms-1">
+                        <button type="submit" class="btn btn-primary ms-1">
                             <i class="bi bi-search me-1"></i>Cari
                         </button>
                     </div>
