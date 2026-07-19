@@ -1,7 +1,6 @@
 <x-app-layout>
     @section('title', 'Absensi Gerbang')
 
-    <!-- Style Override for Scan Page to feel immersive -->
     <style>
         .scan-container {
             min-height: calc(100vh - 120px);
@@ -18,6 +17,12 @@
         .scanner-card.error {
             border-color: var(--bs-danger);
             background-color: rgba(220, 53, 69, 0.05);
+        }
+        .scanner-card.loading {
+            border-color: var(--bs-warning);
+            background-color: rgba(255, 193, 7, 0.05);
+            pointer-events: none;
+            opacity: 0.7;
         }
         .visual-indicator {
             width: 120px;
@@ -43,385 +48,947 @@
             color: var(--bs-danger);
             transform: scale(1.1);
         }
-        #interactive-camera {
+        .visual-indicator.loading-state {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: var(--bs-warning);
+        }
+        /* Mode Tabs */
+        .method-tabs {
+            display: flex;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            background: #f8f9fa;
+        }
+        .method-tab {
+            flex: 1;
+            padding: 10px 16px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+            border: none;
+            background: transparent;
+            color: #6c757d;
+        }
+        .method-tab:hover {
+            background: rgba(var(--bs-primary-rgb), 0.05);
+        }
+        .method-tab.active {
+            background: #fff;
+            color: var(--bs-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .method-tab.active i {
+            color: var(--bs-primary);
+        }
+        .method-tab i {
+            font-size: 1.1rem;
+            margin-right: 6px;
+        }
+        /* Camera region */
+        .camera-region {
+            position: relative;
+        }
+        #camera-container {
+            position: relative;
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
+            margin: 0 auto;
             border-radius: 12px;
             overflow: hidden;
+            background: #000;
+            min-height: 240px;
+            aspect-ratio: 4 / 3;
+        }
+        #qr-reader-container {
+            position: absolute !important;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            border: none !important;
+            overflow: hidden;
+        }
+        #qr-reader-container video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            transform: none !important;
+            -webkit-transform: none !important;
+            display: block;
+        }
+        #qr-reader-container canvas {
+            display: none !important;
+        }
+        #qr-reader-container img {
+            display: none !important;
+        }
+        #camera-overlay-loading {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            border-radius: 12px;
             display: none;
-            margin: 0 auto;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        #camera-overlay-loading.show {
+            display: flex;
+        }
+        #camera-overlay-loading .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        /* Camera switch button (mobile floating) */
+        .btn-switch-camera {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 5;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border: none;
+            font-size: 1.2rem;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s;
+        }
+        .btn-switch-camera:hover {
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+        }
+        /* USB Scanner hidden input */
+        #usb-scanner-input {
+            position: fixed;
+            left: -9999px;
+            top: 0;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            z-index: -1;
+        }
+        /* Inline USB indicator */
+        .usb-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px;
+            background: #f0f9ff;
+            border: 1px dashed #0dcaf0;
+            border-radius: 12px;
+            color: #0aa2c0;
+        }
+        .usb-indicator .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: #0dcaf0;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        /* Camera dropdown */
+        #camera-selector {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 5;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            max-width: 180px;
+            backdrop-filter: blur(4px);
+        }
+        #camera-selector option {
+            background: #333;
+            color: #fff;
+        }
+        /* QR Scanner region overrides for html5-qrcode */
+        #qr-reader-container video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            transform: none !important;
+            -webkit-transform: none !important;
+        }
+        /* Recent scans */
+        .recent-scans-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .recent-scans-list .list-group-item {
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .recent-scans-list .list-group-item:hover {
+            background: rgba(var(--bs-primary-rgb), 0.03);
+        }
+        .recent-scans-list .list-group-item.active-scan {
+            border-left-color: var(--bs-success);
+            background: rgba(25, 135, 84, 0.05);
+        }
+        .recent-scans-list .list-group-item.rejected-scan {
+            border-left-color: var(--bs-danger);
+            background: rgba(220, 53, 69, 0.05);
+        }
+        /* Student profile card */
+        .profile-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            color: #fff;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .profile-card .profile-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .profile-card .profile-detail-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+        .profile-card .profile-detail-item .label {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+        .profile-card .profile-detail-item .value {
+            font-weight: 600;
+        }
+        /* Stok minimal list */
+        .minimal-list {
+            font-size: 0.9rem;
+        }
+        .minimal-list .list-group-item {
+            padding: 8px 12px;
+            border: none;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .minimal-list .list-group-item:last-child {
+            border-bottom: none;
+        }
+        /* Audio scan animation */
+        .scan-pulse {
+            animation: scannerPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes scannerPulse {
+            0% { box-shadow: 0 0 0 0 rgba(25,135,84,0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(25,135,84,0); }
+            100% { box-shadow: 0 0 0 0 rgba(25,135,84,0); }
+        }
+        /* Sound toggle */
+        .sound-toggle {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            z-index: 5;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s;
+        }
+        .sound-toggle:hover {
+            background: rgba(0,0,0,0.7);
+        }
+        /* Profile card backdrop for mobile */
+        .profile-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1040;
+            display: none;
+        }
+        .profile-backdrop.show {
+            display: block;
+        }
+        /* Responsive */
+        @media (max-width: 576px) {
+            #camera-container {
+                max-width: 100%;
+                border-radius: 8px;
+                aspect-ratio: 4 / 3;
+            }
+            .scanner-card {
+                padding: 16px !important;
+            }
+            .method-tab {
+                font-size: 0.8rem;
+                padding: 8px 10px;
+            }
+            .method-tab i {
+                font-size: 0.9rem;
+                margin-right: 4px;
+            }
+            .visual-indicator {
+                width: 80px;
+                height: 80px;
+                font-size: 0.9rem;
+            }
+            .visual-indicator i {
+                font-size: 1.5rem !important;
+            }
+            #camera-selector {
+                font-size: 0.7rem;
+                max-width: 140px;
+                padding: 3px 8px;
+            }
+            .btn-switch-camera {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
         }
     </style>
 
-    <div class="row scan-container align-items-stretch g-4">
-        <!-- Left Side: Scanner Control & Camera -->
-        <div class="col-md-6 d-flex flex-column justify-content-between">
-            <div class="card glass-card border-0 h-100 p-4">
-                <div>
-                    <h3 class="fw-bold tracking-tight text-dark mb-1">Absensi Gerbang Masuk</h3>
-                    <p class="text-muted">Gunakan USB Barcode Scanner (auto-focus) atau Kamera untuk memindai QR Code siswa.</p>
+    <div class="container-fluid px-2 px-sm-3 scan-container py-3">
+        <!-- Header -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-qr-code-scan me-2"></i>Absensi Gerbang</h5>
+            <div class="d-flex align-items-center gap-2">
+                <div class="text-end small text-muted d-none d-sm-block" id="liveClock">
+                    <div id="liveDate" class="fw-semibold"></div>
+                    <div id="liveTime" class="fw-bold" style="font-size: 1.2rem;"></div>
                 </div>
-
-                <div class="my-4 text-center">
-                    <!-- Scanner Box / Visual Feedback -->
-                    <div id="scanner-box" class="scanner-card rounded-4 p-4 text-center">
-                        <div id="visual-indicator" class="visual-indicator idle">
-                            <i id="indicator-icon" class="bi bi-qr-code-scan fs-1"></i>
-                        </div>
-                        <h4 id="status-title" class="fw-bold text-dark mb-2">Siap Memindai</h4>
-                        <p id="status-text" class="text-muted fs-7 mb-0">Dekatkan kartu barcode siswa ke scanner atau posisikan QR code pada kamera.</p>
-                    </div>
-
-                    <!-- Camera Scanner Container -->
-                    <div class="mt-4">
-                        <div id="interactive-camera"></div>
-                        <button type="button" id="btn-toggle-camera" class="btn btn-outline-primary fw-semibold btn-sm mt-3">
-                            <i class="bi bi-camera me-1"></i> Aktifkan Kamera QR
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Input Field (Hidden or Autofocused for USB Scanner keyboard emulation) -->
-                <form id="scan-form" class="mt-auto">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-barcode"></i></span>
-                        <input type="text" name="scan_value" id="scan_value" class="form-control border-start-0" placeholder="Input Barcode/QR manual..." autocomplete="off">
-                        <button type="submit" class="btn btn-primary fw-semibold">Proses</button>
-                    </div>
-                    <div class="form-text fs-8 text-center mt-2 text-muted">
-                        <i class="bi bi-lightning-fill text-warning me-1"></i> Input otomatis terfokus untuk kelancaran USB Scanner.
-                    </div>
-                </form>
             </div>
         </div>
 
-        <!-- Right Side: Student Profile & History Feed -->
-        <div class="col-md-6 d-flex flex-column">
-            <!-- Student Detail Display Panel -->
-            <div class="card glass-card border-0 mb-4 p-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center">
-                <div id="student-profile" style="display: none;">
-                    <img id="student-avatar" src="" alt="Foto Siswa" class="rounded-circle object-fit-cover shadow-sm mb-3 border border-3 border-white" style="width: 140px; height: 140px; display: none;">
-                    <div id="student-avatar-placeholder" class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm mb-3 border border-3 border-white mx-auto" style="width: 140px; height: 140px; font-size: 2.5rem;">
-                        -
-                    </div>
-                    <h4 id="student-name" class="fw-bold text-dark mb-1">-</h4>
-                    <p id="student-class" class="text-primary fw-semibold mb-2">-</p>
-                    <span id="student-nis" class="text-muted fs-7 mb-3 d-block">-</span>
-
-                    <div class="d-flex justify-content-center gap-3">
-                        <div class="bg-light border rounded px-3 py-2">
-                            <span class="fs-8 text-muted d-block text-uppercase">Waktu Scan</span>
-                            <strong id="scan-time" class="text-dark fs-5">-</strong>
+        <div class="row g-3">
+            <!-- LEFT: Scanner -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-3 p-sm-4">
+                        <!-- M To -->
+                        <div class="method-tabs mb-3" role="group">
+                            <button type="button" class="method-tab active" id="tabCamera">
+                                <i class="bi bi-camera-video"></i> Kamera
+                            </button>
+                            <button type="button" class="method-tab" id="tabUsb">
+                                <i class="bi bi-usb-symbol"></i> USB Scanner
+                            </button>
                         </div>
-                        <div class="bg-light border rounded px-3 py-2">
-                            <span class="fs-8 text-muted d-block text-uppercase">Status</span>
-                            <strong id="scan-status" class="text-dark fs-5">-</strong>
+
+                        <!-- Camera Mode -->
+                        <div id="cameraMode">
+                            <div class="camera-region">
+                                <div id="camera-container">
+                                    <div id="qr-reader-container">
+                                        <!-- html5-qrcode injects <video> here -->
+                                    </div>
+                                    <div id="camera-overlay-loading">
+                                        <div class="spinner-border text-light" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <select id="camera-selector" class="d-none"></select>
+                                    <button type="button" id="btnSwitchCamera" class="btn-switch-camera" title="Ganti Kamera">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
+                                    <button type="button" id="btnToggleSound" class="sound-toggle" title="Suara">
+                                        <i class="bi bi-volume-up"></i>
+                                    </button>
+                                </div>
+                                <div id="cameraPlaceholder" class="text-center py-5" style="background:#f8f9fa; border-radius: 12px;">
+                                    <i class="bi bi-camera-video-off display-4 text-muted mb-3 d-block"></i>
+                                    <h6 class="text-muted">Kamera belum aktif</h6>
+                                    <p class="text-muted small">Tekan tombol Start untuk mengaktifkan kamera</p>
+                                </div>
+                                <div class="d-flex gap-2 mt-3 justify-content-center">
+                                    <button id="btnStartCamera" class="btn btn-primary btn-sm px-4">
+                                        <i class="bi bi-play-fill"></i> Start
+                                    </button>
+                                    <button id="btnStopCamera" class="btn btn-outline-danger btn-sm px-4 d-none">
+                                        <i class="bi bi-stop-fill"></i> Stop
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Camera Status & controls -->
+                            <div id="cameraActiveControls" class="d-none mt-3">
+                                <!-- Scanner Status Card -->
+                                <div class="scanner-card rounded-4 p-4 text-center" id="scannerBox">
+                                    <div class="visual-indicator idle" id="visualIndicator">
+                                        <i class="bi bi-qr-code-scan fs-1" id="indicatorIcon"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-1" id="statusTitle">Siap Memindai</h6>
+                                    <p class="text-muted small mb-0" id="statusText">Arahkan QR Code ke kamera untuk scan otomatis.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- USB Mode -->
+                        <div id="usbMode" style="display:none;">
+                            <div class="usb-indicator">
+                                <div class="pulse-dot"></div>
+                                <div>
+                                    <strong>USB Scanner Aktif</strong><br>
+                                    <small class="text-muted">Scan QR Code menggunakan USB Scanner...</small>
+                                </div>
+                            </div>
+                            <input type="text" id="usb-scanner-input" autocomplete="off" readonly>
                         </div>
                     </div>
-                </div>
-
-                <div id="profile-idle-state" class="text-muted">
-                    <i class="bi bi-person-bounding-box text-light-emphasis fs-1 d-block mb-3"></i>
-                    <p class="mb-0">Profil siswa yang sukses scan akan ditampilkan di sini.</p>
                 </div>
             </div>
 
-            <!-- Recent Scans Mini Feed -->
-            <div class="card glass-card border-0 p-4" style="height: 250px;">
-                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-clock-history me-1"></i> Scan Terakhir Hari Ini</h6>
-                <div id="recent-scans-list" class="overflow-y-auto flex-grow-1" style="max-height: 160px;">
-                    <div class="text-center py-4 text-muted fs-8" id="recent-scans-empty">
-                        Belum ada riwayat scan untuk sesi ini.
+            <!-- RIGHT: Recent Scans + Stats -->
+            <div class="col-lg-4">
+                <!-- Mini Stats -->
+                <div class="row g-2 mb-3">
+                    <div class="col-4">
+                        <div class="card border-0 shadow-sm text-center py-2 bg-success-subtle">
+                            <div class="fw-bold text-success" id="mobile-stat-hadir">0</div>
+                            <small class="text-muted">Hadir</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card border-0 shadow-sm text-center py-2 bg-warning-subtle">
+                            <div class="fw-bold text-warning" id="mobile-stat-terlambat">0</div>
+                            <small class="text-muted">Terlambat</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card border-0 shadow-sm text-center py-2 bg-danger-subtle">
+                            <div class="fw-bold text-danger" id="mobile-stat-tidak-terdaftar">0</div>
+                            <small class="text-muted">Tidak Terdaftar</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Student Profile Card -->
+                <div id="studentProfileContainer" style="display:none;">
+                    <div class="profile-card" id="studentProfileCard">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="profile-avatar" id="profileAvatar">A</div>
+                            <div>
+                                <h6 class="mb-0 fw-bold" id="profileName">-</h6>
+                                <small id="profileNis" class="opacity-75">-</small>
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="profile-detail-item">
+                                    <div class="label">Kelas</div>
+                                    <div class="value" id="profileKelas">-</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="profile-detail-item">
+                                    <div class="label">Jurusan</div>
+                                    <div class="value" id="profileJurusan">-</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="profile-detail-item">
+                                    <div class="label">Status</div>
+                                    <div class="value" id="profileStatus">-</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="profile-detail-item">
+                                    <div class="label">Waktu</div>
+                                    <div class="value" id="profileWaktu">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Scans -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-bottom-0 pt-3">
+                        <h6 class="fw-bold mb-0"><i class="bi bi-clock-history me-1"></i>Scan Terbaru</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="recent-scans-list list-group list-group-flush minimal-list" id="recentScansList">
+                            <div class="list-group-item text-center text-muted py-4" id="noScansYet">
+                                <i class="bi bi-inbox display-6 d-block mb-2"></i>
+                                <small>Belum ada scan</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Mobile Gate Grid (only on <768px) --}}
-    <div class="d-block d-md-none mobile-page-content" style="padding:0; margin-top:0;">
-        <div class="mobile-gate-grid">
-            {{-- Scanner --}}
-            <div class="gate-card gate-scanner" id="mobile-gate-scanner">
-                <div class="gate-card-title">Scanner</div>
-                <div class="scanner-placeholder">
-                    <div class="scanner-icon"><i class="bi bi-qr-code-scan"></i></div>
-                    <div class="scanner-text">Arahkan QR Code ke kamera atau scan barcode</div>
-                </div>
-            </div>
+    <!-- Profile Backdrop for mobile -->
+    <div class="profile-backdrop" id="profileBackdrop" onclick="hideStudentProfile()"></div>
 
-            {{-- Result --}}
-            <div class="gate-card gate-result" id="mobile-gate-result">
-                <div class="gate-card-title">Hasil Scan</div>
-                <div id="mobile-gate-result-content">
-                    <div class="result-profile">
-                        <div class="result-avatar"><i class="bi bi-person"></i></div>
-                        <div class="result-info">
-                            <div class="result-name" id="mobile-result-name">-</div>
-                            <div class="result-class" id="mobile-result-class">-</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Audio Beep -->
+    <audio id="beepSuccess" preload="auto" style="display:none;">
+        <source src="{{ asset('sounds/beep-success.mp3') }}" type="audio/mpeg">
+    </audio>
+    <audio id="beepError" preload="auto" style="display:none;">
+        <source src="{{ asset('sounds/beep-error.mp3') }}" type="audio/mpeg">
+    </audio>
 
-            {{-- Status --}}
-            <div class="gate-card gate-status" id="mobile-gate-status">
-                <div class="gate-card-title">Status</div>
-                <div class="status-item">
-                    <span class="status-label">Status Scan</span>
-                    <span class="status-badge badge bg-secondary" id="mobile-status-badge">Menunggu</span>
-                </div>
-                <div class="status-item">
-                    <span class="status-label">Waktu</span>
-                    <span class="status-label fw-semibold" id="mobile-scan-time">-</span>
-                </div>
-            </div>
-
-            {{-- Statistics --}}
-            <div class="gate-card gate-stats" id="mobile-gate-stats">
-                <div class="gate-card-title">Statistik</div>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-num" id="mobile-stat-hadir">0</div>
-                        <div class="stat-label">Hadir</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-num" id="mobile-stat-terlambat">0</div>
-                        <div class="stat-label">Telat</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Include html5-qrcode library for camera scanning -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-
+    @push('scripts')
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const scanInput = document.getElementById('scan_value');
-            const scanForm = document.getElementById('scan-form');
-            const scannerBox = document.getElementById('scanner-box');
-            const visualIndicator = document.getElementById('visual-indicator');
-            const indicatorIcon = document.getElementById('indicator-icon');
-            const statusTitle = document.getElementById('status-title');
-            const statusText = document.getElementById('status-text');
+        // ============================================================
+        // STATE
+        // ============================================================
+        let html5QrCode = null;
+        let isCameraActive = false;
+        let isProcessing = false;
+        let selectedCameraId = null;
+        let currentMethod = 'camera';
+        let availableCameras = [];
+        let scannerTimeout = null;
+        let soundEnabled = true;
+        let recentScanCount = 0;
 
-            // Student profile nodes
-            const profileIdle = document.getElementById('profile-idle-state');
-            const studentProfile = document.getElementById('student-profile');
-            const studentAvatar = document.getElementById('student-avatar');
-            const studentAvatarPlaceholder = document.getElementById('student-avatar-placeholder');
-            const studentName = document.getElementById('student-name');
-            const studentClass = document.getElementById('student-class');
-            const studentNis = document.getElementById('student-nis');
-            const scanTime = document.getElementById('scan-time');
-            const scanStatus = document.getElementById('scan-status');
+        // ============================================================
+        // DOM REFS
+        // ============================================================
+        const cameraContainer = document.getElementById('camera-container');
+        const qrReaderContainer = document.getElementById('qr-reader-container');
+        const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+        const cameraActiveControls = document.getElementById('cameraActiveControls');
+        const cameraOverlayLoading = document.getElementById('camera-overlay-loading');
+        const btnStartCamera = document.getElementById('btnStartCamera');
+        const btnStopCamera = document.getElementById('btnStopCamera');
+        const btnSwitchCamera = document.getElementById('btnSwitchCamera');
+        const cameraSelector = document.getElementById('camera-selector');
+        const btnCameraSelectShow = document.getElementById('camera-selector');
+        const btnToggleSound = document.getElementById('btnToggleSound');
+        const scannerBox = document.getElementById('scannerBox');
+        const visualIndicator = document.getElementById('visualIndicator');
+        const indicatorIcon = document.getElementById('indicatorIcon');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusText = document.getElementById('statusText');
+        const tabCamera = document.getElementById('tabCamera');
+        const tabUsb = document.getElementById('tabUsb');
+        const cameraMode = document.getElementById('cameraMode');
+        const usbMode = document.getElementById('usbMode');
+        const usbScannerInput = document.getElementById('usb-scanner-input');
+        const recentScansList = document.getElementById('recentScansList');
+        const noScansYet = document.getElementById('noScansYet');
+        const profileBackdrop = document.getElementById('profileBackdrop');
+        const studentProfileContainer = document.getElementById('studentProfileContainer');
+        const beepSuccess = document.getElementById('beepSuccess');
+        const beepError = document.getElementById('beepError');
 
-            // Recent scan feed
-            const recentScansList = document.getElementById('recent-scans-list');
-            const recentScansEmpty = document.getElementById('recent-scans-empty');
+        // Profile fields
+        const profileAvatar = document.getElementById('profileAvatar');
+        const profileName = document.getElementById('profileName');
+        const profileNis = document.getElementById('profileNis');
+        const profileKelas = document.getElementById('profileKelas');
+        const profileJurusan = document.getElementById('profileJurusan');
+        const profileStatus = document.getElementById('profileStatus');
+        const profileWaktu = document.getElementById('profileWaktu');
 
-            // Web Audio API Synthesizer (Beep maker)
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // Live clock
+        function updateClock() {
+            var now = new Date();
+            var dateOpts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('liveDate').innerText = now.toLocaleDateString('id-ID', dateOpts);
+            document.getElementById('liveTime').innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
 
-            function playBeep(success = true) {
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
+        // ============================================================
+        // SOUND
+        // ============================================================
+        function playBeep(success) {
+            if (!soundEnabled) return;
+            try {
+                var audio = success ? beepSuccess : beepError;
+                audio.currentTime = 0;
+                audio.play().catch(function(e) {});
+            } catch(e) {}
+        }
 
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
+        btnToggleSound.addEventListener('click', function() {
+            soundEnabled = !soundEnabled;
+            btnToggleSound.innerHTML = soundEnabled
+                ? '<i class="bi bi-volume-up"></i>'
+                : '<i class="bi bi-volume-mute"></i>';
+        });
 
-                if (success) {
-                    // Quick high-pitch beep
-                    osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-                    osc.start(audioCtx.currentTime);
-                    osc.stop(audioCtx.currentTime + 0.15);
-                } else {
-                    // Sawtooth error buzz
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(120, audioCtx.currentTime); // low pitch
-                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
-                    osc.start(audioCtx.currentTime);
-                    osc.stop(audioCtx.currentTime + 0.35);
-                }
+        // ============================================================
+        // SCAN PROCESSING
+        // ============================================================
+        function processScanValue(value) {
+            if (isProcessing) return;
+            isProcessing = true;
+
+            scannerBox.className = 'scanner-card rounded-4 p-4 text-center loading';
+            visualIndicator.className = 'visual-indicator loading-state';
+            indicatorIcon.className = 'bi bi-arrow-repeat fs-1 spinner-inline';
+            statusTitle.innerText = 'Memproses...';
+            statusText.innerText = 'Sedang mencocokkan data absensi siswa...';
+
+            if (isCameraActive) {
+                cameraOverlayLoading.classList.add('show');
             }
 
-            // Always keep input focused for USB barcode scanner keyboard emulation
-            function focusInput() {
-                scanInput.focus();
-            }
-            focusInput();
-            document.addEventListener('click', focusInput);
-
-            // Audio Activation trigger on first interaction
-            document.addEventListener('keydown', function() {
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
+            fetch("{{ route('admin.attendance.scan.post') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ scan_value: value })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.message) });
                 }
-            }, { once: true });
-
-            // Handle Scan Submit
-            scanForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const val = scanInput.value.trim();
-                if (!val) return;
-
-                processScanValue(val);
-                scanInput.value = '';
+                return response.json();
+            })
+            .then(data => {
+                playBeep(true);
+                updateScannerUI(true, 'Absensi Berhasil', data.message || 'Scan berhasil');
+                showStudentProfile(data.data);
+                addToRecentFeed(data.data);
+            })
+            .catch(err => {
+                playBeep(false);
+                updateScannerUI(false, 'Absensi Gagal', err.message || 'Terjadi kesalahan');
+            })
+            .finally(() => {
+                isProcessing = false;
+                cameraOverlayLoading.classList.remove('show');
+                if (scannerTimeout) clearTimeout(scannerTimeout);
+                scannerTimeout = setTimeout(() => {
+                    resetScannerUI();
+                }, 3500);
             });
+        }
 
-            function processScanValue(value) {
-                // Update UI to processing state
-                statusTitle.innerText = "Memproses...";
-                statusText.innerText = "Sedang mencocokkan data absensi siswa...";
+        function updateScannerUI(success, title, message) {
+            scannerBox.className = 'scanner-card rounded-4 p-4 text-center ' + (success ? 'active' : 'error');
+            visualIndicator.className = 'visual-indicator ' + (success ? 'success' : 'error');
+            indicatorIcon.className = success ? 'bi bi-check-circle fs-1' : 'bi bi-x-circle fs-1';
+            statusTitle.innerText = title;
+            statusText.innerText = message;
+        }
 
-                fetch("{{ route('admin.attendance.scan.post') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ scan_value: value })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw new Error(err.message) });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Success Feedback
-                    playBeep(true);
-                    updateScannerUI(true, "Absensi Berhasil", data.message);
-                    showStudentProfile(data.data);
-                    addToRecentFeed(data.data);
-                })
-                .catch(err => {
-                    // Error Feedback
-                    playBeep(false);
-                    updateScannerUI(false, "Absensi Gagal", err.message);
-                })
-                .finally(() => {
-                    setTimeout(() => {
-                        resetScannerUI();
-                    }, 3000);
+        function resetScannerUI() {
+            scannerBox.className = 'scanner-card rounded-4 p-4 text-center';
+            visualIndicator.className = 'visual-indicator idle';
+            indicatorIcon.className = 'bi bi-qr-code-scan fs-1';
+            if (currentMethod === 'camera') {
+                statusTitle.innerText = 'Siap Memindai';
+                statusText.innerText = 'Arahkan QR Code ke kamera untuk scan otomatis.';
+            } else {
+                statusTitle.innerText = 'Siap Memindai';
+                statusText.innerText = 'Scan QR Code menggunakan USB Scanner.';
+            }
+        }
+
+        function showStudentProfile(data) {
+            if (!data) return;
+            studentProfileContainer.style.display = 'block';
+            profileAvatar.innerText = (data.nama || '?').charAt(0).toUpperCase();
+            profileName.innerText = data.nama || '-';
+            profileNis.innerText = data.nis || '-';
+            profileKelas.innerText = data.kelas || '-';
+            profileJurusan.innerText = data.jurusan || '-';
+            profileStatus.innerText = data.status || '-';
+            var now = new Date();
+            profileWaktu.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            profileBackdrop.classList.add('show');
+        }
+
+        function hideStudentProfile() {
+            profileBackdrop.classList.remove('show');
+            studentProfileContainer.style.display = 'none';
+        }
+
+        function addToRecentFeed(data) {
+            if (!data) return;
+            var noMsg = document.getElementById('noScansYet');
+            if (noMsg) noMsg.remove();
+
+            var statusIcon = (data.status && data.status.toLowerCase() === 'terlambat')
+                ? '<i class="bi bi-exclamation-triangle text-warning"></i>'
+                : '<i class="bi bi-check-circle text-success"></i>';
+
+            var item = document.createElement('div');
+            item.className = 'list-group-item d-flex align-items-center gap-2';
+            item.innerHTML = '<div class="flex-shrink-0">' + statusIcon + '</div>' +
+                '<div class="flex-grow-1"><strong>' + (data.nama || 'Unknown') + '</strong><br><small class="text-muted">' +
+                (data.nis || '-') + ' &middot; ' + (data.kelas || '-') + '</small></div>' +
+                '<small class="text-nowrap text-muted">' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + '</small>';
+
+            recentScansList.insertBefore(item, recentScansList.firstChild);
+
+            if (data.status && data.status.toLowerCase() === 'terlambat') {
+                const telatEl = document.getElementById('mobile-stat-terlambat');
+                telatEl.innerText = parseInt(telatEl.innerText || 0) + 1;
+            } else {
+                const hadirEl = document.getElementById('mobile-stat-hadir');
+                hadirEl.innerText = parseInt(hadirEl.innerText || 0) + 1;
+            }
+        }
+
+        // ============================================================
+        // TAB SWITCHING
+        // ============================================================
+        function switchMethod(method) {
+            if (method === currentMethod) return;
+            currentMethod = method;
+
+            document.querySelectorAll('.method-tab').forEach(function(t) {
+                t.classList.remove('active');
+            });
+            if (method === 'camera') {
+                tabCamera.classList.add('active');
+            } else {
+                tabUsb.classList.add('active');
+            }
+
+            if (method === 'camera') {
+                usbMode.style.display = 'none';
+                cameraMode.style.display = 'block';
+                usbScannerInput.blur();
+                usbScannerInput.value = '';
+                resetScannerUI();
+            } else {
+                cameraMode.style.display = 'none';
+                usbMode.style.display = 'block';
+                if (html5QrCode) {
+                    stopCameraScanner(false);
+                }
+                setTimeout(function() {
+                    usbScannerInput.focus();
+                }, 100);
+                resetScannerUI();
+            }
+        }
+
+        tabCamera.addEventListener('click', function() {
+            switchMethod('camera');
+        });
+        tabUsb.addEventListener('click', function() {
+            switchMethod('usb');
+        });
+
+        // ============================================================
+        // CAMERA ENGINE
+        // ============================================================
+        function enumerateCameras() {
+            return navigator.mediaDevices.enumerateDevices()
+                .then(function(devices) {
+                    availableCameras = devices.filter(function(d) {
+                        return d.kind === 'videoinput';
+                    });
+                    return availableCameras;
                 });
+        }
+
+        function populateCameraSelector() {
+            cameraSelector.innerHTML = '';
+            if (availableCameras.length <= 1) {
+                cameraSelector.classList.add('d-none');
+                btnCameraSelectShow.classList.add('d-none');
+                return;
             }
+            cameraSelector.classList.remove('d-none');
+            btnCameraSelectShow.classList.remove('d-none');
 
-            function updateScannerUI(success, title, message) {
-                scannerBox.className = `scanner-card rounded-4 p-4 text-center ${success ? 'active' : 'error'}`;
-                visualIndicator.className = `visual-indicator ${success ? 'success' : 'error'}`;
-                indicatorIcon.className = success ? 'bi bi-check-circle fs-1' : 'bi bi-x-circle fs-1';
-                statusTitle.innerText = title;
-                statusText.innerText = message;
-            }
-
-            function resetScannerUI() {
-                scannerBox.className = 'scanner-card rounded-4 p-4 text-center';
-                visualIndicator.className = 'visual-indicator idle';
-                indicatorIcon.className = 'bi bi-qr-code-scan fs-1';
-                statusTitle.innerText = "Siap Memindai";
-                statusText.innerText = "Dekatkan kartu barcode siswa ke scanner atau posisikan QR code pada kamera.";
-            }
-
-            function showStudentProfile(data) {
-                profileIdle.style.display = 'none';
-                studentProfile.style.display = 'block';
-
-                if (data.photo) {
-                    studentAvatar.src = data.photo;
-                    studentAvatar.style.display = 'block';
-                    studentAvatarPlaceholder.style.display = 'none';
-                } else {
-                    studentAvatar.style.display = 'none';
-                    studentAvatarPlaceholder.innerText = data.name.substring(0, 2).toUpperCase();
-                    studentAvatarPlaceholder.style.display = 'flex';
+            availableCameras.forEach(function(cam, idx) {
+                var opt = document.createElement('option');
+                opt.value = cam.deviceId;
+                opt.text = cam.label || ('Kamera ' + (idx + 1));
+                if (cam.deviceId === selectedCameraId) {
+                    opt.selected = true;
                 }
-
-                studentName.innerText = data.name;
-                studentClass.innerText = data.class;
-                studentNis.innerText = `NIS: ${data.nis}`;
-                scanTime.innerText = data.time;
-                scanStatus.innerText = data.status;
-
-                // Color based on status
-                if (data.status.toLowerCase() === 'terlambat') {
-                    scanStatus.className = "text-danger fs-5";
-                } else {
-                    scanStatus.className = "text-success fs-5";
-                }
-            }
-
-            function addToRecentFeed(data) {
-                recentScansEmpty.style.display = 'none';
-                
-                const item = document.createElement('div');
-                item.className = 'd-flex align-items-center justify-content-between p-2 mb-2 bg-light rounded border border-start-3 ' + 
-                    (data.status.toLowerCase() === 'terlambat' ? 'border-start-danger' : 'border-start-success');
-                
-                item.innerHTML = `
-                    <div>
-                        <span class="fw-semibold text-dark fs-7 d-block">${data.name}</span>
-                        <span class="text-muted fs-8">${data.class} &middot; NIS: ${data.nis}</span>
-                    </div>
-                    <div class="text-end">
-                        <span class="badge ${data.status.toLowerCase() === 'terlambat' ? 'bg-danger' : 'bg-success'} fs-8 d-block mb-1">${data.status}</span>
-                        <span class="text-muted fs-8">${data.time} WIB</span>
-                    </div>
-                `;
-
-                recentScansList.insertBefore(item, recentScansList.firstChild);
-            }
-
-            // HTML5 Camera QR Code Scanner setup
-            let html5QrcodeScanner = null;
-            const btnToggleCamera = document.getElementById('btn-toggle-camera');
-            const interactiveCamera = document.getElementById('interactive-camera');
-
-            btnToggleCamera.addEventListener('click', function() {
-                if (html5QrcodeScanner) {
-                    // Stop camera
-                    html5QrcodeScanner.stop().then(() => {
-                        html5QrcodeScanner = null;
-                        interactiveCamera.style.display = 'none';
-                        btnToggleCamera.innerHTML = '<i class="bi bi-camera me-1"></i> Aktifkan Kamera QR';
-                    }).catch(err => {
-                        console.error("Gagal menghentikan kamera: ", err);
-                    });
-                } else {
-                    // Start camera
-                    interactiveCamera.style.display = 'block';
-                    btnToggleCamera.innerHTML = '<i class="bi bi-camera-video-off me-1"></i> Matikan Kamera';
-                    
-                    html5QrcodeScanner = new Html5Qrcode("interactive-camera");
-                    html5QrcodeScanner.start(
-                        { facingMode: "environment" },
-                        {
-                            fps: 10,
-                            qrbox: { width: 250, height: 250 }
-                        },
-                        (decodedText) => {
-                            // On scan success
-                            processScanValue(decodedText);
-                        },
-                        (errorMessage) => {
-                            // ignore console spam on idle frames
-                        }
-                    ).catch(err => {
-                        console.error("Gagal mengaktifkan kamera: ", err);
-                        alert("Kamera gagal diakses. Pastikan izin kamera telah diberikan.");
-                        interactiveCamera.style.display = 'none';
-                        btnToggleCamera.innerHTML = '<i class="bi bi-camera me-1"></i> Aktifkan Kamera QR';
-                    });
-                }
+                cameraSelector.appendChild(opt);
             });
+        }
+
+        function getCameraConfig() {
+            if (selectedCameraId) {
+                return { deviceId: { exact: selectedCameraId } };
+            }
+            // Prefer environment (rear) camera with no mirror effect
+            return { facingMode: 'environment' };
+        }
+
+        function startCameraScanner() {
+            if (isCameraActive) return;
+
+            btnStartCamera.classList.add('d-none');
+            btnStopCamera.classList.remove('d-none');
+            cameraActiveControls.classList.remove('d-none');
+            cameraOverlayLoading.classList.add('show');
+            cameraPlaceholder.style.display = 'none';
+
+            // Hapus container lama untuk mencegah double <video>
+            qrReaderContainer.innerHTML = '';
+
+            html5QrCode = new Html5Qrcode('qr-reader-container');
+
+            var config = getCameraConfig();
+
+            // Ukuran QR box proporsional ~65% dari lebar container
+            var containerW = cameraContainer.offsetWidth;
+            if (containerW < 200) containerW = 280;
+            var qrSize = Math.round(containerW * 0.65);
+
+            html5QrCode.start(
+                config,
+                {
+                    fps: 10,
+                    qrbox: { width: qrSize, height: qrSize }
+                },
+                function(decodedText) {
+                    if (!isProcessing) {
+                        processScanValue(decodedText);
+                    }
+                },
+                function(err) {
+                    // ignore
+                }
+            ).then(function() {
+                isCameraActive = true;
+                cameraOverlayLoading.classList.remove('show');
+                // Hapus mirror jika ada CSS transform dari html5-qrcode
+                var videoEl = qrReaderContainer.querySelector('video');
+                if (videoEl) {
+                    videoEl.style.transform = 'none';
+                    videoEl.style.webkitTransform = 'none';
+                }
+            }).catch(function(err) {
+                console.error('Camera start error:', err);
+                stopCameraScanner(true);
+                alert('Gagal mengakses kamera: ' + err.message);
+            });
+        }
+
+        function stopCameraScanner(resetUI) {
+            if (html5QrCode) {
+                try {
+                    html5QrCode.stop().then(function() {
+                        html5QrCode.clear();
+                        html5QrCode = null;
+                    }).catch(function(e) {});
+                } catch(e) {}
+            }
+            isCameraActive = false;
+            cameraOverlayLoading.classList.remove('show');
+
+            if (resetUI !== false) {
+                btnStartCamera.classList.remove('d-none');
+                btnStopCamera.classList.add('d-none');
+                cameraActiveControls.classList.add('d-none');
+                cameraPlaceholder.style.display = 'block';
+            }
+        }
+
+        btnStartCamera.addEventListener('click', function() {
+            startCameraScanner();
+        });
+
+        btnStopCamera.addEventListener('click', function() {
+            stopCameraScanner(true);
+        });
+
+        btnSwitchCamera.addEventListener('click', function() {
+            if (availableCameras.length <= 1) return;
+            var currentIdx = availableCameras.findIndex(function(cam) {
+                return cam.deviceId === selectedCameraId;
+            });
+            var nextIdx = (currentIdx + 1) % availableCameras.length;
+            selectedCameraId = availableCameras[nextIdx].deviceId;
+            cameraSelector.value = selectedCameraId;
+
+            if (isCameraActive) {
+                stopCameraScanner(false);
+                setTimeout(function() {
+                    startCameraScanner();
+                }, 300);
+            }
+        });
+
+        cameraSelector.addEventListener('change', function() {
+            selectedCameraId = this.value;
+            if (isCameraActive) {
+                stopCameraScanner(false);
+                setTimeout(function() {
+                    startCameraScanner();
+                }, 300);
+            }
+        });
+
+        // ============================================================
+        // USB SCANNER INPUT
+        // ============================================================
+        var usbBuffer = '';
+        var usbTimer = null;
+
+        usbScannerInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                var value = usbBuffer.trim();
+                if (value) {
+                    processScanValue(value);
+                }
+                usbBuffer = '';
+                usbScannerInput.value = '';
+                e.preventDefault();
+                return;
+            }
+
+            if (e.key.length === 1) {
+                usbBuffer += e.key;
+                clearTimeout(usbTimer);
+                usbTimer = setTimeout(function() {
+                    if (usbBuffer.trim()) {
+                        processScanValue(usbBuffer.trim());
+                    }
+                    usbBuffer = '';
+                    usbScannerInput.value = '';
+                }, 150);
+            }
+        });
+
+        usbScannerInput.addEventListener('blur', function() {
+            setTimeout(function() {
+                if (currentMethod === 'usb') {
+                    usbScannerInput.focus();
+                }
+            }, 200);
+        });
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        enumerateCameras().then(function() {
+            populateCameraSelector();
         });
     </script>
+    @endpush
 </x-app-layout>
