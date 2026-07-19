@@ -25,7 +25,7 @@
                 <p class="mobile-subtitle">Daftar kehadiran siswa via gerbang pada {{ now()->format('d M Y') }}</p>
             </div>
         </div>
-        <div class="mobile-btn-row">
+        <div class="mobile-btn-row" style="display: flex; gap: 10px; margin-bottom: 16px;">
             <a href="{{ route('admin.attendance.manual') }}" class="btn btn-outline-primary mobile-btn flex-fill">
                 <i class="bi bi-pencil-square me-1"></i> Manual
             </a>
