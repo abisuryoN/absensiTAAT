@@ -18,18 +18,37 @@ class AdminDashboardController extends Controller
     {
         $today = Carbon::today()->format('Y-m-d');
 
-        // 1. Current Stats
+        // 1. Current Stats (New Logic)
         $totalSiswa = Student::where('is_active', true)->count();
-        $hadir = AttendanceGate::where('date', $today)->where('status', 'hadir')->count();
-        $terlambat = AttendanceGate::where('date', $today)->where('status', 'terlambat')->count();
         
-        // Sick/Permission/Alpha explicitly marked
-        $sakitIzinAlpha = AttendanceGate::where('date', $today)
-            ->whereIn('status', ['sakit', 'izin', 'alpha'])
+        // Hadir = attendance hari ini status 'hadir' ATAU 'terlambat' (tetap dianggap hadir walau telat)
+        $hadir = AttendanceGate::where('date', $today)
+            ->whereIn('status', ['hadir', 'terlambat'])
             ->count();
         
-        $totalCheckedIn = AttendanceGate::where('date', $today)->count();
-        $belumAbsen = max(0, $totalSiswa - $totalCheckedIn);
+        // Terlambat = subset dari hadir, hanya yang 'terlambat'
+        $terlambat = AttendanceGate::where('date', $today)
+            ->where('status', 'terlambat')
+            ->count();
+        
+        // Total siswa yang SUDAH punya record attendance hari ini (apapun statusnya)
+        $totalCheckedIn = AttendanceGate::where('date', $today)
+            ->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit', 'alpha'])
+            ->count();
+        
+        // Tidak Hadir = Total Siswa - (yang sudah punya record hari ini)
+        $tidakHadir = max(0, $totalSiswa - $totalCheckedIn);
+
+        // Stat tambahan untuk breakdown
+        $izin = AttendanceGate::where('date', $today)
+            ->where('status', 'izin')
+            ->count();
+        $sakit = AttendanceGate::where('date', $today)
+            ->where('status', 'sakit')
+            ->count();
+        $alpha = AttendanceGate::where('date', $today)
+            ->where('status', 'alpha')
+            ->count();
 
         // 2. Query 7 Days Trend
         $startWeek = Carbon::today()->subDays(6)->format('Y-m-d');
@@ -54,7 +73,7 @@ class AdminDashboardController extends Controller
 
             $dayStats = $dailyStats->get($dateStr) ?? collect();
 
-            $chartHadir[] = $dayStats->where('status', 'hadir')->first()?->count ?? 0;
+            $chartHadir[] = $dayStats->whereIn('status', ['hadir', 'terlambat'])->sum('count');
             $chartTerlambat[] = $dayStats->where('status', 'terlambat')->first()?->count ?? 0;
             $chartAlpha[] = $dayStats->where('status', 'alpha')->first()?->count ?? 0;
         }
@@ -69,8 +88,10 @@ class AdminDashboardController extends Controller
             'totalSiswa',
             'hadir',
             'terlambat',
-            'sakitIzinAlpha',
-            'belumAbsen',
+            'tidakHadir',
+            'izin',
+            'sakit',
+            'alpha',
             'chartLabels',
             'chartHadir',
             'chartTerlambat',

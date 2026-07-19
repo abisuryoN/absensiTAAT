@@ -1,6 +1,64 @@
 <x-app-layout>
     @section('title', 'Rekap Absensi Hari Ini')
 
+    {{-- Stat Summary Cards --}}
+    <div class="row g-2 mb-4">
+        <div class="col-6 col-md-2">
+            <div class="card bg-primary text-white border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-3 text-center">
+                    <div class="fw-bold fs-4">{{ number_format($totalSiswa) }}</div>
+                    <div class="fs-8 text-white-50">Total Siswa</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="card bg-success text-white border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-3 text-center">
+                    <div class="fw-bold fs-4">{{ number_format($hadirCount) }}</div>
+                    <div class="fs-8 text-white-50">Hadir</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="card bg-warning text-white border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-3 text-center">
+                    <div class="fw-bold fs-4">{{ number_format($terlambatCount) }}</div>
+                    <div class="fs-8 text-white-50">Terlambat</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <a href="{{ request()->fullUrlWithQuery(['status' => 'izin']) }}" class="text-decoration-none">
+                <div class="card bg-info text-white border-0 rounded-4 shadow-sm h-100">
+                    <div class="card-body p-3 text-center">
+                        <div class="fw-bold fs-4">{{ number_format($izinCount) }}</div>
+                        <div class="fs-8 text-white-50">Izin</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-2">
+            <a href="{{ request()->fullUrlWithQuery(['status' => 'sakit']) }}" class="text-decoration-none">
+                <div class="card bg-secondary text-white border-0 rounded-4 shadow-sm h-100">
+                    <div class="card-body p-3 text-center">
+                        <div class="fw-bold fs-4">{{ number_format($sakitCount) }}</div>
+                        <div class="fs-8 text-white-50">Sakit</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-2">
+            <a href="{{ request()->fullUrlWithQuery(['status' => 'alpha']) }}" class="text-decoration-none">
+                <div class="card bg-danger text-white border-0 rounded-4 shadow-sm h-100">
+                    <div class="card-body p-3 text-center">
+                        <div class="fw-bold fs-4">{{ number_format($tidakHadir) }}</div>
+                        <div class="fs-8 text-white-50">Tidak Hadir</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
     {{-- Desktop Header --}}
     <div class="row mb-4 align-items-center d-none d-md-flex">
         <div class="col">

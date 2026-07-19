@@ -115,9 +115,26 @@
             width: 100% !important;
             height: 100% !important;
             object-fit: cover !important;
+            transform: scaleX(1) !important;
+            -webkit-transform: scaleX(1) !important;
+            -moz-transform: scaleX(1) !important;
+            -ms-transform: scaleX(1) !important;
+            -o-transform: scaleX(1) !important;
+            display: block;
+        }
+        /* Force remove any mirror/scaleX that html5-qrcode may apply inline */
+        #qr-reader-container video[style*="scaleX"] {
+            transform: scaleX(1) !important;
+            -webkit-transform: scaleX(1) !important;
+        }
+        /* Target possible wrapper div created by html5-qrcode */
+        #qr-reader-container > div > video {
+            transform: scaleX(1) !important;
+            -webkit-transform: scaleX(1) !important;
+        }
+        #qr-reader-container > div {
             transform: none !important;
             -webkit-transform: none !important;
-            display: block;
         }
         #qr-reader-container canvas {
             display: none !important;
@@ -217,14 +234,6 @@
         #camera-selector option {
             background: #333;
             color: #fff;
-        }
-        /* QR Scanner region overrides for html5-qrcode */
-        #qr-reader-container video {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
-            transform: none !important;
-            -webkit-transform: none !important;
         }
         /* Recent scans */
         .recent-scans-list {
@@ -477,8 +486,8 @@
                     </div>
                     <div class="col-4">
                         <div class="card border-0 shadow-sm text-center py-2 bg-danger-subtle">
-                            <div class="fw-bold text-danger" id="mobile-stat-tidak-terdaftar">0</div>
-                            <small class="text-muted">Tidak Terdaftar</small>
+                            <div class="fw-bold text-danger" id="mobile-stat-tidak-hadir">0</div>
+                            <small class="text-muted">Tidak Hadir</small>
                         </div>
                     </div>
                 </div>
@@ -876,12 +885,59 @@
             ).then(function() {
                 isCameraActive = true;
                 cameraOverlayLoading.classList.remove('show');
-                // Hapus mirror jika ada CSS transform dari html5-qrcode
+
+                // FORCE NON-MIRROR: html5-qrcode library sering set scaleX(-1) inline
+                function forceNonMirror() {
+                    var videoEl = qrReaderContainer.querySelector('video');
+                    if (!videoEl) return;
+                    // Cek apakah library telah set mirror
+                    var t = videoEl.style.transform || '';
+                    var wt = videoEl.style.webkitTransform || '';
+                    if (t.indexOf('scaleX(-1)') !== -1 || t.indexOf('scale(-1') !== -1 || 
+                        wt.indexOf('scaleX(-1)') !== -1 || wt.indexOf('scale(-1') !== -1 ||
+                        t.indexOf('scaleX(-') !== -1 || wt.indexOf('scaleX(-') !== -1) {
+                        videoEl.style.setProperty('transform', 'scaleX(1)');
+                        videoEl.style.setProperty('-webkit-transform', 'scaleX(1)');
+                        videoEl.style.setProperty('-moz-transform', 'scaleX(1)');
+                    }
+                    // Set CSS custom property to override any library magic
+                    videoEl.style.setProperty('--mirror', '1');
+                }
+
                 var videoEl = qrReaderContainer.querySelector('video');
                 if (videoEl) {
-                    videoEl.style.transform = 'none';
-                    videoEl.style.webkitTransform = 'none';
+                    forceNonMirror();
                 }
+
+                // MutationObserver: reset mirror inline style kapanpun library mengubahnya
+                if (videoEl) {
+                    var mirrorObserver = new MutationObserver(function(mutations) {
+                        mutations.forEach(function(mutation) {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                                var t = videoEl.style.transform || '';
+                                var wt = videoEl.style.webkitTransform || '';
+                                if (t.indexOf('scaleX') !== -1 || t.indexOf('scale(-1') !== -1 || 
+                                    wt.indexOf('scaleX') !== -1 || wt.indexOf('scale(-1') !== -1 ||
+                                    t.indexOf('scaleX(-') !== -1 || wt.indexOf('scaleX(-') !== -1) {
+                                    videoEl.style.setProperty('transform', 'scaleX(1)', 'important');
+                                    videoEl.style.setProperty('-webkit-transform', 'scaleX(1)', 'important');
+                                    videoEl.style.setProperty('-moz-transform', 'scaleX(1)', 'important');
+                                }
+                            }
+                        });
+                    });
+                    mirrorObserver.observe(videoEl, { attributes: true, attributeFilter: ['style'] });
+                }
+
+                // Interval periodik sebagai fallback (library mungkin rewrite style terus)
+                if (window._nonmirrorInterval) clearInterval(window._nonmirrorInterval);
+                window._nonmirrorInterval = setInterval(function() {
+                    if (!isCameraActive) {
+                        clearInterval(window._nonmirrorInterval);
+                        return;
+                    }
+                    forceNonMirror();
+                }, 1000);
             }).catch(function(err) {
                 console.error('Camera start error:', err);
                 stopCameraScanner(true);

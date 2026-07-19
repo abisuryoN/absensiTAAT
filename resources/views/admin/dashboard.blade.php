@@ -55,17 +55,19 @@
             </div>
         </div>
 
-        <!-- Belum Absen -->
+        <!-- Tidak Hadir (clickable) -->
         <div class="col-6 col-md-3 stats-col">
-            <div class="card card-stat bg-danger text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body position-relative p-4">
-                    <div class="position-absolute top-0 end-0 p-3">
-                        <i class="bi bi-exclamation-triangle-fill fs-3 opacity-50"></i>
+            <a href="{{ route('admin.attendance.today') }}" class="text-decoration-none">
+                <div class="card card-stat bg-danger text-white border-0 rounded-4 shadow-sm h-100">
+                    <div class="card-body position-relative p-4">
+                        <div class="position-absolute top-0 end-0 p-3">
+                            <i class="bi bi-exclamation-triangle-fill fs-3 opacity-50"></i>
+                        </div>
+                        <div class="stat-value display-6 fw-bold mb-0">{{ number_format($tidakHadir) }}</div>
+                        <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Tidak Hadir</div>
                     </div>
-                    <div class="stat-value display-6 fw-bold mb-0">{{ number_format($belumAbsen) }}</div>
-                    <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Belum Absen</div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -146,7 +148,7 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Hadir Tepat Waktu',
+                            label: 'Hadir (Tepat + Terlambat)',
                             data: dataHadir,
                             backgroundColor: 'rgba(25, 135, 84, 0.85)', // bg-success
                             borderColor: 'rgb(25, 135, 84)',

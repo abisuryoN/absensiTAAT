@@ -97,7 +97,23 @@ class AttendanceGateController extends Controller
         $attendances = $query->orderByDesc('time_in')->paginate(20);
         $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.attendance.today', compact('attendances', 'classes'));
+        // Statistik untuk card summary
+        $totalSiswa = Student::where('is_active', true)->count();
+        $hadirCount = AttendanceGate::where('date', $today)->whereIn('status', ['hadir', 'terlambat'])->count();
+        $terlambatCount = AttendanceGate::where('date', $today)->where('status', 'terlambat')->count();
+        $izinCount = AttendanceGate::where('date', $today)->where('status', 'izin')->count();
+        $sakitCount = AttendanceGate::where('date', $today)->where('status', 'sakit')->count();
+        $alphaCount = AttendanceGate::where('date', $today)->where('status', 'alpha')->count();
+        $totalCheckedIn = AttendanceGate::where('date', $today)
+            ->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit', 'alpha'])
+            ->count();
+        $tidakHadir = max(0, $totalSiswa - $totalCheckedIn);
+
+        return view('admin.attendance.today', compact(
+            'attendances', 'classes',
+            'totalSiswa', 'hadirCount', 'terlambatCount',
+            'izinCount', 'sakitCount', 'alphaCount', 'tidakHadir'
+        ));
     }
 
     /**
