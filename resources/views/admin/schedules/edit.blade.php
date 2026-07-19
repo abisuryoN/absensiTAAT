@@ -119,14 +119,14 @@
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label for="start_time" class="form-label fw-semibold">Jam Mulai <span class="text-danger">*</span></label>
-                                <input type="time" name="start_time" id="start_time" class="form-control @error('start_time') is-invalid @enderror" value="{{ old('start_time', substr($schedule->start_time, 0, 5)) }}" required>
+                                <input type="text" name="start_time" id="start_time" class="form-control @error('start_time') is-invalid @enderror" value="{{ old('start_time', substr($schedule->start_time, 0, 5)) }}" placeholder="Contoh: 09:00" pattern="[0-9]{2}:[0-9]{2}" maxlength="5" required>
                                 @error('start_time')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-4">
                                 <label for="end_time" class="form-label fw-semibold">Jam Selesai <span class="text-danger">*</span></label>
-                                <input type="time" name="end_time" id="end_time" class="form-control @error('end_time') is-invalid @enderror" value="{{ old('end_time', substr($schedule->end_time, 0, 5)) }}" required>
+                                <input type="text" name="end_time" id="end_time" class="form-control @error('end_time') is-invalid @enderror" value="{{ old('end_time', substr($schedule->end_time, 0, 5)) }}" placeholder="Contoh: 10:00" pattern="[0-9]{2}:[0-9]{2}" maxlength="5" required>
                                 @error('end_time')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
