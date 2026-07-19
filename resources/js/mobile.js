@@ -16,6 +16,18 @@
     const bottomNav = document.getElementById('mobileBottomNav');
 
     // ─── Helpers ─────────────────────────────────────────────
+    function scrollDrawerToActive() {
+        if (!drawer) return;
+        var nav = drawer.querySelector('.drawer-nav');
+        var activeItem = nav ? nav.querySelector('.drawer-nav-item.active') : null;
+        if (nav && activeItem) {
+            var containerRect = nav.getBoundingClientRect();
+            var itemRect = activeItem.getBoundingClientRect();
+            var offset = itemRect.top - containerRect.top - containerRect.clientHeight / 2 + itemRect.clientHeight / 2;
+            nav.scrollTop += offset;
+        }
+    }
+
     function openDrawer() {
         if (!drawer || !drawerOverlay) return;
         drawer.classList.add('open');
@@ -25,6 +37,8 @@
         if (bottomNav) {
             bottomNav.style.display = 'none';
         }
+        // Scroll to active menu item after drawer opens
+        setTimeout(scrollDrawerToActive, 50);
     }
 
     function closeDrawer() {

@@ -114,3 +114,40 @@
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>
+
+<script>
+(function() {
+    function scrollToActive() {
+        var container = document.querySelector('.sidebar-nav-container');
+        if (!container) return;
+        var activeItem = container.querySelector('.nav-link.active');
+        if (!activeItem) return;
+
+        // Calculate using getBoundingClientRect relative to container
+        var containerRect = container.getBoundingClientRect();
+        var itemRect = activeItem.getBoundingClientRect();
+        var scrollTarget = container.scrollTop + (itemRect.top - containerRect.top) - container.clientHeight / 2 + itemRect.height / 2;
+        // Clamp to valid scroll range
+        scrollTarget = Math.max(0, Math.min(scrollTarget, container.scrollHeight - container.clientHeight));
+        container.scrollTop = scrollTarget;
+
+        // Verify: if still not visible, scrollIntoView as fallback
+        setTimeout(function() {
+            var newItemRect = activeItem.getBoundingClientRect();
+            var newContainerRect = container.getBoundingClientRect();
+            if (newItemRect.bottom > newContainerRect.bottom || newItemRect.top < newContainerRect.top) {
+                activeItem.scrollIntoView({ block: 'center', behavior: 'auto' });
+            }
+        }, 100);
+    }
+
+    // Run after layout settles
+    if (document.readyState === 'complete') {
+        requestAnimationFrame(scrollToActive);
+    } else {
+        window.addEventListener('load', function() {
+            requestAnimationFrame(scrollToActive);
+        });
+    }
+})();
+</script>
