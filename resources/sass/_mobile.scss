@@ -621,6 +621,39 @@ $mobile-radius-lg: 12px;
         padding: 0 !important;
     }
 
+    // ─── CUSTOM DROPDOWN MOBILE OVERRIDE ────────────────────
+    .custom-select-wrapper {
+        .custom-select__trigger {
+            padding: 8px 12px;
+            min-height: 42px;
+            font-size: 0.8rem;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid $mobile-border;
+        }
+
+        .custom-select__dropdown {
+            z-index: 1060;
+            max-height: 200px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .custom-select__option {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+
+        // Make sure the hidden select doesn't cause layout issues
+        select {
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+            width: 0;
+            height: 0;
+        }
+    }
+
     // ─── MOBILE CONTENT WRAPPER ─────────────────────────────
     .mobile-page-content {
         width: 100%;
@@ -1646,6 +1679,111 @@ $mobile-radius-lg: 12px;
     // ─── WEBKIT OVERFLOW FIX ───────────────────────────────
     * {
         -webkit-overflow-scrolling: touch;
+    }
+
+    // ─── ATTENDANCE CARDS (Rekap Hari Ini) ──────────────────────
+    .mobile-attendance-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .mobile-attendance-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 12px 14px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        border: 1px solid $mobile-border;
+        transition: all 0.15s;
+    }
+
+    .mobile-att-card-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .mobile-att-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 40px;
+        background: linear-gradient(135deg, #4361ee, #3a56d4);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        line-height: 1;
+    }
+
+    .mobile-att-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .mobile-att-name {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: $mobile-text;
+        line-height: 1.3;
+    }
+
+    .mobile-att-meta {
+        font-size: 0.7rem;
+        color: $mobile-text-secondary;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 1px;
+        line-height: 1.3;
+    }
+
+    .dot-sep {
+        color: #cbd5e1;
+    }
+
+    .mobile-att-status {
+        flex-shrink: 0;
+        .badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+    }
+
+    .mobile-att-card-bottom {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid $mobile-border;
+        align-items: center;
+    }
+
+    .mobile-att-detail {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.68rem;
+        color: $mobile-text-secondary;
+        line-height: 1.2;
+
+        i {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+    }
+
+    .mobile-att-note {
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     // ─── EQUAL HEIGHT BUTTONS ──────────────────────────────

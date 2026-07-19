@@ -143,42 +143,55 @@
         {{-- Mobile card body --}}
         <div class="d-block d-md-none mobile-card-body">
             <!-- Search & Filters -->
-            <form method="GET" action="{{ route('admin.attendance.today') }}" class="mobile-filter-form">
-                <div class="mobile-filter-row">
-                    <div class="mobile-search-group">
-                        <span class="mobile-search-icon"><i class="bi bi-search"></i></span>
-                        <input type="text" name="search" class="mobile-search-input" placeholder="Cari nama atau NIS..." value="{{ request('search') }}">
+            <div class="mobile-search-card" style="margin-bottom:0;">
+                <form method="GET" action="{{ route('admin.attendance.today') }}" class="mobile-search-form">
+                    <div class="mobile-search-row">
+                        <div class="mobile-search-group">
+                            <span class="mobile-search-icon"><i class="bi bi-search"></i></span>
+                            <input type="text" name="search" class="mobile-search-input" placeholder="Cari nama atau NIS..." value="{{ request('search') }}">
+                        </div>
+                        <button type="submit" class="mobile-cari-btn">Cari</button>
                     </div>
-                </div>
-                <div class="mobile-filter-row">
-                    <div class="mobile-select-wrapper flex-fill">
-                        <select name="class_id" class="mobile-select" onchange="this.form.submit()">
-                            <option value="">Semua Kelas</option>
-                            @foreach($classes as $class)
-                                <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
-                            @endforeach
-                        </select>
+                    <div class="mobile-filter-row" style="margin-top: 10px; display: flex; gap: 8px;">
+                        <div class="custom-select-wrapper flex-fill" data-placeholder="Semua Kelas" style="flex: 1;">
+                            <select name="class_id" onchange="this.form.submit()">
+                                <option value="">Semua Kelas</option>
+                                @foreach($classes as $class)
+                                    <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="custom-select-wrapper flex-fill" data-placeholder="Semua Status" style="flex: 1;">
+                            <select name="status" onchange="this.form.submit()">
+                                <option value="">Semua Status</option>
+                                <option value="hadir" {{ request('status') === 'hadir' ? 'selected' : '' }}>Hadir</option>
+                                <option value="terlambat" {{ request('status') === 'terlambat' ? 'selected' : '' }}>Terlambat</option>
+                                <option value="izin" {{ request('status') === 'izin' ? 'selected' : '' }}>Izin</option>
+                                <option value="sakit" {{ request('status') === 'sakit' ? 'selected' : '' }}>Sakit</option>
+                                <option value="alpha" {{ request('status') === 'alpha' ? 'selected' : '' }}>Alpha</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="mobile-select-wrapper flex-fill">
-                        <select name="status" class="mobile-select" onchange="this.form.submit()">
-                            <option value="">Semua Status</option>
-                            <option value="hadir" {{ request('status') === 'hadir' ? 'selected' : '' }}>Hadir</option>
-                            <option value="terlambat" {{ request('status') === 'terlambat' ? 'selected' : '' }}>Terlambat</option>
-                            <option value="izin" {{ request('status') === 'izin' ? 'selected' : '' }}>Izin</option>
-                            <option value="sakit" {{ request('status') === 'sakit' ? 'selected' : '' }}>Sakit</option>
-                            <option value="alpha" {{ request('status') === 'alpha' ? 'selected' : '' }}>Alpha</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="mobile-filter-btn">Filter</button>
-                </div>
-            </form>
+                </form>
+            </div>
 
-            <!-- Cards -->
+            <!-- Attendance Cards -->
             <div class="mobile-attendance-list">
                 @forelse($attendances as $attendance)
                     <div class="mobile-attendance-card">
+                        {{-- Top: Avatar + Nama + Status --}}
                         <div class="mobile-att-card-top">
-                            <div class="mobile-att-name">{{ $attendance->student->name }}</div>
+                            <div class="mobile-att-avatar">
+                                {{ strtoupper(substr($attendance->student->name, 0, 1)) }}
+                            </div>
+                            <div class="mobile-att-info">
+                                <div class="mobile-att-name">{{ $attendance->student->name }}</div>
+                                <div class="mobile-att-meta">
+                                    <span>NIS {{ $attendance->student->nis }}</span>
+                                    <span class="dot-sep">•</span>
+                                    <span>{{ $attendance->student->class->name ?? '-' }}</span>
+                                </div>
+                            </div>
                             <div class="mobile-att-status">
                                 @if($attendance->status === 'hadir')
                                     <span class="badge bg-success">Hadir</span>
@@ -193,16 +206,41 @@
                                 @endif
                             </div>
                         </div>
+
+                        {{-- Bottom: waktu + metode + catatan --}}
                         <div class="mobile-att-card-bottom">
-                            <span>NIS: {{ $attendance->student->nis }}</span>
-                            <span>{{ $attendance->student->class->name ?? '-' }}</span>
-                            <span>{{ substr($attendance->time_in, 0, 5) }} WIB</span>
+                            <div class="mobile-att-detail">
+                                <i class="bi bi-clock"></i>
+                                <span>{{ substr($attendance->time_in, 0, 5) }} WIB</span>
+                            </div>
+                            <div class="mobile-att-detail">
+                                @if($attendance->method === 'barcode')
+                                    <i class="bi bi-barcode"></i><span>Barcode</span>
+                                @elseif($attendance->method === 'qr_code')
+                                    <i class="bi bi-qr-code"></i><span>QR Code</span>
+                                @else
+                                    <i class="bi bi-pencil-square"></i><span>Manual</span>
+                                @endif
+                            </div>
+                            @if($attendance->note)
+                            <div class="mobile-att-detail mobile-att-note" title="{{ $attendance->note }}">
+                                <i class="bi bi-chat-dots"></i>
+                                <span>{{ Str::limit($attendance->note, 30) }}</span>
+                            </div>
+                            @endif
+                            <div class="mobile-att-detail">
+                                <i class="bi bi-person-badge"></i>
+                                <span>{{ $attendance->scanner->name ?? 'System' }}</span>
+                            </div>
                         </div>
                     </div>
                 @empty
-                    <div class="mobile-empty-state">
-                        <i class="bi bi-inbox"></i>
-                        <p>Belum ada data absensi hari ini.</p>
+                    <div class="mobile-empty-state" style="padding-top: 32px;">
+                        <div class="empty-icon-wrap">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <h4 class="empty-title">Belum Ada Data</h4>
+                        <p class="empty-desc">Belum ada data absensi yang masuk hari ini.</p>
                     </div>
                 @endforelse
             </div>

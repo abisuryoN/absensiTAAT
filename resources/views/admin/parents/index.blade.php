@@ -130,7 +130,7 @@
                             <span class="mobile-search-icon"><i class="bi bi-search"></i></span>
                             <input type="text" name="search" class="mobile-search-input" placeholder="Cari nama atau nomor HP..." value="{{ request('search') }}">
                         </div>
-                        <button type="submit" class="mobile-search-btn">Cari</button>
+                        <button type="submit" class="mobile-cari-btn">Cari</button>
                     </div>
                 </form>
             </div>
