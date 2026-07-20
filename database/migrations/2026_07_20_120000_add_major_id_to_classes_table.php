@@ -15,12 +15,12 @@ return new class extends Migration
         Schema::table('classes', function (Blueprint $table) {
             // Column may already exist from a partial previous run — skip if so
             if (!Schema::hasColumn('classes', 'major_id')) {
-                $table->foreignId('major_id')->nullable()->after('academic_year_id')->constrained('majors')->onDelete('cascade');
+                $table->foreignId('major_id')->nullable()->after('academic_year_id');
             }
         });
 
         // Add the composite index only if it doesn't already exist
-        $indexes = DB::select("SHOW INDEX FROM `classes` WHERE Key_name = 'classes_grade_level_major_id_index'");
+        $indexes = DB::select("SHOW INDEX FROM classes WHERE Key_name = ?", ['classes_grade_level_major_id_index']);
         if (empty($indexes)) {
             Schema::table('classes', function (Blueprint $table) {
                 $table->index(['grade_level', 'major_id']);
@@ -31,10 +31,10 @@ return new class extends Migration
         $foreignKeys = DB::select("
             SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS
             WHERE TABLE_SCHEMA = DATABASE()
-              AND TABLE_NAME = 'classes'
-              AND CONSTRAINT_NAME = 'classes_major_id_foreign'
+              AND TABLE_NAME = ?
+              AND CONSTRAINT_NAME = ?
               AND CONSTRAINT_TYPE = 'FOREIGN KEY'
-        ");
+        ", ['classes', 'classes_major_id_foreign']);
         if (empty($foreignKeys)) {
             Schema::table('classes', function (Blueprint $table) {
                 $table->foreign('major_id')->references('id')->on('majors')->onDelete('cascade');
@@ -42,9 +42,7 @@ return new class extends Migration
         }
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::table('classes', function (Blueprint $table) {

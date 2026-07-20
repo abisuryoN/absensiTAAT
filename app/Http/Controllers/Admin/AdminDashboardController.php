@@ -102,10 +102,7 @@ class AdminDashboardController extends Controller
         ));
     }
 
-    /**
-     * Store the Super Admin's selected academic year in session.
-     * All data pages will then filter by this year instead of the system-active one.
-     */
+
     public function switchAcademicYear(Request $request)
     {
         $request->validate([
