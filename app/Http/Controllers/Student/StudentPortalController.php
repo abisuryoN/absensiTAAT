@@ -87,6 +87,27 @@ class StudentPortalController extends Controller
     }
 
     /**
+     * Halaman QR Code siswa — dedicated page untuk scan absensi gerbang.
+     */
+    public function qrcode()
+    {
+        $user    = Auth::user();
+        $student = Student::where('user_id', $user->id)->with(['class'])->first();
+
+        if (!$student) {
+            return redirect()->route('student.dashboard')->with('error', 'Data siswa tidak ditemukan.');
+        }
+
+        if (!$student->is_active) {
+            return redirect()->route('student.dashboard')->with('error', 'Akun siswa tidak aktif.');
+        }
+
+        $qrTtl = (int) config('absensi.qr_token.ttl_seconds', 30);
+
+        return view('student.qrcode', compact('student', 'qrTtl'));
+    }
+
+    /**
      * Generate QR token (AJAX endpoint).
      */
     public function generateQr(Request $request)
