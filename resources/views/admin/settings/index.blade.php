@@ -3,7 +3,9 @@
 
     <div class="row mb-4">
         <div class="col">
-            <h3 class="fw-bold tracking-tight text-dark mb-1">Pengaturan Sistem</h3>
+            <h3 class="fw-bold tracking-tight text-dark mb-1">
+                <i class="bi bi-gear-fill me-2 text-primary"></i>Pengaturan Sistem
+            </h3>
             <p class="text-muted mb-0">Sesuaikan jam operasional absensi, durasi token QR, dan gateway WhatsApp.</p>
         </div>
     </div>

@@ -3,7 +3,9 @@
 
     <div class="row mb-4 align-items-center">
         <div class="col">
-            <h3 class="fw-bold tracking-tight text-dark mb-1">Daftar Siswa</h3>
+            <h3 class="fw-bold tracking-tight text-dark mb-1">
+                <i class="bi bi-mortarboard me-2 text-primary"></i>Daftar Siswa
+            </h3>
             <p class="text-muted mb-0">Kelola data peserta didik, kelas penempatan, dan orang tua terkait.</p>
         </div>
         <div class="col-auto">

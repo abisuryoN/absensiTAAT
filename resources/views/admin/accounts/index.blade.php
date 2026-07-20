@@ -28,7 +28,7 @@
     <div class="card glass-card border-0 mb-3" style="position: relative; z-index: 20;">
         <div class="card-body p-3">
             <form method="GET" action="{{ route('admin.accounts.index') }}" id="filterForm">
-                <div class="row g-2 align-items-end">
+                <div class="row g-2 align-items-center">
                     {{-- Search --}}
                     <div class="col-md-3">
                         <label class="form-label fw-semibold small mb-1">Cari Nama</label>

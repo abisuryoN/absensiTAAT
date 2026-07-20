@@ -3,7 +3,9 @@
 
     <div class="row mb-4">
         <div class="col">
-            <h3 class="fw-bold tracking-tight text-dark mb-1">Import Data Excel</h3>
+            <h3 class="fw-bold tracking-tight text-dark mb-1">
+                <i class="bi bi-file-earmark-arrow-up me-2 text-primary"></i>Import Data Excel
+            </h3>
             <p class="text-muted mb-0">Impor data Master secara massal menggunakan file spreadsheet (.xlsx, .xls, .csv).</p>
         </div>
     </div>

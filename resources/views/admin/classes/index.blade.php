@@ -3,7 +3,9 @@
 
     <div class="row mb-4 align-items-center">
         <div class="col">
-            <h3 class="fw-bold tracking-tight text-dark mb-1">Daftar Kelas</h3>
+            <h3 class="fw-bold tracking-tight text-dark mb-1">
+                <i class="bi bi-building me-2 text-primary"></i>Daftar Kelas
+            </h3>
             <p class="text-muted mb-0">Kelola rombongan belajar (kelas), wali kelas, serta daya tampungnya.</p>
         </div>
         <div class="col-auto">

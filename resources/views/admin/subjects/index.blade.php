@@ -3,7 +3,9 @@
 
     <div class="row mb-4 align-items-center">
         <div class="col">
-            <h3 class="fw-bold tracking-tight text-dark mb-1">Mata Pelajaran</h3>
+            <h3 class="fw-bold tracking-tight text-dark mb-1">
+                <i class="bi bi-book-half me-2 text-primary"></i>Mata Pelajaran
+            </h3>
             <p class="text-muted mb-0">Kelola daftar mata pelajaran kurikulum sekolah.</p>
         </div>
         <div class="col-auto">

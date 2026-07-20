@@ -3,7 +3,9 @@
 
     <div class="row mb-4 align-items-center">
         <div class="col">
-            <h3 class="fw-bold tracking-tight text-dark mb-1">Jurusan</h3>
+            <h3 class="fw-bold tracking-tight text-dark mb-1">
+                <i class="bi bi-award me-2 text-primary"></i>Jurusan
+            </h3>
             <p class="text-muted mb-0">Kelola kompetensi keahlian/jurusan sekolah.</p>
         </div>
         <div class="col-auto">

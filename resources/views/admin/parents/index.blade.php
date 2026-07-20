@@ -17,7 +17,9 @@
     {{-- Desktop Header --}}
     <div class="row mb-4 align-items-center d-none d-md-flex">
         <div class="col">
-            <h3 class="fw-bold tracking-tight text-dark mb-1">Daftar Orang Tua / Wali</h3>
+            <h3 class="fw-bold tracking-tight text-dark mb-1">
+                <i class="bi bi-people-fill me-2 text-primary"></i>Daftar Orang Tua / Wali
+            </h3>
             <p class="text-muted mb-0">Master data orang tua dan wali siswa untuk portal dan notifikasi.</p>
         </div>
         <div class="col-auto d-flex gap-2">
