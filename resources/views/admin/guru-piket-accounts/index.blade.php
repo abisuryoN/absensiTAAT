@@ -3,14 +3,14 @@
 <div class="container-fluid px-4">
 
     {{-- Page Header --}}
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-2">
         <div>
             <h1 class="h3 mb-1 fw-semibold">
                 <i class="bi bi-person-badge me-2 text-info"></i>Akun Guru Piket
             </h1>
             <p class="text-muted small mb-0">Kelola akun login untuk petugas piket gerbang.</p>
         </div>
-        <a href="{{ route('admin.guru-piket-accounts.create') }}" class="btn btn-primary">
+        <a href="{{ route('admin.guru-piket-accounts.create') }}" class="btn btn-primary align-self-start align-self-md-auto">
             <i class="bi bi-person-plus me-1"></i> Tambah Akun Guru Piket
         </a>
     </div>
@@ -33,9 +33,17 @@
     <div class="alert alert-info d-flex align-items-start gap-2 mb-4">
         <i class="bi bi-info-circle fs-5 flex-shrink-0 mt-1"></i>
         <div class="small">
-            <strong>Tentang Akun Guru Piket:</strong> Akun ini adalah akun bersama yang digunakan di perangkat scan gerbang.
-            Setelah login, petugas mengisi nama masing-masing untuk sesi piket. Satu akun bisa dipakai di banyak perangkat sekaligus.
-            Password default saat reset: <code>piket123</code>.
+            <strong>Tentang Akun Guru Piket:</strong>
+            {{-- Short version on mobile --}}
+            <span class="d-md-none">
+                Akun bersama untuk perangkat scan gerbang. Password default: <code>piket123</code>.
+            </span>
+            {{-- Full version on desktop --}}
+            <span class="d-none d-md-inline">
+                Akun ini adalah akun bersama yang digunakan di perangkat scan gerbang.
+                Setelah login, petugas mengisi nama masing-masing untuk sesi piket. Satu akun bisa dipakai di banyak perangkat sekaligus.
+                Password default saat reset: <code>piket123</code>.
+            </span>
         </div>
     </div>
 

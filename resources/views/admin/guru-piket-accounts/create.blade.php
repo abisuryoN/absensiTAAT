@@ -2,7 +2,8 @@
 @section('title', 'Tambah Akun Guru Piket')
 <div class="container-fluid px-4">
 
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    {{-- Desktop page header --}}
+    <div class="d-none d-lg-flex align-items-center justify-content-between mb-4">
         <div>
             <h1 class="h3 mb-1 fw-semibold">
                 <i class="bi bi-person-plus me-2 text-info"></i>Tambah Akun Guru Piket
@@ -11,6 +12,13 @@
         </div>
         <a href="{{ route('admin.guru-piket-accounts.index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-1"></i> Kembali
+        </a>
+    </div>
+
+    {{-- Mobile page header --}}
+    <div class="d-lg-none mb-3">
+        <a href="{{ route('admin.guru-piket-accounts.index') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
         </a>
     </div>
 

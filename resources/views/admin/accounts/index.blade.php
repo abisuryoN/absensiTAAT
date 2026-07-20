@@ -1,14 +1,14 @@
 <x-app-layout>
     @section('title', 'Manajemen Akun Login')
 
-    <div class="row mb-4 align-items-center">
-        <div class="col">
-            <h3 class="fw-bold tracking-tight text-dark mb-1">
-                <i class="bi bi-person-lock me-2 text-primary"></i>Manajemen Akun Login
-            </h3>
-            <p class="text-muted mb-0">Kelola akun login semua pengguna dan reset password jika diperlukan.</p>
-        </div>
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 mb-1 fw-semibold">
+            <i class="bi bi-person-lock me-2 text-primary"></i>Manajemen Akun Login
+        </h1>
+        <p class="text-muted small mb-0">Kelola akun login semua pengguna dan reset password jika diperlukan.</p>
     </div>
+</div>
 
     {{-- Flash messages --}}
     @if(session('success'))
