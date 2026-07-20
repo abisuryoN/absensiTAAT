@@ -23,7 +23,7 @@
         </span>
     </div>
     
-    <div class="sidebar-nav-container flex-grow-1" style="visibility: hidden">
+    <div class="sidebar-nav-container flex-grow-1">
         <ul class="nav nav-pills flex-column sidebar-menu">
             @include('layouts.partials.sidebar-menu-items', ['variant' => 'desktop'])
         </ul>
@@ -116,29 +116,19 @@
 
 <script>
 (function() {
-    function scrollToActive() {
-        var container = document.querySelector('.sidebar-nav-container');
-        if (!container) return;
-        var activeItem = container.querySelector('.nav-link.active');
+    var container = document.querySelector('.sidebar-nav-container');
+    if (!container) return;
+    var activeItem = container.querySelector('.nav-link.active');
+    if (!activeItem) return;
 
-        if (activeItem) {
-            // getBoundingClientRect is accurate after layout is computed
-            var itemRect = activeItem.getBoundingClientRect();
-            var containerRect = container.getBoundingClientRect();
-            var offset = itemRect.top - containerRect.top;
-            var target = container.scrollTop + offset - container.clientHeight / 2 + activeItem.clientHeight / 2;
-            target = Math.max(0, Math.min(target, container.scrollHeight - container.clientHeight));
-            container.scrollTop = target;
-        }
-
-        // Reveal the container only after scroll position is set — no flash, no jump
-        container.style.visibility = '';
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', scrollToActive);
-    } else {
-        scrollToActive();
-    }
+    // Calling getBoundingClientRect() here forces the browser to do a synchronous
+    // layout calculation. Since this is an inline script, it runs BEFORE the browser
+    // gets a chance to paint — so scrollTop is set correctly on the very first frame.
+    var itemRect = activeItem.getBoundingClientRect();
+    var containerRect = container.getBoundingClientRect();
+    var offset = itemRect.top - containerRect.top;
+    var target = container.scrollTop + offset - container.clientHeight / 2 + activeItem.clientHeight / 2;
+    target = Math.max(0, Math.min(target, container.scrollHeight - container.clientHeight));
+    container.scrollTop = target;
 })();
 </script>
