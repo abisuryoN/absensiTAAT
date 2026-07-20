@@ -23,7 +23,7 @@
         </span>
     </div>
     
-    <div class="sidebar-nav-container flex-grow-1">
+    <div class="sidebar-nav-container flex-grow-1" style="visibility: hidden">
         <ul class="nav nav-pills flex-column sidebar-menu">
             @include('layouts.partials.sidebar-menu-items', ['variant' => 'desktop'])
         </ul>
@@ -120,15 +120,21 @@
         var container = document.querySelector('.sidebar-nav-container');
         if (!container) return;
         var activeItem = container.querySelector('.nav-link.active');
-        if (!activeItem) return;
 
-        // Use offsetTop — same approach as mobile drawer, works before first paint
-        var target = activeItem.offsetTop - container.clientHeight / 2 + activeItem.clientHeight / 2;
-        target = Math.max(0, Math.min(target, container.scrollHeight - container.clientHeight));
-        container.scrollTop = target;
+        if (activeItem) {
+            // getBoundingClientRect is accurate after layout is computed
+            var itemRect = activeItem.getBoundingClientRect();
+            var containerRect = container.getBoundingClientRect();
+            var offset = itemRect.top - containerRect.top;
+            var target = container.scrollTop + offset - container.clientHeight / 2 + activeItem.clientHeight / 2;
+            target = Math.max(0, Math.min(target, container.scrollHeight - container.clientHeight));
+            container.scrollTop = target;
+        }
+
+        // Reveal the container only after scroll position is set — no flash, no jump
+        container.style.visibility = '';
     }
 
-    // Run as early as possible so the scroll is set before the browser paints
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', scrollToActive);
     } else {
