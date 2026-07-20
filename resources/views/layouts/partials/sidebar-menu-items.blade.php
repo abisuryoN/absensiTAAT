@@ -86,6 +86,7 @@ PARAMETER:
             ],
             'SUPER ADMIN' => [
                 ['label' => 'Manajemen Super Admin', 'icon' => 'bi-person-gear',         'route' => 'admin.super-admins.index'],
+                ['label' => 'Akun Guru Piket',        'icon' => 'bi-person-badge',        'route' => 'admin.guru-piket-accounts.index'],
                 ['label' => 'Log Aktivitas',          'icon' => 'bi-journal-text',        'route' => 'admin.activity-logs.index'],
             ],
             'LAINNYA' => [

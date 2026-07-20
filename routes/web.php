@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AccountManagementController;
 use App\Http\Controllers\Admin\SuperAdminController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\GuruPiketAccountController;
 use App\Http\Controllers\Parent\ParentPortalController;
 use App\Http\Controllers\GuruPiket\GuruPiketController;
 
@@ -112,6 +113,13 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         Route::get('/super-admins/create', [SuperAdminController::class, 'create'])->name('super-admins.create');
         Route::post('/super-admins', [SuperAdminController::class, 'store'])->name('super-admins.store');
         Route::patch('/super-admins/{superAdmin}/toggle-active', [SuperAdminController::class, 'toggleActive'])->name('super-admins.toggle-active');
+
+        // Manajemen Akun Guru Piket
+        Route::get('/guru-piket-accounts', [GuruPiketAccountController::class, 'index'])->name('guru-piket-accounts.index');
+        Route::get('/guru-piket-accounts/create', [GuruPiketAccountController::class, 'create'])->name('guru-piket-accounts.create');
+        Route::post('/guru-piket-accounts', [GuruPiketAccountController::class, 'store'])->name('guru-piket-accounts.store');
+        Route::patch('/guru-piket-accounts/{guruPiketAccount}/toggle-active', [GuruPiketAccountController::class, 'toggleActive'])->name('guru-piket-accounts.toggle-active');
+        Route::delete('/guru-piket-accounts/{guruPiketAccount}', [GuruPiketAccountController::class, 'destroy'])->name('guru-piket-accounts.destroy');
 
         // Log Aktivitas
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
