@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\AccountManagementController;
 use App\Http\Controllers\Admin\SuperAdminController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Parent\ParentPortalController;
+use App\Http\Controllers\GuruPiket\GuruPiketController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -169,6 +170,26 @@ Route::middleware(['auth', 'active', 'role:parent'])
         Route::get('/dashboard', [ParentPortalController::class, 'dashboard'])->name('dashboard');
         Route::get('/rekap-harian', [ParentPortalController::class, 'rekapHarian'])->name('rekap_harian');
         Route::get('/rekap-bulanan', [ParentPortalController::class, 'rekapBulanan'])->name('rekap_bulanan');
+    });
+
+// 5. Guru Piket Group (shared account, multi-session)
+// Setup routes: tidak pakai middleware piket.setup supaya bisa akses form isi nama
+Route::middleware(['auth', 'active', 'role:guru_piket'])
+    ->prefix('piket')
+    ->name('piket.')
+    ->group(function () {
+        // Setup nama piket untuk sesi ini (wajib sebelum akses halaman lain)
+        Route::get('/setup', [GuruPiketController::class, 'setup'])->name('setup');
+        Route::post('/setup', [GuruPiketController::class, 'setupStore'])->name('setup.post');
+
+        // Halaman yang butuh nama piket sudah diisi (dijaga middleware piket.setup)
+        Route::middleware(['piket.setup'])->group(function () {
+            Route::get('/dashboard', [GuruPiketController::class, 'dashboard'])->name('dashboard');
+            Route::get('/scan', [GuruPiketController::class, 'scan'])->name('scan');
+            Route::post('/scan', [GuruPiketController::class, 'scanPost'])->name('scan.post');
+            Route::get('/rekap', [GuruPiketController::class, 'rekap'])->name('rekap');
+            Route::post('/end-session', [GuruPiketController::class, 'endSession'])->name('end-session');
+        });
     });
 
 require __DIR__.'/auth.php';

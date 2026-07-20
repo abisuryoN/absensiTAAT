@@ -17,6 +17,7 @@ class DashboardController extends Controller
             'guru'        => redirect()->route('teacher.dashboard'),
             'siswa'       => redirect()->route('student.dashboard'),
             'parent'      => redirect()->route('parent.dashboard'),
+            'guru_piket'  => redirect()->route('piket.setup'),
             default       => view('dashboard'),
         };
     }

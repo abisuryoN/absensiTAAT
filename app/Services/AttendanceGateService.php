@@ -17,9 +17,9 @@ class AttendanceGateService
     /**
      * Process barcode scanning.
      */
-    public function processBarcodeScan(string $barcodeValue, ?int $scannedBy = null): AttendanceGate
+    public function processBarcodeScan(string $barcodeValue, ?int $scannedBy = null, ?int $petugasPiketId = null): AttendanceGate
     {
-        return DB::transaction(function () use ($barcodeValue, $scannedBy) {
+        return DB::transaction(function () use ($barcodeValue, $scannedBy, $petugasPiketId) {
             $student = Student::where('barcode_id', $barcodeValue)->first();
 
             if (!$student) {
@@ -51,14 +51,15 @@ class AttendanceGateService
             $status = $this->getStatusByTime($timeIn);
 
             $attendance = AttendanceGate::create([
-                'student_id' => $student->id,
+                'student_id'       => $student->id,
                 'academic_year_id' => $academicYear->id,
-                'semester_id' => $semester->id,
-                'date' => $today,
-                'time_in' => $timeIn,
-                'status' => $status,
-                'method' => 'barcode',
-                'scanned_by' => $scannedBy,
+                'semester_id'      => $semester->id,
+                'date'             => $today,
+                'time_in'          => $timeIn,
+                'status'           => $status,
+                'method'           => 'barcode',
+                'scanned_by'       => $scannedBy,
+                'petugas_piket_id' => $petugasPiketId,
             ]);
 
             // Dispatch notification to parents via queue job
@@ -79,9 +80,9 @@ class AttendanceGateService
     /**
      * Process QR Token scanning.
      */
-    public function processQrScan(string $token, ?int $scannedBy = null): AttendanceGate
+    public function processQrScan(string $token, ?int $scannedBy = null, ?int $petugasPiketId = null): AttendanceGate
     {
-        return DB::transaction(function () use ($token, $scannedBy) {
+        return DB::transaction(function () use ($token, $scannedBy, $petugasPiketId) {
             $qrToken = QrToken::where('token', $token)
                 ->where('is_used', false)
                 ->where('expires_at', '>', Carbon::now())
@@ -124,14 +125,15 @@ class AttendanceGateService
             $status = $this->getStatusByTime($timeIn);
 
             $attendance = AttendanceGate::create([
-                'student_id' => $student->id,
+                'student_id'       => $student->id,
                 'academic_year_id' => $academicYear->id,
-                'semester_id' => $semester->id,
-                'date' => $today,
-                'time_in' => $timeIn,
-                'status' => $status,
-                'method' => 'qr_code',
-                'scanned_by' => $scannedBy,
+                'semester_id'      => $semester->id,
+                'date'             => $today,
+                'time_in'          => $timeIn,
+                'status'           => $status,
+                'method'           => 'qr_code',
+                'scanned_by'       => $scannedBy,
+                'petugas_piket_id' => $petugasPiketId,
             ]);
 
             // Dispatch notification to parents
