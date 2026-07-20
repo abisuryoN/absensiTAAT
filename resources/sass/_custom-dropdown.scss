@@ -66,13 +66,11 @@
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s ease;
+            transition: opacity 0.15s ease, visibility 0.15s ease;
             
             &.active {
                 opacity: 1;
                 visibility: visible;
-                transform: translateY(0);
             }
             
             &::-webkit-scrollbar {

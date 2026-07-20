@@ -10,8 +10,8 @@
         </div>
     </div>
 
-    {{-- Filter Panel --}}
-    <div class="card glass-card border-0 mb-3">
+    {{-- Filter Panel — higher z-index so custom dropdown floats above the table card --}}
+    <div class="card glass-card border-0 mb-3" style="position: relative; z-index: 20; overflow: visible;">
         <div class="card-body p-3">
             <form method="GET" action="{{ route('admin.activity-logs.index') }}" id="filterForm">
 
@@ -212,35 +212,31 @@
     (function () {
         'use strict';
 
-        const modulesUrl   = "{{ route('admin.activity-logs.modules-by-role') }}";
-        const activeModule = "{{ request('module') }}";
+        var modulesUrl   = "{{ route('admin.activity-logs.modules-by-role') }}";
+        var activeModule = "{{ request('module') }}";
 
         function rebuildModuleDropdown(modules) {
-            const wrapper = document.getElementById('moduleWrapper');
+            var wrapper = document.getElementById('moduleWrapper');
             if (!wrapper) return;
-
-            const existing = wrapper.querySelector('.custom-select');
+            var existing = wrapper.querySelector('.custom-select');
             if (existing) existing.remove();
-
-            const select = document.getElementById('moduleSelect');
+            var select = document.getElementById('moduleSelect');
             select.style.display = '';
-
             select.innerHTML = '<option value="">Semua Modul</option>';
             modules.forEach(function (mod) {
-                const opt = document.createElement('option');
+                var opt = document.createElement('option');
                 opt.value       = mod;
                 opt.textContent = mod;
                 if (mod === activeModule) opt.selected = true;
                 select.appendChild(opt);
             });
-
             if (window.CustomDropdown) {
                 new window.CustomDropdown(wrapper, { placeholder: 'Semua Modul' });
             }
         }
 
         function onRoleChange(roleValue) {
-            const url = modulesUrl + (roleValue ? '?role=' + encodeURIComponent(roleValue) : '');
+            var url = modulesUrl + (roleValue ? '?role=' + encodeURIComponent(roleValue) : '');
             fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                 .then(function (res) { return res.json(); })
                 .then(function (modules) { rebuildModuleDropdown(modules); })
@@ -248,7 +244,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            const roleSelect = document.getElementById('roleSelect');
+            var roleSelect = document.getElementById('roleSelect');
             if (roleSelect) {
                 roleSelect.addEventListener('change', function () {
                     onRoleChange(this.value);
@@ -260,7 +256,7 @@
         });
 
         window.setToday = function () {
-            const today = new Date().toISOString().slice(0, 10);
+            var today = new Date().toISOString().slice(0, 10);
             document.querySelector('[name="date_from"]').value = today;
             document.querySelector('[name="date_to"]').value   = today;
             document.getElementById('filterForm').submit();
