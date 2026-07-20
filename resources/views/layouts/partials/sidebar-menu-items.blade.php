@@ -24,7 +24,7 @@ PARAMETER:
     function isMenuItemActive($routeName)
     {
         // Exact match untuk dashboard
-        if (in_array($routeName, ['admin.dashboard', 'teacher.dashboard', 'student.dashboard', 'parent.dashboard', 'dashboard'])) {
+        if (in_array($routeName, ['admin.dashboard', 'teacher.dashboard', 'student.dashboard', 'parent.dashboard', 'piket.dashboard', 'dashboard'])) {
             return request()->routeIs($routeName);
         }
 
@@ -98,7 +98,6 @@ PARAMETER:
             'MENU UTAMA' => [
                 ['label' => 'Dashboard',          'icon' => 'bi-speedometer2',       'route' => 'teacher.dashboard'],
                 ['label' => 'Jadwal Mengajar',    'icon' => 'bi-calendar-event',     'route' => 'teacher.schedules'],
-                ['label' => 'Absensi Mapel',      'icon' => 'bi-check2-square',      'route' => 'teacher.attendance.input'],
                 ['label' => 'Rekap Mengajar',     'icon' => 'bi-file-earmark-text',  'route' => 'teacher.recap'],
             ],
             'LAINNYA' => [
@@ -123,6 +122,16 @@ PARAMETER:
                 ['label' => 'Dashboard',          'icon' => 'bi-speedometer2',       'route' => 'parent.dashboard'],
                 ['label' => 'Rekap Harian',       'icon' => 'bi-calendar-check',     'route' => 'parent.rekap_harian'],
                 ['label' => 'Rekap Bulanan',      'icon' => 'bi-calendar-month',     'route' => 'parent.rekap_bulanan'],
+            ],
+            'LAINNYA' => [
+                ['label' => 'Profil',             'icon' => 'bi-person-circle',      'route' => 'profile.edit'],
+            ],
+        ];
+    } elseif ($role === 'guru_piket') {
+        $menuGroups = [
+            'MENU UTAMA' => [
+                ['label' => 'Absensi Gerbang',    'icon' => 'bi-qr-code-scan',       'route' => 'piket.scan'],
+                ['label' => 'Rekap Hari Ini',     'icon' => 'bi-calendar-check',     'route' => 'piket.rekap'],
             ],
             'LAINNYA' => [
                 ['label' => 'Profil',             'icon' => 'bi-person-circle',      'route' => 'profile.edit'],

@@ -1,144 +1,187 @@
 <x-app-layout>
     @section('title', 'Dashboard Guru')
 
-    <!-- Welcome Header (Photo 4 style) -->
-    <div class="d-flex align-items-center gap-3 mb-4">
-        <div class="bg-dark bg-opacity-10 text-dark rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background-color: #334155 !important;">
-            <i class="bi bi-eye-slash text-white fs-5"></i>
-        </div>
-        <div>
-            <h4 class="fw-bold mb-1 text-dark">Halo, {{ strtoupper($teacher->name) }}!</h4>
-            <p class="text-muted mb-0 fs-7">
-                Mode Privasi Aktif: Data sensitif disembunyikan.
-            </p>
-        </div>
-    </div>
+    @push('styles')
+    <style>
+        .stat-card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,.12);
+        }
+        .stat-card .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+        .stat-card .stat-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-top: 2px;
+        }
+    </style>
+    @endpush
 
-    <!-- Stats Cards Row -->
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card stat-card glass-card text-white bg-primary border-0 shadow-sm h-100">
-                <div class="card-body d-flex align-items-center justify-content-between p-4">
-                    <div>
-                        <span class="fs-8 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Jadwal Hari Ini</span>
-                        <h2 class="fw-bold mb-0 mt-1">{{ $schedulesCount }} Kelas</h2>
-                    </div>
-                    <div class="bg-white bg-opacity-15 rounded-3 p-3">
-                        <i class="bi bi-calendar-check fs-2"></i>
-                    </div>
-                </div>
+    <div class="main-content-inner">
+
+        {{-- ── Page Header ─────────────────────────────────────────── --}}
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <div>
+                <h4 class="fw-bold mb-0" style="color:#1e293b;">Dashboard Guru</h4>
+                <p class="text-muted mb-0 fs-7">Selamat datang, {{ auth()->user()->name }}</p>
             </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card stat-card glass-card text-white bg-success border-0 shadow-sm h-100">
-                <div class="card-body d-flex align-items-center justify-content-between p-4">
-                    <div>
-                        <span class="fs-8 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Selesai Dikirim</span>
-                        <h2 class="fw-bold mb-0 mt-1">{{ $submittedCount }} Kelas</h2>
-                    </div>
-                    <div class="bg-white bg-opacity-15 rounded-3 p-3">
-                        <i class="bi bi-check2-all fs-2"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card stat-card glass-card text-white bg-warning border-0 shadow-sm h-100">
-                <div class="card-body d-flex align-items-center justify-content-between p-4">
-                    <div>
-                        <span class="fs-8 text-white text-opacity-75 text-uppercase fw-semibold tracking-wider d-block">Draf Tersimpan</span>
-                        <h2 class="fw-bold mb-0 mt-1">{{ $draftCount }} Kelas</h2>
-                    </div>
-                    <div class="bg-white bg-opacity-15 rounded-3 p-3">
-                        <i class="bi bi-pencil-square fs-2"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Table Card -->
-    <div class="card glass-card border-0 shadow-sm">
-        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
-            <h5 class="fw-bold mb-0">
-                <i class="bi bi-clock-history me-2 text-primary"></i>Jadwal Mengajar Hari Ini
-            </h5>
-            <span class="badge bg-light text-dark px-3 py-2 fs-8 border rounded-3 fw-semibold">
-                <i class="bi bi-calendar-event me-1 text-primary"></i>{{ Carbon\Carbon::today()->translatedFormat('l, d F Y') }}
+            <span class="badge bg-light text-secondary border fs-8">
+                <i class="bi bi-clock me-1"></i>{{ now()->format('d M Y') }}
             </span>
         </div>
-        <div class="card-body px-4 pb-4">
-            @if($todaySchedules->isEmpty())
-                <div class="text-center py-5">
-                    <i class="bi bi-calendar-x fs-1 text-muted d-block mb-3"></i>
-                    <h6 class="fw-semibold text-muted mb-1">Tidak Ada Jadwal Mengajar Hari Ini</h6>
-                    <p class="text-muted fs-8 mb-0">Selamat beristirahat atau silakan periksa tab jadwal mingguan.</p>
+
+        {{-- ── Profil Guru ──────────────────────────────────────────── --}}
+        <div class="card border-0 shadow-sm mb-4" style="border-radius:12px;">
+            <div class="card-body p-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;font-weight:700;">
+                            {{ strtoupper(substr($teacher->name ?? auth()->user()->name, 0, 1)) }}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="fw-bold fs-5" style="color:#1e293b;">{{ $teacher->name ?? '-' }}</div>
+                        <div class="text-muted fs-8">
+                            NIP: {{ $teacher->nip ?? '-' }}
+                            @if($teacher->phone)
+                                &nbsp;·&nbsp; {{ $teacher->phone }}
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-pencil me-1"></i>Edit Profil
+                        </a>
+                    </div>
                 </div>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="fs-8 fw-semibold text-muted text-uppercase" style="width: 15%;">Waktu</th>
-                                <th class="fs-8 fw-semibold text-muted text-uppercase">Mata Pelajaran</th>
-                                <th class="fs-8 fw-semibold text-muted text-uppercase">Kelas</th>
-                                <th class="fs-8 fw-semibold text-muted text-uppercase" style="width: 20%;">Status Absensi</th>
-                                <th class="fs-8 fw-semibold text-muted text-uppercase text-end" style="width: 20%;">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($todaySchedules as $schedule)
-                                @php
-                                    $attendance = $todayAttendances->get($schedule->id);
-                                @endphp
-                                <tr>
-                                    <td data-label="Waktu">
-                                        <span class="badge bg-dark bg-opacity-10 text-dark px-2 py-1 fw-semibold fs-8">
-                                            {{ substr($schedule->start_time, 0, 5) }} - {{ substr($schedule->end_time, 0, 5) }}
-                                        </span>
-                                    </td>
-                                    <td data-label="Mata Pelajaran">
-                                        <span class="fw-semibold text-dark">{{ $schedule->subject->name ?? '-' }}</span>
-                                    </td>
-                                    <td data-label="Kelas">
-                                        <span class="fw-semibold text-dark">{{ $schedule->class->name ?? '-' }}</span>
-                                    </td>
-                                    <td data-label="Status Absensi">
-                                        @if($attendance)
-                                            @if($attendance->status === 'submitted')
-                                                <span class="badge bg-success-subtle text-success-emphasis border border-success border-opacity-25 px-2.5 py-1 fs-9">
-                                                    <i class="bi bi-check-circle-fill me-1"></i>Sudah Diisi
-                                                </span>
-                                            @else
-                                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning border-opacity-25 px-2.5 py-1 fs-9">
-                                                    <i class="bi bi-pencil-square me-1"></i>Draf (Belum Kirim)
-                                                </span>
-                                            @endif
-                                        @else
-                                            <span class="badge bg-secondary-subtle text-secondary px-2.5 py-1 fs-9">
-                                                <i class="bi bi-exclamation-circle me-1"></i>Belum Diisi
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td data-label="Aksi" class="text-end">
-                                        @if($attendance && $attendance->status === 'submitted')
-                                            <a href="{{ route('teacher.attendance.input', $schedule->id) }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 fs-8">
-                                                <i class="bi bi-pencil me-1"></i>Ubah Absen
-                                            </a>
-                                        @else
-                                            <a href="{{ route('teacher.attendance.input', $schedule->id) }}" class="btn btn-sm btn-primary rounded-3 px-3 fs-8">
-                                                <i class="bi bi-check2-square me-1"></i>Isi Absensi
-                                            </a>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
+            </div>
         </div>
+
+        {{-- ── Stat Cards ───────────────────────────────────────────── --}}
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#4361ee,#3a0ca3);">
+                    <div class="card-body p-3">
+                        <div class="stat-icon mb-2" style="background:rgba(255,255,255,.2);">
+                            <i class="bi bi-calendar3 text-white"></i>
+                        </div>
+                        <div class="stat-value text-white">{{ $schedulesCount ?? 0 }}</div>
+                        <div class="stat-label text-white opacity-75">Jadwal Hari Ini</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#10b981,#059669);">
+                    <div class="card-body p-3">
+                        <div class="stat-icon mb-2" style="background:rgba(255,255,255,.2);">
+                            <i class="bi bi-check2-square text-white"></i>
+                        </div>
+                        <div class="stat-value text-white">{{ $submittedCount ?? 0 }}</div>
+                        <div class="stat-label text-white opacity-75">Sudah Submit</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                    <div class="card-body p-3">
+                        <div class="stat-icon mb-2" style="background:rgba(255,255,255,.2);">
+                            <i class="bi bi-pencil-square text-white"></i>
+                        </div>
+                        <div class="stat-value text-white">{{ $draftCount ?? 0 }}</div>
+                        <div class="stat-label text-white opacity-75">Draft/Belum Submit</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#ef4444,#b91c1c);">
+                    <div class="card-body p-3">
+                        <div class="stat-icon mb-2" style="background:rgba(255,255,255,.2);">
+                            <i class="bi bi-dash-circle text-white"></i>
+                        </div>
+                        <div class="stat-value text-white">{{ ($schedulesCount ?? 0) - ($submittedCount ?? 0) - ($draftCount ?? 0) }}</div>
+                        <div class="stat-label text-white opacity-75">Belum Diisi</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── Jadwal Mengajar Hari Ini ─────────────────────────────── --}}
+        <div class="card border-0 shadow-sm" style="border-radius:12px;">
+            <div class="card-header bg-white border-bottom py-3 px-4" style="border-radius:12px 12px 0 0;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h6 class="fw-bold mb-0" style="color:#1e293b;">
+                        <i class="bi bi-calendar-week me-2 text-primary"></i>Jadwal Mengajar Hari Ini
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-2 fs-8">
+                            {{ now()->translatedFormat('l, d F Y') }}
+                        </span>
+                    </h6>
+                    <a href="{{ route('teacher.schedules') }}" class="btn btn-sm btn-outline-primary fs-8">
+                        Semua Jadwal <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                @php $schedules = $todaySchedules ?? collect(); @endphp
+                @if(empty($schedules) || (is_object($schedules) && $schedules->isEmpty()) || (is_array($schedules) && count($schedules) === 0))
+                    <div class="text-center py-5">
+                        <i class="bi bi-calendar-x fs-1 text-muted opacity-50 d-block mb-2"></i>
+                        <p class="text-muted mb-0">Tidak ada jadwal mengajar hari ini</p>
+                    </div>
+                @else
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr style="background:#f8fafc;">
+                                    <th class="px-4 py-3 border-0" style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Waktu</th>
+                                    <th class="px-3 py-3 border-0" style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Kelas</th>
+                                    <th class="px-3 py-3 border-0" style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Mata Pelajaran</th>
+                                    <th class="px-3 py-3 border-0 d-none d-md-table-cell" style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Ruang</th>
+                                    <th class="px-3 py-3 border-0" style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($schedules as $schedule)
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size:.82rem;">
+                                                {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }} – {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-3 fw-semibold" style="color:#1e293b;">{{ $schedule->class->name ?? '-' }}</td>
+                                        <td class="px-3 py-3 text-muted">{{ $schedule->subject->name ?? '-' }}</td>
+                                        <td class="px-3 py-3 text-muted d-none d-md-table-cell">{{ $schedule->room ?? '-' }}</td>
+                                        <td class="px-3 py-3">
+                                            <a href="{{ route('teacher.attendance.input', $schedule->id) }}" class="btn btn-sm btn-primary fs-8">
+                                                <i class="bi bi-check2-square me-1"></i>Absen
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+        </div>
+
     </div>
 </x-app-layout>

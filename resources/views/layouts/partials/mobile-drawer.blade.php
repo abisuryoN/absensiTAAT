@@ -2,7 +2,7 @@
     $user = auth()->user();
     $role = $user->roles->first()?->name;
 
-    // Get NIS for students or NIP for teachers
+    // Identity number per role
     $identityNumber = '';
     if ($role === 'super_admin') {
         $identityNumber = 'Administrator';
@@ -10,7 +10,21 @@
         $identityNumber = 'NIP: ' . ($user->teacher->employee_id_number ?? $user->teacher->nip ?? '-');
     } elseif ($role === 'siswa' && $user->student) {
         $identityNumber = 'NIS: ' . ($user->student->student_id_number ?? $user->student->nis ?? '-');
+    } elseif ($role === 'parent' && $user->studentParent) {
+        $identityNumber = 'NIK: ' . ($user->studentParent->nik ?? '-');
+    } elseif ($role === 'guru_piket') {
+        $identityNumber = 'Petugas Piket';
     }
+
+    // Dashboard link per role
+    $dashboardRoute = match($role) {
+        'super_admin' => 'admin.dashboard',
+        'guru'        => 'teacher.dashboard',
+        'siswa'       => 'student.dashboard',
+        'parent'      => 'parent.dashboard',
+        'guru_piket'  => 'piket.scan',
+        default       => 'dashboard',
+    };
 @endphp
 
 {{-- Overlay (tap to close) --}}
@@ -21,7 +35,7 @@
     {{-- HEADER — Logo, School Name & Official Badge                  --}}
     {{-- ============================================================ --}}
     <div class="drawer-header">
-        <a href="{{ route($role === 'super_admin' ? 'admin.dashboard' : ($role === 'guru' ? 'teacher.dashboard' : ($role === 'siswa' ? 'student.dashboard' : 'dashboard'))) }}" class="drawer-logo-link">
+        <a href="{{ route($dashboardRoute) }}" class="drawer-logo-link">
             <img src="{{ asset('images.png') }}" alt="Logo" class="drawer-logo-img">
             <div class="drawer-title-container">
                 <span class="drawer-title-line1">SMAN 1</span>

@@ -1,111 +1,169 @@
 <x-app-layout>
-    @section('title', 'Portal Siswa')
+    @section('title', 'Dashboard Siswa')
 
-    <!-- Welcome Header (Photo 4 style) -->
-    <div class="d-flex align-items-center gap-3 mb-4">
-        <div class="bg-dark bg-opacity-10 text-dark rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background-color: #334155 !important;">
-            <i class="bi bi-eye-slash text-white fs-5"></i>
-        </div>
-        <div>
-            <h4 class="fw-bold mb-1 text-dark">Halo, {{ strtoupper($student->name) }}!</h4>
-            <p class="text-muted mb-0 fs-7">
-                Mode Privasi Aktif: Data sensitif disembunyikan.
-            </p>
-        </div>
-    </div>
+    @push('styles')
+    <style>
+        .stat-card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,.12);
+        }
+        .stat-card .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+        .stat-card .stat-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-top: 2px;
+        }
+        .status-badge-today {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .qr-code-placeholder {
+            width: 180px;
+            height: 180px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #94a3b8;
+        }
+        .qr-refresh-btn {
+            font-size: 0.82rem;
+        }
+    </style>
+    @endpush
 
-    <div class="row g-4">
-        <!-- Main Card: Student Info & Dynamic QR -->
-        <div class="col-12 col-lg-8">
-            <div class="card glass-card border-0 shadow-sm p-4 h-100">
-                <div class="row g-4 align-items-center">
-                    <div class="col-12 col-md-5 text-center">
-                        <!-- Dynamic QR Code Container -->
-                        <div id="qr-container" class="position-relative mx-auto" style="max-width: 220px;">
-                            <div id="qr-code-display" class="bg-white border rounded-4 p-3 d-flex flex-column align-items-center justify-content-center" style="aspect-ratio: 1/1;">
-                                <div id="qr-loading" class="text-center">
-                                    <div class="spinner-border text-primary mb-2" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                    <p class="fs-8 text-muted mb-0">Memuat QR Code...</p>
-                                </div>
-                                <div id="qr-image" class="d-none text-center w-100">
-                                    <!-- QR SVG will be injected here -->
-                                </div>
-                                <div id="qr-error" class="d-none text-center">
-                                    <i class="bi bi-exclamation-triangle fs-1 text-danger mb-2"></i>
-                                    <p class="fs-8 text-danger mb-0">Gagal memuat QR Code</p>
-                                    <button class="btn btn-sm btn-outline-primary mt-2" onclick="generateQr()">
-                                        <i class="bi bi-arrow-clockwise"></i> Coba Lagi
-                                    </button>
+    <div class="main-content-inner">
+
+        {{-- ── Page Header ─────────────────────────────────────────── --}}
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <div>
+                <h4 class="fw-bold mb-0" style="color:#1e293b;">Dashboard Siswa</h4>
+                <p class="text-muted mb-0 fs-7">Selamat datang, {{ auth()->user()->name }}</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-secondary border fs-8">
+                    <i class="bi bi-clock me-1"></i>{{ now()->format('d M Y') }}
+                </span>
+                <a href="{{ route('student.qrcode') }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-qr-code me-1"></i>QR Absensi
+                </a>
+            </div>
+        </div>
+
+        {{-- ── Info Profil & Status Hari Ini ───────────────────────── --}}
+        <div class="row g-3 mb-4">
+            {{-- Profile Card --}}
+            <div class="col-md-5">
+                <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#4361ee,#3a0ca3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700;flex-shrink:0;">
+                                {{ strtoupper(substr($student->name ?? auth()->user()->name, 0, 1)) }}
+                            </div>
+                            <div>
+                                <div class="fw-bold" style="color:#1e293b;font-size:1rem;">{{ $student->name }}</div>
+                                <div class="text-muted fs-8">NIS: {{ $student->student_id_number ?? $student->nis ?? '-' }}</div>
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="p-2 rounded" style="background:#f1f5f9;">
+                                    <div class="fs-8 text-muted">Kelas</div>
+                                    <div class="fw-semibold" style="font-size:0.85rem;color:#1e293b;">{{ $student->class->name ?? '-' }}</div>
                                 </div>
                             </div>
-
-                            <!-- Countdown Progress Ring -->
-                            <div id="qr-countdown" class="d-none mt-2 text-center">
-                                <div class="d-flex align-items-center justify-content-center gap-2">
-                                    <div class="progress flex-grow-1" style="height: 4px; border-radius: 4px;">
-                                        <div id="qr-progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 100%; transition: width 1s linear;"></div>
-                                    </div>
-                                    <span id="qr-timer-text" class="fs-8 fw-bold text-primary" style="min-width: 28px;">30s</span>
+                            <div class="col-6">
+                                <div class="p-2 rounded" style="background:#f1f5f9;">
+                                    <div class="fs-8 text-muted">Status</div>
+                                    @if($student->is_active)
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size:0.75rem;">Aktif</span>
+                                    @else
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size:0.75rem;">Nonaktif</span>
+                                    @endif
                                 </div>
-                                <span class="badge bg-indigo-50 text-indigo-700 mt-1 fs-9">
-                                    <i class="bi bi-shield-lock-fill me-1"></i>One-Time Token
-                                </span>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-7">
-                        <span class="badge bg-primary bg-opacity-10 text-primary fw-bold text-uppercase px-3 py-1 mb-2 fs-8">
-                            @if($student->is_active)
-                                <i class="bi bi-check-circle-fill me-1"></i>Siswa Aktif
-                            @else
-                                <i class="bi bi-x-circle-fill me-1"></i>Siswa Tidak Aktif
-                            @endif
-                        </span>
-                        <h3 class="fw-bold mb-1">{{ $student->name }}</h3>
-                        <p class="text-muted mb-3 fs-7">
-                            NIS: {{ $student->nis ?? '-' }}
-                            @if($student->class)
-                                &bull; Kelas: {{ $student->class->name }}
-                            @endif
-                        </p>
+                </div>
+            </div>
 
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <div class="p-3 bg-light rounded-3">
-                                    <span class="fs-8 text-muted d-block text-uppercase fw-semibold">Kehadiran Bulan Ini</span>
-                                    <span class="fs-4 fw-bold {{ $attendancePercent >= 90 ? 'text-success' : ($attendancePercent >= 75 ? 'text-warning' : 'text-danger') }} mt-1 d-block">
-                                        {{ $attendancePercent }}%
-                                    </span>
-                                </div>
+            {{-- Status Kehadiran Bulan Ini --}}
+            <div class="col-md-7">
+                <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="fw-bold" style="color:#1e293b;">Kehadiran Bulan Ini</span>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-8">
+                                {{ now()->format('F Y') }}
+                            </span>
+                        </div>
+                        {{-- Progress bar --}}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between fs-8 text-muted mb-1">
+                                <span>Persentase Kehadiran</span>
+                                <span class="fw-bold text-primary">{{ $attendancePercent }}%</span>
                             </div>
-                            <div class="col-6">
-                                <div class="p-3 bg-light rounded-3">
-                                    <span class="fs-8 text-muted d-block text-uppercase fw-semibold">Total Terlambat</span>
-                                    <span class="fs-4 fw-bold text-warning mt-1 d-block">{{ $terlambatCount }}x</span>
-                                </div>
+                            <div class="progress" style="height:8px;border-radius:50px;">
+                                <div class="progress-bar bg-primary" style="width:{{ $attendancePercent }}%;border-radius:50px;"></div>
                             </div>
                         </div>
-
-                        <!-- Mini stats row -->
-                        <div class="row g-2 mt-2">
-                            <div class="col-4">
-                                <div class="text-center p-2 bg-success bg-opacity-10 rounded-3">
-                                    <span class="d-block fw-bold text-success">{{ $hadirCount }}</span>
-                                    <span class="fs-9 text-muted">Hadir</span>
+                        {{-- Mini stats --}}
+                        <div class="row g-2">
+                            <div class="col">
+                                <div class="text-center p-2 rounded" style="background:#dcfce7;">
+                                    <div class="fw-bold" style="color:#16a34a;font-size:1.1rem;">{{ $hadirCount }}</div>
+                                    <div class="fs-8" style="color:#15803d;">Hadir</div>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <div class="text-center p-2 bg-info bg-opacity-10 rounded-3">
-                                    <span class="d-block fw-bold text-info">{{ $izinCount + $sakitCount }}</span>
-                                    <span class="fs-9 text-muted">Izin/Sakit</span>
+                            <div class="col">
+                                <div class="text-center p-2 rounded" style="background:#fef9c3;">
+                                    <div class="fw-bold" style="color:#ca8a04;font-size:1.1rem;">{{ $terlambatCount }}</div>
+                                    <div class="fs-8" style="color:#a16207;">Terlambat</div>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <div class="text-center p-2 bg-danger bg-opacity-10 rounded-3">
-                                    <span class="d-block fw-bold text-danger">{{ $alphaCount }}</span>
-                                    <span class="fs-9 text-muted">Alpha</span>
+                            <div class="col">
+                                <div class="text-center p-2 rounded" style="background:#dbeafe;">
+                                    <div class="fw-bold" style="color:#2563eb;font-size:1.1rem;">{{ $izinCount }}</div>
+                                    <div class="fs-8" style="color:#1d4ed8;">Izin</div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="text-center p-2 rounded" style="background:#fce7f3;">
+                                    <div class="fw-bold" style="color:#db2777;font-size:1.1rem;">{{ $sakitCount }}</div>
+                                    <div class="fs-8" style="color:#be185d;">Sakit</div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="text-center p-2 rounded" style="background:#fee2e2;">
+                                    <div class="fw-bold" style="color:#dc2626;font-size:1.1rem;">{{ $alphaCount }}</div>
+                                    <div class="fs-8" style="color:#b91c1c;">Alpha</div>
                                 </div>
                             </div>
                         </div>
@@ -114,210 +172,144 @@
             </div>
         </div>
 
-        <!-- Schedule list on right -->
-        <div class="col-12 col-lg-4">
-            <div class="card glass-card border-0 shadow-sm p-4 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h5 class="fw-bold mb-0">
-                        <i class="bi bi-calendar3 me-2 text-primary"></i>Jadwal Hari Ini
-                    </h5>
-                    <a href="{{ route('student.schedule') }}" class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-arrow-right"></i>
+        {{-- ── Stat Cards ───────────────────────────────────────────── --}}
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-4 col-xl">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#4361ee,#3a0ca3);">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="stat-icon" style="background:rgba(255,255,255,.2);">
+                                <i class="bi bi-check-circle text-white"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value text-white">{{ $hadirCount }}</div>
+                        <div class="stat-label text-white opacity-75">Hadir</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="stat-icon" style="background:rgba(255,255,255,.2);">
+                                <i class="bi bi-clock text-white"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value text-white">{{ $terlambatCount }}</div>
+                        <div class="stat-label text-white opacity-75">Terlambat</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#10b981,#059669);">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="stat-icon" style="background:rgba(255,255,255,.2);">
+                                <i class="bi bi-file-text text-white"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value text-white">{{ $izinCount }}</div>
+                        <div class="stat-label text-white opacity-75">Izin</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#ec4899,#be185d);">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="stat-icon" style="background:rgba(255,255,255,.2);">
+                                <i class="bi bi-heart-pulse text-white"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value text-white">{{ $sakitCount }}</div>
+                        <div class="stat-label text-white opacity-75">Sakit</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#ef4444,#b91c1c);">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="stat-icon" style="background:rgba(255,255,255,.2);">
+                                <i class="bi bi-x-circle text-white"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value text-white">{{ $alphaCount }}</div>
+                        <div class="stat-label text-white opacity-75">Alpha</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="stat-icon" style="background:rgba(255,255,255,.2);">
+                                <i class="bi bi-calendar3 text-white"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value text-white">{{ $totalDays }}</div>
+                        <div class="stat-label text-white opacity-75">Total Hari</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── Jadwal Hari Ini ──────────────────────────────────────── --}}
+        <div class="card border-0 shadow-sm" style="border-radius:12px;">
+            <div class="card-header bg-white border-bottom py-3 px-4" style="border-radius:12px 12px 0 0;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h6 class="fw-bold mb-0" style="color:#1e293b;">
+                        <i class="bi bi-calendar-week me-2 text-primary"></i>Jadwal Hari Ini
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-2 fs-8">
+                            {{ now()->translatedFormat('l, d F Y') }}
+                        </span>
+                    </h6>
+                    <a href="{{ route('student.schedule') }}" class="btn btn-sm btn-outline-primary fs-8">
+                        Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
                     </a>
                 </div>
-
+            </div>
+            <div class="card-body p-0">
                 @if($todaySchedules->isEmpty())
-                    <div class="text-center py-4">
-                        <i class="bi bi-emoji-smile fs-1 text-muted mb-2 d-block"></i>
-                        <p class="text-muted mb-0">Tidak ada jadwal hari ini</p>
+                    <div class="text-center py-5">
+                        <i class="bi bi-calendar-x fs-1 text-muted opacity-50 d-block mb-2"></i>
+                        <p class="text-muted mb-0">Tidak ada jadwal pelajaran hari ini</p>
                     </div>
                 @else
-                    <div class="timeline">
-                        @foreach($todaySchedules as $schedule)
-                            <div class="p-3 bg-light rounded-3 mb-2 border-start border-4 {{ $loop->first ? 'border-primary' : 'border-secondary' }}">
-                                <span class="fs-8 text-muted fw-semibold">
-                                    {{ substr($schedule->start_time, 0, 5) }} - {{ substr($schedule->end_time, 0, 5) }}
-                                </span>
-                                <h6 class="fw-bold mb-0 mt-1">{{ $schedule->subject->name ?? '-' }}</h6>
-                                <div class="d-flex align-items-center gap-2 mt-1">
-                                    <span class="fs-8 text-muted">
-                                        <i class="bi bi-person-fill me-1"></i>{{ $schedule->teacher->name ?? '-' }}
-                                    </span>
-                                    @if($schedule->room)
-                                        <span class="fs-8 text-muted">
-                                            <i class="bi bi-geo-alt-fill me-1"></i>{{ $schedule->room }}
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr style="background:#f8fafc;">
+                                    <th class="px-4 py-3 border-0" style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Waktu</th>
+                                    <th class="px-3 py-3 border-0" style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Mata Pelajaran</th>
+                                    <th class="px-3 py-3 border-0 d-none d-md-table-cell" style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Guru</th>
+                                    <th class="px-3 py-3 border-0 d-none d-md-table-cell" style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Ruang</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($todaySchedules as $schedule)
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size:.82rem;">
+                                                {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }} – {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-3 fw-semibold" style="color:#1e293b;">{{ $schedule->subject->name ?? '-' }}</td>
+                                        <td class="px-3 py-3 text-muted d-none d-md-table-cell">{{ $schedule->teacher->name ?? '-' }}</td>
+                                        <td class="px-3 py-3 text-muted d-none d-md-table-cell">{{ $schedule->room ?? '-' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 @endif
             </div>
         </div>
 
-        <!-- Quick Links -->
-        <div class="col-12">
-            <div class="row g-3">
-                <div class="col-6 col-md-3">
-                    <a href="{{ route('student.schedule') }}" class="card glass-card border-0 shadow-sm p-3 text-decoration-none text-center h-100 hover-lift">
-                        <i class="bi bi-calendar3 fs-2 text-primary mb-2"></i>
-                        <span class="fw-semibold text-dark fs-7">Jadwal Mingguan</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-3">
-                    <a href="{{ route('student.history') }}" class="card glass-card border-0 shadow-sm p-3 text-decoration-none text-center h-100 hover-lift">
-                        <i class="bi bi-clock-history fs-2 text-success mb-2"></i>
-                        <span class="fw-semibold text-dark fs-7">Riwayat Hadir</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-3">
-                    <a href="{{ route('profile.edit') }}" class="card glass-card border-0 shadow-sm p-3 text-decoration-none text-center h-100 hover-lift">
-                        <i class="bi bi-person-gear fs-2 text-info mb-2"></i>
-                        <span class="fw-semibold text-dark fs-7">Edit Profil</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card glass-card border-0 shadow-sm p-3 text-center h-100">
-                        <i class="bi bi-bell fs-2 text-warning mb-2"></i>
-                        <span class="fw-semibold text-dark fs-7">Notifikasi</span>
-                        <span class="badge bg-secondary mt-1 fs-9">Segera Hadir</span>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-
     @push('scripts')
     <script>
-        const QR_GENERATE_URL = "{{ route('student.qrcode.generate') }}";
-        const CSRF_TOKEN = "{{ csrf_token() }}";
-        const QR_TTL = {{ $qrTtl }};
-
-        let countdownInterval = null;
-        let refreshTimeout = null;
-        let remainingSeconds = QR_TTL;
-
-        function generateQr() {
-            // Show loading
-            document.getElementById('qr-loading').classList.remove('d-none');
-            document.getElementById('qr-image').classList.add('d-none');
-            document.getElementById('qr-error').classList.add('d-none');
-            document.getElementById('qr-countdown').classList.add('d-none');
-
-            clearInterval(countdownInterval);
-            clearTimeout(refreshTimeout);
-
-            fetch(QR_GENERATE_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': CSRF_TOKEN,
-                    'Accept': 'application/json',
-                },
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    // Decode and display QR SVG
-                    const svgData = atob(data.data.qr_svg);
-                    document.getElementById('qr-image').innerHTML = svgData;
-
-                    // Show QR, hide loading
-                    document.getElementById('qr-loading').classList.add('d-none');
-                    document.getElementById('qr-image').classList.remove('d-none');
-                    document.getElementById('qr-countdown').classList.remove('d-none');
-
-                    // Start countdown
-                    startCountdown(data.data.ttl_seconds);
-
-                    // Auto-refresh 5 seconds before expiry
-                    const refreshDelay = (data.data.ttl_seconds - 5) * 1000;
-                    refreshTimeout = setTimeout(() => {
-                        generateQr();
-                    }, Math.max(refreshDelay, 5000));
-                } else {
-                    showQrError();
-                }
-            })
-            .catch(() => {
-                showQrError();
-            });
-        }
-
-        function showQrError() {
-            document.getElementById('qr-loading').classList.add('d-none');
-            document.getElementById('qr-image').classList.add('d-none');
-            document.getElementById('qr-error').classList.remove('d-none');
-            document.getElementById('qr-countdown').classList.add('d-none');
-        }
-
-        function startCountdown(seconds) {
-            remainingSeconds = seconds;
-            const progressBar = document.getElementById('qr-progress-bar');
-            const timerText = document.getElementById('qr-timer-text');
-
-            updateCountdownUI(progressBar, timerText, seconds);
-
-            countdownInterval = setInterval(() => {
-                remainingSeconds--;
-                if (remainingSeconds <= 0) {
-                    clearInterval(countdownInterval);
-                    return;
-                }
-                updateCountdownUI(progressBar, timerText, seconds);
-            }, 1000);
-        }
-
-        function updateCountdownUI(progressBar, timerText, totalSeconds) {
-            const pct = (remainingSeconds / totalSeconds) * 100;
-            progressBar.style.width = pct + '%';
-            timerText.textContent = remainingSeconds + 's';
-
-            // Color change based on remaining time
-            if (remainingSeconds <= 5) {
-                progressBar.className = 'progress-bar bg-danger';
-                timerText.className = 'fs-8 fw-bold text-danger';
-            } else if (remainingSeconds <= 10) {
-                progressBar.className = 'progress-bar bg-warning';
-                timerText.className = 'fs-8 fw-bold text-warning';
-            } else {
-                progressBar.className = 'progress-bar bg-primary';
-                timerText.className = 'fs-8 fw-bold text-primary';
-            }
-        }
-
-        // Initial load
-        document.addEventListener('DOMContentLoaded', () => {
-            generateQr();
-        });
-
-        // Pause/Resume on tab visibility
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                clearInterval(countdownInterval);
-                clearTimeout(refreshTimeout);
-            } else {
-                generateQr(); // Refresh immediately when tab becomes visible
-            }
-        });
+        // Nothing special needed — QR generation is on the qrcode page
     </script>
     @endpush
-
-    <style>
-        .fs-9 { font-size: 0.7rem; }
-        .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.1); }
-        .text-indigo-700 { color: #4338ca; }
-        .hover-lift {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .hover-lift:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
-        }
-        #qr-image svg {
-            width: 100%;
-            height: auto;
-        }
-    </style>
 </x-app-layout>
