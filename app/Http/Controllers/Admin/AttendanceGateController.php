@@ -42,7 +42,7 @@ class AttendanceGateController extends Controller
     public function scan(Request $request)
     {
         $request->validate([
-            'scan_value' => 'required|string',
+            'scan_value' => 'required|string|max:255',
         ]);
 
         $value = trim($request->input('scan_value'));

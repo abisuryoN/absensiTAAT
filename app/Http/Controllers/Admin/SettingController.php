@@ -18,7 +18,16 @@ class SettingController extends Controller
     {
         $data = $request->except('_token');
 
+        // Whitelist: only allow keys that already exist in the settings table.
+        // This prevents an authenticated admin from injecting arbitrary keys.
+        $allowedKeys = Setting::pluck('key')->all();
+
         foreach ($data as $key => $value) {
+            // Skip any key not in the whitelist
+            if (!in_array($key, $allowedKeys, true)) {
+                continue;
+            }
+
             $setting = Setting::where('key', $key)->first();
             if ($setting) {
                 // If it is a boolean, cast it
