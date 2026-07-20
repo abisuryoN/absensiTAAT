@@ -35,6 +35,13 @@
     </div>
 
     {{-- ============================================================ --}}
+    {{-- TAHUN AJARAN — Dropdown (super_admin) / badge read-only (lainnya) --}}
+    {{-- ============================================================ --}}
+    <div class="drawer-tahun-ajaran-wrap">
+        @include('layouts.partials.sidebar-academic-year')
+    </div>
+
+    {{-- ============================================================ --}}
     {{-- NAVIGATION — Gunakan shared partial agar konsisten dengan desktop --}}
     {{-- ============================================================ --}}
     <nav class="drawer-nav">

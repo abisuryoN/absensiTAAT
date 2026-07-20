@@ -224,4 +224,31 @@
     font-size: 1rem;
     margin: 0 auto;
 }
+
+/* ---- Mobile drawer: full-width with proper spacing ---- */
+.drawer-tahun-ajaran-wrap .sidebar-tahun-ajaran {
+    padding: 0 1rem;
+    margin-bottom: 0;
+}
+
+.drawer-tahun-ajaran-wrap {
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.drawer-tahun-ajaran-wrap .sidebar-ta-value {
+    max-width: 100%;
+}
+
+/* Ensure dropdown menu in drawer doesn't overflow the drawer panel */
+.drawer-tahun-ajaran-wrap .sidebar-ta-menu {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: auto !important;
+    margin: 0 1rem !important;
+    transform: none !important;
+    top: auto !important;
+}
 </style>
