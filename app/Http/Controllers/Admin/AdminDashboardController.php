@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AcademicYear;
 use App\Models\Student;
 use App\Models\AttendanceGate;
 use App\Models\ActivityLog;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
@@ -98,5 +100,20 @@ class AdminDashboardController extends Controller
             'chartAlpha',
             'activities'
         ));
+    }
+
+    /**
+     * Store the Super Admin's selected academic year in session.
+     * All data pages will then filter by this year instead of the system-active one.
+     */
+    public function switchAcademicYear(Request $request)
+    {
+        $request->validate([
+            'academic_year_id' => 'required|integer|exists:academic_years,id',
+        ]);
+
+        session(['selected_academic_year_id' => $request->integer('academic_year_id')]);
+
+        return back();
     }
 }

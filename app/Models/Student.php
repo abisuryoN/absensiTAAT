@@ -50,6 +50,12 @@ class Student extends Model
         return $this->belongsTo(SchoolClass::class, 'class_id');
     }
 
+    // Alias for class() to avoid PHP reserved word conflicts
+    public function schoolClass(): BelongsTo
+    {
+        return $this->belongsTo(SchoolClass::class, 'class_id');
+    }
+
     public function attendanceGates(): HasMany
     {
         return $this->hasMany(AttendanceGate::class);

@@ -44,8 +44,31 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
     ->name('admin.')
     ->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/academic-year/switch', [AdminDashboardController::class, 'switchAcademicYear'])->name('academic-year.switch');
 
         // Master Data CRUD Resources
+        // Academic Year Transition Routes (MUST come BEFORE resource to avoid route conflict)
+        Route::prefix('academic-years/transition')->name('academic-years.transition.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\AcademicYearTransitionController::class, 'index'])->name('index');
+
+            // Grade 10 ke 11 (dengan penjurusan)
+            Route::get('/grade10-to-11', [\App\Http\Controllers\Admin\AcademicYearTransitionController::class, 'grade10To11'])->name('grade10-to-11');
+            Route::get('/get-grade11-classes', [\App\Http\Controllers\Admin\AcademicYearTransitionController::class, 'getGrade11Classes'])->name('get-grade11-classes');
+            Route::post('/process-grade10-to-11', [\App\Http\Controllers\Admin\AcademicYearTransitionController::class, 'processGrade10To11'])->name('process-grade10-to-11');
+
+            // Grade 11 ke 12 (auto-mapping jurusan)
+            Route::get('/grade11-to-12', [\App\Http\Controllers\Admin\AcademicYearTransitionController::class, 'grade11To12'])->name('grade11-to-12');
+            Route::post('/process-grade11-to-12', [\App\Http\Controllers\Admin\AcademicYearTransitionController::class, 'processGrade11To12'])->name('process-grade11-to-12');
+
+            // Grade 12 kelulusan
+            Route::get('/grade12-graduate', [\App\Http\Controllers\Admin\AcademicYearTransitionController::class, 'grade12Graduate'])->name('grade12-graduate');
+            Route::post('/process-grade12-graduate', [\App\Http\Controllers\Admin\AcademicYearTransitionController::class, 'processGrade12Graduate'])->name('process-grade12-graduate');
+
+            // Finalisasi & aktivasi tahun ajaran baru
+            Route::get('/finalize', [\App\Http\Controllers\Admin\AcademicYearTransitionController::class, 'finalize'])->name('finalize');
+            Route::post('/activate-new-year', [\App\Http\Controllers\Admin\AcademicYearTransitionController::class, 'activateNewYear'])->name('activate-new-year');
+        });
+        
         Route::resource('academic-years', AcademicYearController::class);
         Route::resource('semesters', SemesterController::class);
         Route::resource('majors', MajorController::class);

@@ -23,6 +23,9 @@
         </span>
     </div>
     
+    {{-- Tahun Ajaran selector (dropdown for super_admin, static badge for other roles) --}}
+    @include('layouts.partials.sidebar-academic-year')
+
     <div class="sidebar-nav-container flex-grow-1">
         <ul class="nav nav-pills flex-column sidebar-menu">
             @include('layouts.partials.sidebar-menu-items', ['variant' => 'desktop'])

@@ -71,6 +71,7 @@ PARAMETER:
                 ['label' => 'Data Guru',          'icon' => 'bi-person-badge',       'route' => 'admin.teachers.index'],
                 ['label' => 'Data Kelas',         'icon' => 'bi-building',           'route' => 'admin.classes.index'],
                 ['label' => 'Tahun Ajaran',       'icon' => 'bi-calendar-check',     'route' => 'admin.academic-years.index'],
+                ['label' => 'Mulai Tahun Ajaran Baru', 'icon' => 'bi-arrow-repeat',  'route' => 'admin.academic-years.transition.index'],
                 ['label' => 'Semester',           'icon' => 'bi-calendar-range',     'route' => 'admin.semesters.index'],
                 ['label' => 'Jurusan',            'icon' => 'bi-diagram-3',          'route' => 'admin.majors.index'],
                 ['label' => 'Mata Pelajaran',     'icon' => 'bi-book',               'route' => 'admin.subjects.index'],
