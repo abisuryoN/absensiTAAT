@@ -114,6 +114,11 @@ class AttendanceSeeder extends Seeder
                     default     => '00:00:00', // izin / sakit
                 };
 
+                // izin/sakit = always manual; hadir/terlambat = 88% barcode, 12% manual
+                $method = in_array($statusRoll, ['izin', 'sakit'])
+                    ? 'manual'
+                    : $faker->randomElement(array_merge(array_fill(0, 88, 'barcode'), array_fill(0, 12, 'manual')));
+
                 $records[] = [
                     'student_id'       => $studentId,
                     'academic_year_id' => $academicYear->id,
@@ -121,7 +126,7 @@ class AttendanceSeeder extends Seeder
                     'date'             => $date,
                     'time_in'          => $timeIn,
                     'status'           => $statusRoll,
-                    'method'           => $faker->randomElement(['barcode', 'barcode', 'barcode', 'manual']),
+                    'method'           => $method,
                     'note'             => null,
                     'scanned_by'       => $scannerUser,
                     'petugas_piket_id' => $faker->randomElement($petugasIds),
