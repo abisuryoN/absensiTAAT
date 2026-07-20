@@ -10,6 +10,7 @@ use App\Models\Major;
 use App\Models\AcademicYear;
 use App\Models\Semester;
 use App\Services\AttendanceGateService;
+use App\Services\ActivityLogService;
 use App\Exports\AttendanceGateExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -54,6 +55,8 @@ class AttendanceGateController extends Controller
             }
 
             $student = $attendance->student;
+
+            ActivityLogService::logAttendanceScan($student->name, $attendance->status);
 
             return response()->json([
                 'success' => true,
@@ -294,6 +297,10 @@ class AttendanceGateController extends Controller
             $filename .= '_sd_' . $dateTo->format('Y-m-d');
         }
 
+        // Log the export
+        $exportCount = is_countable($rows) ? count($rows) : $rows->count();
+        ActivityLogService::logExport('Absensi', $exportCount, strtoupper($request->format));
+
         if ($request->format === 'pdf') {
             $pdf = Pdf::loadView('admin.attendance.export-pdf', [
                 'rows'         => $rows,
@@ -425,6 +432,11 @@ class AttendanceGateController extends Controller
                 $request->note,
                 Auth::id()
             );
+
+            $student = \App\Models\Student::find($request->student_id);
+            if ($student) {
+                ActivityLogService::logAttendanceManual($student->name, $request->status);
+            }
 
             return redirect()->route('admin.attendance.today')
                 ->with('success', 'Absensi manual berhasil disimpan.');

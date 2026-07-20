@@ -20,6 +20,8 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AccountManagementController;
+use App\Http\Controllers\Admin\SuperAdminController;
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Parent\ParentPortalController;
 
 Route::get('/', function () {
@@ -103,6 +105,16 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         // Manajemen Akun Login
         Route::get('/accounts', [AccountManagementController::class, 'index'])->name('accounts.index');
         Route::post('/accounts/reset-password', [AccountManagementController::class, 'resetPassword'])->name('accounts.reset-password');
+
+        // Manajemen Super Admin
+        Route::get('/super-admins', [SuperAdminController::class, 'index'])->name('super-admins.index');
+        Route::get('/super-admins/create', [SuperAdminController::class, 'create'])->name('super-admins.create');
+        Route::post('/super-admins', [SuperAdminController::class, 'store'])->name('super-admins.store');
+        Route::patch('/super-admins/{superAdmin}/toggle-active', [SuperAdminController::class, 'toggleActive'])->name('super-admins.toggle-active');
+
+        // Log Aktivitas
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+        Route::get('/activity-logs/modules-by-role', [ActivityLogController::class, 'modulesByRole'])->name('activity-logs.modules-by-role');
 
         // Absensi Gerbang
         Route::get('/attendance/scan', [\App\Http\Controllers\Admin\AttendanceGateController::class, 'index'])->name('attendance.scan');

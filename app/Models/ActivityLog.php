@@ -10,7 +10,9 @@ class ActivityLog extends Model
 {
     protected $fillable = [
         'user_id',
+        'causer_role',
         'action',
+        'module',
         'model_type',
         'model_id',
         'description',
@@ -28,8 +30,8 @@ class ActivityLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function model(): MorphTo
+    public function subject(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo('model');
     }
 }

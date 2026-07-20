@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ParentRequest;
 use App\Models\StudentParent;
 use App\Services\ParentService;
+use App\Services\ActivityLogService;
 use App\Exports\ParentReferenceExport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -32,7 +33,8 @@ class ParentController extends Controller
 
     public function store(ParentRequest $request)
     {
-        $this->service->store($request->validated());
+        $parent = $this->service->store($request->validated());
+        ActivityLogService::log('create', "Menambahkan data orang tua: {$parent->name}", $parent, null, 'Data Orang Tua');
         return redirect()->route('admin.parents.index')
             ->with('success', 'Data orang tua/wali berhasil ditambahkan.');
     }
@@ -51,14 +53,18 @@ class ParentController extends Controller
 
     public function update(ParentRequest $request, StudentParent $parent)
     {
+        $original = $parent->getOriginal();
         $this->service->update($parent, $request->validated());
+        ActivityLogService::log('update', "Mengubah data orang tua: {$parent->name}", $parent, ['old' => $original], 'Data Orang Tua');
         return redirect()->route('admin.parents.index')
             ->with('success', 'Data orang tua/wali berhasil diperbarui.');
     }
 
     public function destroy(StudentParent $parent)
     {
+        $name = $parent->name;
         $this->service->delete($parent);
+        ActivityLogService::log('delete', "Menghapus data orang tua: {$name}", null, null, 'Data Orang Tua');
         return redirect()->route('admin.parents.index')
             ->with('success', 'Data orang tua/wali berhasil dihapus.');
     }

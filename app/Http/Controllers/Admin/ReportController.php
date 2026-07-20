@@ -12,6 +12,7 @@ use App\Exports\AttendanceGateExport;
 use App\Exports\AttendanceSubjectExport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Services\ActivityLogService;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -59,9 +60,11 @@ class ReportController extends Controller
 
         if ($reportType === 'gate') {
             $data = $this->getGateQuery($request)->get();
+            ActivityLogService::logExport('Absensi Gerbang', $data->count(), 'Excel');
             return Excel::download(new AttendanceGateExport($data), $fileName);
         } else {
             $data = $this->getSubjectQuery($request)->get();
+            ActivityLogService::logExport('Absensi Mapel', $data->count(), 'Excel');
             return Excel::download(new AttendanceSubjectExport($data), $fileName);
         }
     }
@@ -80,10 +83,12 @@ class ReportController extends Controller
 
         if ($reportType === 'gate') {
             $data = $this->getGateQuery($request)->get();
+            ActivityLogService::logExport('Absensi Gerbang', $data->count(), 'PDF');
             $pdf = Pdf::loadView('admin.reports.pdf_gate', compact('data', 'schoolProfile', 'startDate', 'endDate'));
             return $pdf->setPaper('a4', 'portrait')->download($fileName);
         } else {
             $data = $this->getSubjectQuery($request)->get();
+            ActivityLogService::logExport('Absensi Mapel', $data->count(), 'PDF');
             $pdf = Pdf::loadView('admin.reports.pdf_subject', compact('data', 'schoolProfile', 'startDate', 'endDate'));
             return $pdf->setPaper('a4', 'landscape')->download($fileName);
         }

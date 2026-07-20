@@ -84,6 +84,10 @@ PARAMETER:
                 ['label' => 'Manajemen Akun',     'icon' => 'bi-shield-lock',            'route' => 'admin.accounts.index'],
                 ['label' => 'Pengaturan Sistem',  'icon' => 'bi-gear',                   'route' => 'admin.settings.index'],
             ],
+            'SUPER ADMIN' => [
+                ['label' => 'Manajemen Super Admin', 'icon' => 'bi-person-gear',         'route' => 'admin.super-admins.index'],
+                ['label' => 'Log Aktivitas',          'icon' => 'bi-journal-text',        'route' => 'admin.activity-logs.index'],
+            ],
             'LAINNYA' => [
                 ['label' => 'Profil',             'icon' => 'bi-person-circle',      'route' => 'profile.edit'],
             ],

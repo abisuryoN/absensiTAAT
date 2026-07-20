@@ -9,6 +9,7 @@ use App\Models\StudentParent;
 use App\Models\Major;
 use App\Models\SchoolClass;
 use App\Services\PasswordGeneratorService;
+use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
@@ -195,6 +196,8 @@ class AccountManagementController extends Controller
         }
 
         $user->update(['password' => Hash::make($newPassword)]);
+
+        ActivityLogService::logPasswordReset($name, $type);
 
         return redirect()->route('admin.accounts.index')
             ->with('reset_result', [

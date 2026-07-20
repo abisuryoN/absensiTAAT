@@ -9,6 +9,7 @@ use App\Models\SchoolClass;
 use App\Models\Major;
 use App\Models\StudentParent;
 use App\Services\StudentService;
+use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
@@ -37,7 +38,8 @@ class StudentController extends Controller
 
     public function store(StudentRequest $request)
     {
-        $this->service->store($request->validated());
+        $student = $this->service->store($request->validated());
+        ActivityLogService::log('create', "Menambahkan data siswa: {$student->name}", $student, null, 'Data Siswa');
         return redirect()->route('admin.students.index')->with('success', 'Data siswa berhasil ditambahkan.');
     }
 
@@ -50,14 +52,18 @@ class StudentController extends Controller
 
     public function update(StudentRequest $request, Student $student)
     {
+        $original = $student->getOriginal();
         $this->service->update($student, $request->validated());
+        ActivityLogService::log('update', "Mengubah data siswa: {$student->name}", $student, ['old' => $original], 'Data Siswa');
         return redirect()->route('admin.students.index')->with('success', 'Data siswa berhasil diperbarui.');
     }
 
     public function destroy(Student $student)
     {
         try {
+            $name = $student->name;
             $this->service->delete($student);
+            ActivityLogService::log('delete', "Menghapus data siswa: {$name}", null, null, 'Data Siswa');
             return redirect()->route('admin.students.index')->with('success', 'Data siswa berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('admin.students.index')->with('error', $e->getMessage());

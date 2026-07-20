@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\ImportService;
+use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\Templates\StudentImportWithParentsExport;
@@ -67,6 +68,15 @@ class ImportController extends Controller
             
             // Clear session data
             session()->forget(['import_type', 'import_rows']);
+
+            $typeLabel = match($type) {
+                'students' => 'Siswa',
+                'teachers' => 'Guru',
+                'classes'  => 'Kelas',
+                'schedules'=> 'Jadwal',
+                default    => ucfirst($type),
+            };
+            ActivityLogService::logImport($typeLabel, $successCount);
 
             return redirect()->route('admin.imports.index')->with('success', "Berhasil mengimpor {$successCount} data {$type}.");
         } catch (\Exception $e) {
