@@ -104,7 +104,7 @@
                                         'create' => ['bg' => 'bg-success', 'icon' => 'bi-plus-circle'],
                                         'update' => ['bg' => 'bg-info', 'icon' => 'bi-pencil'],
                                         'delete' => ['bg' => 'bg-danger', 'icon' => 'bi-trash'],
-                                        'scan' => ['bg' => 'bg-indigo', 'icon' => 'bi-qr-code-scan'],
+                                        'scan' => ['bg' => 'bg-light-blue', 'icon' => 'bi-qr-code-scan'],
                                         'login' => ['bg' => 'bg-primary', 'icon' => 'bi-box-arrow-in-right'],
                                         'import' => ['bg' => 'bg-warning text-dark', 'icon' => 'bi-file-earmark-arrow-up'],
                                     ];
@@ -207,7 +207,7 @@
     @endpush
 
     <style>
-        .bg-indigo { background-color: #6366f1; color: white; }
+        .bg-light-blue { background-color: #eef4ff; color: #334155; }
 
         /* Card Statistik - Grid rapi dengan rounded corner & floating effect */
         .card-stat {
