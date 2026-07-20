@@ -4,7 +4,7 @@
 // Bootstrap Variable Overrides (must be before Bootstrap import)
 $font-family-sans-serif: 'Outfit', sans-serif;
 $font-size-base: 0.875rem; // Reduced from default 1rem to 0.875rem (14px)
-$primary: #4f46e5;
+$primary: #eef4ff;
 $secondary: #7c3aed;
 $success: #10b981;
 $info: #0ea5e9;
@@ -257,7 +257,7 @@ body {
             color: #1e293b;
             background: #eef2ff;
             i {
-                color: #6366f1;
+                color: #eef4ff;
             }
         }
 
@@ -293,7 +293,7 @@ body {
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: #eef4ff;
             color: #ffffff;
             display: flex;
             align-items: center;

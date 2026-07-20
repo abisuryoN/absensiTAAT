@@ -10,7 +10,7 @@
             <!-- School Profile & Active Period Info -->
             <div class="d-none d-md-flex flex-column align-items-end me-3 text-end">
                 <span class="text-xs text-muted fw-semibold">TAHUN AJARAN</span>
-                <span class="badge bg-indigo-50 text-indigo-700 fw-bold px-3 py-2 mt-1 fs-8">
+                <span class="badge bg-blue-50 text-blue-400 fw-bold px-3 py-2 mt-1 fs-8">
                     {{ \App\Models\AcademicYear::active()->first()?->name ?? '-' }} ({{ \App\Models\Semester::active()->first()?->name ?? '-' }})
                 </span>
             </div>
@@ -21,7 +21,7 @@
                     @if(auth()->user()->avatar)
                         <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="" width="36" height="36" class="rounded-circle shadow-sm">
                     @else
-                        <div class="bg-indigo-600 text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width:36px; height:36px; font-weight:600;">
+                        <div class="bg-blue-200 text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width:36px; height:36px; font-weight:600;">
                             {{ substr(auth()->user()->name, 0, 1) }}
                         </div>
                     @endif
@@ -66,10 +66,10 @@
 .dropdown-menu-item:hover {
     background-color: #f8fafc;
 }
-.bg-indigo-50 {
+.bg-blue-50 {
     background-color: #e0e7ff;
 }
-.text-indigo-700 {
+.text-blue-400 {
     color: #4338ca;
 }
 .text-xs { font-size: 0.7rem; }

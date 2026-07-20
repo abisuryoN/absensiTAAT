@@ -22,13 +22,13 @@
             transition: all 0.2s ease;
             
             &:hover {
-                border-color: #6366f1;
+                border-color: #eef4ff;
             }
             
             &:focus,
             &.active {
                 outline: none;
-                border-color: #6366f1;
+                border-color: #eef4ff;
                 box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
             }
             
@@ -134,7 +134,7 @@
                 outline: none;
                 
                 &:focus {
-                    border-color: #6366f1;
+                    border-color: #eef4ff;
                     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
                 }
             }
@@ -179,7 +179,7 @@
         }
         
         &:hover {
-            border-color: #6366f1;
+            border-color: #eef4ff;
             
             &::-webkit-calendar-picker-indicator {
                 filter: opacity(1);
@@ -188,7 +188,7 @@
         
         &:focus {
             outline: none;
-            border-color: #6366f1;
+            border-color: #eef4ff;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
     }

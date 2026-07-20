@@ -240,7 +240,7 @@
                 </div>
             </div>
             <div class="col-6 col-md-4 col-xl">
-                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                <div class="card stat-card shadow-sm h-100" style="background:#eef4ff;">
                     <div class="card-body p-3">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <div class="stat-icon" style="background:rgba(255,255,255,.2);">
