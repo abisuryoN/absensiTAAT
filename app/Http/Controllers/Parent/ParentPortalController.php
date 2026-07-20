@@ -17,32 +17,54 @@ class ParentPortalController extends Controller
      */
     public function dashboard(Request $request)
     {
-        $parent   = Auth::user()->parent;
+        $parent = Auth::user()->parent;
+
+        if (!$parent) {
+            return view('parent.dashboard', [
+                'children'         => collect(),
+                'activeStudent'    => null,
+                'todayRecord'      => null,
+                'summary'          => null,
+                'recentAttendances'=> collect(),
+            ]);
+        }
+
         $children = $parent->students()->with('class')->where('is_active', true)->get();
 
         if ($children->isEmpty()) {
             return view('parent.dashboard', [
-                'children'    => $children,
-                'student'     => null,
-                'todayRecord' => null,
-                'monthStats'  => null,
+                'children'         => $children,
+                'activeStudent'    => null,
+                'todayRecord'      => null,
+                'summary'          => null,
+                'recentAttendances'=> collect(),
             ]);
         }
 
         // Switch child via query param
-        $studentId = $request->get('student_id', $children->first()->id);
-        $student   = $children->firstWhere('id', $studentId) ?? $children->first();
+        $studentId     = $request->get('student_id', $children->first()->id);
+        $activeStudent = $children->firstWhere('id', $studentId) ?? $children->first();
 
         // Today's attendance
         $today       = Carbon::today()->toDateString();
-        $todayRecord = AttendanceGate::where('student_id', $student->id)
+        $todayRecord = AttendanceGate::where('student_id', $activeStudent->id)
             ->whereDate('date', $today)
             ->first();
 
         // Current month summary
-        $monthStats = $this->buildMonthStats($student->id, now()->year, now()->month);
+        $summary = $this->buildMonthStats($activeStudent->id, now()->year, now()->month);
 
-        return view('parent.dashboard', compact('children', 'student', 'todayRecord', 'monthStats'));
+        // Recent attendances (last 10 records this month)
+        $monthStart        = Carbon::now()->startOfMonth()->toDateString();
+        $recentAttendances = AttendanceGate::where('student_id', $activeStudent->id)
+            ->whereBetween('date', [$monthStart, $today])
+            ->orderBy('date', 'desc')
+            ->limit(10)
+            ->get();
+
+        return view('parent.dashboard', compact(
+            'children', 'activeStudent', 'todayRecord', 'summary', 'recentAttendances'
+        ));
     }
 
     /**
@@ -50,7 +72,13 @@ class ParentPortalController extends Controller
      */
     public function rekapHarian(Request $request)
     {
-        $parent   = Auth::user()->parent;
+        $parent = Auth::user()->parent;
+
+        if (!$parent) {
+            return redirect()->route('parent.dashboard')
+                ->with('error', 'Data orang tua tidak ditemukan untuk akun ini.');
+        }
+
         $children = $parent->students()->with('class')->where('is_active', true)->get();
 
         $studentId = $request->get('student_id', $children->first()?->id);
@@ -75,7 +103,13 @@ class ParentPortalController extends Controller
      */
     public function rekapBulanan(Request $request)
     {
-        $parent   = Auth::user()->parent;
+        $parent = Auth::user()->parent;
+
+        if (!$parent) {
+            return redirect()->route('parent.dashboard')
+                ->with('error', 'Data orang tua tidak ditemukan untuk akun ini.');
+        }
+
         $children = $parent->students()->with('class')->where('is_active', true)->get();
 
         $studentId = $request->get('student_id', $children->first()?->id);
