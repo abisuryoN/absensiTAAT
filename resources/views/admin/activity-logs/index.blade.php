@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    {{-- Filter Panel — higher z-index so custom dropdown floats above the table card --}}
+    {{-- Filter Panel --}}
     <div class="card glass-card border-0 mb-3" style="position: relative; z-index: 20; overflow: visible;">
         <div class="card-body p-3">
             <form method="GET" action="{{ route('admin.activity-logs.index') }}" id="filterForm">
@@ -32,10 +32,9 @@
                     </div>
 
                     <div class="col-auto">
-                        {{-- spacer label to align button with inputs --}}
                         <label class="form-label d-block small mb-1">&nbsp;</label>
                         <button type="button" class="btn btn-outline-secondary"
-                                onclick="setToday()" title="Set ke Hari Ini">
+                                onclick="setToday(this)" title="Set ke Hari Ini">
                             <i class="bi bi-calendar-check me-1"></i>Hari Ini
                         </button>
                     </div>
@@ -215,12 +214,15 @@
         var modulesUrl   = "{{ route('admin.activity-logs.modules-by-role') }}";
         var activeModule = "{{ request('module') }}";
 
-        function rebuildModuleDropdown(modules) {
-            var wrapper = document.getElementById('moduleWrapper');
-            if (!wrapper) return;
+        /**
+         * Rebuild the module custom-dropdown for a specific wrapper+select pair.
+         * Called with the context of whichever form instance triggered the change.
+         */
+        function rebuildModuleDropdown(modules, wrapper, select) {
+            if (!wrapper || !select) return;
+            // Remove existing custom dropdown UI so we can recreate it
             var existing = wrapper.querySelector('.custom-select');
             if (existing) existing.remove();
-            var select = document.getElementById('moduleSelect');
             select.style.display = '';
             select.innerHTML = '<option value="">Semua Modul</option>';
             modules.forEach(function (mod) {
@@ -235,31 +237,43 @@
             }
         }
 
-        function onRoleChange(roleValue) {
+        function onRoleChange(roleValue, moduleWrapper, moduleSelect) {
             var url = modulesUrl + (roleValue ? '?role=' + encodeURIComponent(roleValue) : '');
             fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                 .then(function (res) { return res.json(); })
-                .then(function (modules) { rebuildModuleDropdown(modules); })
+                .then(function (modules) { rebuildModuleDropdown(modules, moduleWrapper, moduleSelect); })
                 .catch(function () {});
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            var roleSelect = document.getElementById('roleSelect');
-            if (roleSelect) {
+            // The layout renders the slot content twice (desktop + mobile wrappers), so every
+            // element ID in this form is duplicated in the DOM. getElementById() only returns
+            // the first match (the hidden desktop element). querySelectorAll finds all instances
+            // and we scope each handler to its own <form> so desktop and mobile work independently.
+            document.querySelectorAll('[id="roleSelect"]').forEach(function (roleSelect) {
+                var form          = roleSelect.closest('form');
+                var moduleWrapper = form ? form.querySelector('[id="moduleWrapper"]') : null;
+                var moduleSelect  = form ? form.querySelector('[id="moduleSelect"]')  : null;
+                if (!moduleWrapper || !moduleSelect) return;
+
                 roleSelect.addEventListener('change', function () {
-                    onRoleChange(this.value);
+                    onRoleChange(this.value, moduleWrapper, moduleSelect);
                 });
+                // If role is pre-selected (e.g. back-navigation), populate modules immediately
                 if (roleSelect.value) {
-                    onRoleChange(roleSelect.value);
+                    onRoleChange(roleSelect.value, moduleWrapper, moduleSelect);
                 }
-            }
+            });
         });
 
-        window.setToday = function () {
+        // Pass `this` (the button) so we can find the correct form instance on mobile
+        window.setToday = function (btn) {
+            var form = btn ? btn.closest('form') : document.getElementById('filterForm');
+            if (!form) return;
             var today = new Date().toISOString().slice(0, 10);
-            document.querySelector('[name="date_from"]').value = today;
-            document.querySelector('[name="date_to"]').value   = today;
-            document.getElementById('filterForm').submit();
+            form.querySelector('[name="date_from"]').value = today;
+            form.querySelector('[name="date_to"]').value   = today;
+            form.submit();
         };
     }());
     </script>
