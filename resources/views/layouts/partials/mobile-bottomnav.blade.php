@@ -23,6 +23,7 @@
         } elseif ($role === 'siswa') {
             $bottomMenus = [
                 ['label' => 'Dashboard', 'icon' => 'bi-speedometer2',          'route' => 'student.dashboard'],
+                ['label' => 'QR Absensi','icon' => 'bi-qr-code',               'route' => 'student.qrcode'],
                 ['label' => 'Jadwal',    'icon' => 'bi-calendar-week',         'route' => 'student.schedule'],
                 ['label' => 'Riwayat',   'icon' => 'bi-clock-history',         'route' => 'student.history'],
                 ['label' => 'Profil',    'icon' => 'bi-person-circle',         'route' => 'profile.edit'],

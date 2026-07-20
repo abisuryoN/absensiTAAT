@@ -78,19 +78,19 @@ class GuruPiketController extends Controller
         $namaLengkap    = session('piket_nama_lengkap');
 
         // Rekap scan hari ini oleh petugas piket ini
-        $scanHariIni = AttendanceGate::with(['student.class'])
+        $recentScans = AttendanceGate::with(['student.class'])
             ->where('petugas_piket_id', $petugasPiketId)
             ->where('date', $today)
             ->orderByDesc('time_in')
             ->get();
 
         $stats = [
-            'hadir'     => $scanHariIni->where('status', 'hadir')->count(),
-            'terlambat' => $scanHariIni->where('status', 'terlambat')->count(),
-            'total'     => $scanHariIni->count(),
+            'hadir'     => $recentScans->where('status', 'hadir')->count(),
+            'terlambat' => $recentScans->where('status', 'terlambat')->count(),
+            'total'     => $recentScans->count(),
         ];
 
-        return view('guru-piket.dashboard', compact('scanHariIni', 'stats', 'namaLengkap', 'today'));
+        return view('guru-piket.dashboard', compact('recentScans', 'stats', 'namaLengkap', 'today'));
     }
 
     /**
