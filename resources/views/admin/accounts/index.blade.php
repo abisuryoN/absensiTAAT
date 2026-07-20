@@ -50,6 +50,7 @@
                                 <option value="">Semua Role</option>
                                 <option value="siswa" {{ request('role') == 'siswa' ? 'selected' : '' }}>Siswa</option>
                                 <option value="guru" {{ request('role') == 'guru' ? 'selected' : '' }}>Guru</option>
+                                <option value="guru_piket" {{ request('role') == 'guru_piket' ? 'selected' : '' }}>Guru Piket</option>
                                 <option value="parent" {{ request('role') == 'parent' ? 'selected' : '' }}>Orang Tua/Wali</option>
                             </select>
                         </div>
@@ -145,6 +146,8 @@
                                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Siswa</span>
                                 @elseif($account['role'] === 'guru')
                                     <span class="badge bg-success-subtle text-success border border-success-subtle">Guru</span>
+                                @elseif($account['role'] === 'guru_piket')
+                                    <span class="badge bg-info-subtle text-info border border-info-subtle">Guru Piket</span>
                                 @else
                                     <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Orang Tua</span>
                                 @endif
@@ -161,6 +164,8 @@
                                     <span class="small">{{ $account['class'] ?? '-' }}</span>
                                 @elseif($account['role'] === 'guru')
                                     <span class="small text-muted">{{ $account['subjects'] ?? '-' }}</span>
+                                @elseif($account['role'] === 'guru_piket')
+                                    <span class="small text-muted">Guru Piket</span>
                                 @else
                                     <span class="small text-muted">
                                         Wali dari: {{ $account['children'] ?? '-' }}
@@ -314,6 +319,7 @@ function confirmReset(id, userName, role) {
     const hints = {
         siswa: 'Password default: NISN + Tahun Masuk (contoh: 12345678902024)',
         guru: 'Password default: NIP + Tahun Masuk Kerja (contoh: 1985010120100110012015)',
+        guru_piket: 'Password default: piket123',
         parent: 'Password default: NIK + Tahun Masuk anak yang terhubung (contoh: 3201xxxxxxxxxxxx2024)',
     };
     document.getElementById('resetRoleHint').textContent = hints[role] || '';

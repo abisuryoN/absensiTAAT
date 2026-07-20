@@ -46,6 +46,10 @@ class ActivityLogController extends Controller
                 'Rekap Anak',
                 'Login',
             ],
+            'guru_piket' => [
+                'Absensi Gerbang',
+                'Login',
+            ],
         ];
 
         if ($role === '') {
@@ -102,7 +106,7 @@ class ActivityLogController extends Controller
             ->pluck('module');
 
         // Role options
-        $roles = ['super_admin', 'guru', 'siswa', 'parent'];
+        $roles = ['super_admin', 'guru', 'guru_piket', 'siswa', 'parent'];
 
         return view('admin.activity-logs.index', compact(
             'logs', 'modules', 'roles',

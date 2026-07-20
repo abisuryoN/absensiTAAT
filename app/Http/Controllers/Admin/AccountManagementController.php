@@ -8,6 +8,7 @@ use App\Models\Teacher;
 use App\Models\StudentParent;
 use App\Models\Major;
 use App\Models\SchoolClass;
+use App\Models\User;
 use App\Services\PasswordGeneratorService;
 use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ class AccountManagementController extends Controller
 
         $accounts = collect();
 
-        // ── Siswa ──────────────────────────────────────────────
+        // Siswa
         if ($role === 'all' || $role === 'siswa') {
             $query = Student::with(['user', 'class.major'])->whereHas('user');
 
@@ -66,7 +67,7 @@ class AccountManagementController extends Controller
             }
         }
 
-        // ── Guru ───────────────────────────────────────────────
+        // Guru
         if ($role === 'all' || $role === 'guru') {
             $query = Teacher::with(['user', 'subjects'])->whereHas('user');
 
@@ -96,7 +97,33 @@ class AccountManagementController extends Controller
             }
         }
 
-        // ── Orang Tua ──────────────────────────────────────────
+        // Guru Piket
+        if ($role === 'all' || $role === 'guru_piket') {
+            $query = User::role('guru_piket');
+
+            if ($search) {
+                $query->where('name', 'like', "%{$search}%");
+            }
+
+            foreach ($query->orderBy('name')->get() as $user) {
+                $accounts->push([
+                    'role'             => 'guru_piket',
+                    'id'               => $user->id,
+                    'name'             => $user->name,
+                    'email'            => $user->email ?? '-',
+                    'nisn'             => null,
+                    'nip'              => null,
+                    'nik'              => null,
+                    'class'            => null,
+                    'subjects'         => null,
+                    'children'         => null,
+                    'is_active'        => true,
+                    'password_changed' => false,
+                ]);
+            }
+        }
+
+        // Orang Tua
         if ($role === 'all' || $role === 'parent') {
             $query = StudentParent::with(['user', 'students.class'])->whereHas('user');
 
@@ -152,12 +179,11 @@ class AccountManagementController extends Controller
 
     /**
      * Reset a user account's password to the role-default pattern.
-     * Returns JSON: { success, name, new_password }
      */
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'type' => 'required|in:siswa,guru,parent',
+            'type' => 'required|in:siswa,guru,guru_piket,parent',
             'id'   => 'required|integer',
         ]);
 
@@ -177,6 +203,12 @@ class AccountManagementController extends Controller
                 $newPassword = $this->passwordGenerator->generateForTeacher($model);
                 $user = $model->user;
                 $name = $model->name;
+                break;
+
+            case 'guru_piket':
+                $user = User::findOrFail($id);
+                $newPassword = 'piket123';
+                $name = $user->name;
                 break;
 
             case 'parent':

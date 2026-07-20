@@ -68,6 +68,7 @@
                                         {{ match($role) {
                                             'super_admin' => 'Super Admin',
                                             'guru'        => 'Guru',
+                                            'guru_piket'  => 'Guru Piket',
                                             'siswa'       => 'Siswa',
                                             'parent'      => 'Orang Tua/Wali',
                                             default       => ucfirst($role),
@@ -159,6 +160,7 @@
                                         [$roleLabel, $roleColor] = match($log->causer_role ?? '') {
                                             'super_admin' => ['Super Admin', 'danger'],
                                             'guru'        => ['Guru',        'primary'],
+                                            'guru_piket'  => ['Guru Piket',  'info'],
                                             'siswa'       => ['Siswa',       'success'],
                                             'parent'      => ['Orang Tua',   'warning'],
                                             default       => [ucfirst($log->causer_role ?? '-'), 'secondary'],
