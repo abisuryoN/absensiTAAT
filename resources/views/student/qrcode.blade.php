@@ -116,7 +116,7 @@
             <h5 class="mb-0 fw-bold mt-1">QR Absensi Gerbang</h5>
         </div>
         <div>
-            <span class="badge bg-white text-primary fw-semibold" style="font-size:0.75rem;">
+            <span class="badge fw-semibold" style="font-size:0.75rem;background:#fff;color:#1e40af;">
                 <i class="bi bi-person-fill me-1"></i>{{ $student->class->name ?? '-' }}
             </span>
         </div>
