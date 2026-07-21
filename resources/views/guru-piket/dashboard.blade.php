@@ -7,6 +7,75 @@
         .status-badge { font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
         .status-hadir     { background: #d4edda; color: #155724; }
         .status-terlambat { background: #fff3cd; color: #856404; }
+        
+        /* Mobile spacing adjustments */
+        @media (max-width: 480px) {
+            /* Container padding */
+            .mobile-main-content {
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+            }
+            
+            /* Page header spacing */
+            .d-flex.align-items-center.justify-content-between.mb-4 {
+                margin-bottom: 20px !important;
+            }
+            
+            /* Stats cards - add gap and padding */
+            .row.g-3 {
+                display: flex !important;
+                gap: 8px !important;
+                margin-bottom: 20px !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+            
+            .row.g-3 > [class*="col-"] {
+                flex: 1 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                min-width: 0 !important;
+            }
+            
+            .stat-card {
+                padding: 16px 12px !important;
+            }
+            
+            .stat-card .h2 {
+                font-size: 1.6rem !important;
+                margin-bottom: 6px !important;
+            }
+            
+            .stat-card .small {
+                font-size: 0.7rem !important;
+            }
+            
+            /* Section "Scan Hari Ini" spacing */
+            .card.border-0.shadow-sm.rounded-3.mb-4 {
+                margin-bottom: 20px !important;
+                padding: 12px;
+            }
+            
+            .card-header {
+                padding: 12px !important;
+            }
+            
+            .card-body {
+                padding: 12px !important;
+            }
+            
+            /* Action buttons spacing */
+            .d-flex.gap-2.justify-content-center {
+                margin-top: 20px !important;
+                margin-bottom: 90px !important; /* Space for bottom nav */
+                gap: 10px !important;
+            }
+            
+            .d-flex.gap-2.justify-content-center .btn {
+                padding: 10px 16px !important;
+                font-size: 0.9rem !important;
+            }
+        }
     </style>
     @endpush
 
