@@ -3,7 +3,59 @@
 
     @push('styles')
     <style>
-        .stat-card { border: none; border-radius: 12px; }
+        /* Card Statistik - sama seperti dashboard admin */
+        .card-stat {
+            position: relative;
+            border-radius: 16px !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden;
+        }
+        .card-stat::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .card-stat .card-body {
+            position: relative;
+            z-index: 1;
+        }
+        .card-stat:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.18) !important;
+        }
+        .card-stat .stat-value {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            line-height: 1.1;
+            color: white !important;
+        }
+        .card-stat .stat-label {
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+            color: rgba(255, 255, 255, 0.75) !important;
+        }
+        .card-stat .card-body {
+            min-height: 110px;
+        }
+
+        /* Stats column spacing */
+        .stats-col {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+            margin-bottom: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .stats-col {
+                margin-bottom: 0;
+            }
+        }
+
         .status-badge { font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
         .status-hadir     { background: #d4edda; color: #155724; }
         .status-terlambat { background: #fff3cd; color: #856404; }
@@ -99,23 +151,38 @@
     @endif
 
     {{-- Stats --}}
-    <div class="row g-3 mb-4">
-        <div class="col-4">
-            <div class="card stat-card shadow-sm text-center p-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="h2 fw-bold text-white mb-1" style="font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">{{ $stats['total'] }}</div>
-                <div class="small fw-semibold text-white">Total Scan</div>
+    <div class="row g-0 mb-4 stats-row">
+        <div class="col-6 col-md-4 stats-col">
+            <div class="card stat-card text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+                <div class="card-body p-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-qr-code-scan fs-4"></i>
+                    </div>
+                    <div class="stat-value display-6 fw-bold mb-0">{{ $stats['total'] }}</div>
+                    <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Total Scan</div>
+                </div>
             </div>
         </div>
-        <div class="col-4">
-            <div class="card stat-card shadow-sm text-center p-3" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                <div class="h2 fw-bold text-white mb-1" style="font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">{{ $stats['hadir'] }}</div>
-                <div class="small fw-semibold text-white">Hadir</div>
+        <div class="col-6 col-md-4 stats-col">
+            <div class="card stat-card bg-success text-white border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-check-circle-fill fs-4"></i>
+                    </div>
+                    <div class="stat-value display-6 fw-bold mb-0">{{ $stats['hadir'] }}</div>
+                    <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Hadir</div>
+                </div>
             </div>
         </div>
-        <div class="col-4">
-            <div class="card stat-card shadow-sm text-center p-3" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                <div class="h2 fw-bold text-white mb-1" style="font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">{{ $stats['terlambat'] }}</div>
-                <div class="small fw-semibold text-white">Terlambat</div>
+        <div class="col-6 col-md-4 stats-col">
+            <div class="card stat-card bg-warning text-white border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-clock-history fs-4"></i>
+                    </div>
+                    <div class="stat-value display-6 fw-bold mb-0">{{ $stats['terlambat'] }}</div>
+                    <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Terlambat</div>
+                </div>
             </div>
         </div>
     </div>
