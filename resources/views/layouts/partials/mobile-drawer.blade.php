@@ -85,9 +85,9 @@
         </div>
 
         {{-- Logout --}}
-        <form method="POST" action="{{ route('logout') }}" class="w-100">
+        <form method="POST" action="{{ route('logout') }}" id="mobile-drawer-logout-form" class="w-100">
             @csrf
-            <button type="submit" class="drawer-logout-btn">
+            <button type="button" class="drawer-logout-btn" onclick="handleMobileDrawerLogout(event)">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Keluar</span>
             </button>

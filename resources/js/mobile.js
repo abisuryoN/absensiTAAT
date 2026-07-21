@@ -199,4 +199,17 @@
         }
     }
 
+    // ─── Handle mobile drawer logout with SweetAlert2 confirmation ─────
+    window.handleMobileDrawerLogout = function(event) {
+        event.preventDefault();
+        if (typeof confirmLogout === 'function') {
+            confirmLogout(function() {
+                document.getElementById('mobile-drawer-logout-form').submit();
+            });
+        } else {
+            // Fallback if confirmLogout is not loaded yet
+            document.getElementById('mobile-drawer-logout-form').submit();
+        }
+    };
+
 })();

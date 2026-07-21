@@ -68,9 +68,9 @@
                 <hr class="dropdown-divider my-2">
             </li>
             <li>
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" id="sidebar-logout-form">
                     @csrf
-                    <button type="submit" class="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-danger bg-transparent border-0 w-100 text-start fs-7 rounded-2">
+                    <button type="button" class="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-danger bg-transparent border-0 w-100 text-start fs-7 rounded-2" onclick="handleSidebarLogout(event)">
                         <i class="bi bi-box-arrow-right"></i>
                         <span>Keluar</span>
                     </button>
@@ -118,6 +118,14 @@
 </style>
 
 <script>
+// Handle sidebar logout with confirmation
+function handleSidebarLogout(event) {
+    event.preventDefault();
+    confirmLogout(() => {
+        document.getElementById('sidebar-logout-form').submit();
+    });
+}
+
 (function() {
     var container = document.querySelector('.sidebar-nav-container');
     if (!container) return;

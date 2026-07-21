@@ -101,19 +101,52 @@
 
     {{-- Footer aksi --}}
     <div class="d-flex gap-2 justify-content-center">
-        <form method="POST" action="{{ route('piket.end-session') }}"
-              onsubmit="return confirm('Akhiri sesi piket Anda sekarang?')">
+        <form method="POST" action="{{ route('piket.end-session') }}" id="end-session-form">
             @csrf
-            <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold" style="border-radius: 10px;">
+            <button type="button" class="btn btn-danger px-4 py-2 fw-semibold" style="border-radius: 10px;" onclick="handleEndSession(event)">
                 <i class="bi bi-stop-circle me-1"></i>Akhiri Sesi
             </button>
         </form>
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" action="{{ route('logout') }}" id="guru-piket-logout-form">
             @csrf
-            <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold" style="border-radius: 10px; background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%) !important; border: none !important;">
+            <button type="button" class="btn btn-danger px-4 py-2 fw-semibold" style="border-radius: 10px; background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%) !important; border: none !important;" onclick="handleGuruPiketLogout(event)">
                 <i class="bi bi-box-arrow-right me-1"></i>Logout
             </button>
         </form>
     </div>
+
+    @push('scripts')
+    <script>
+        // Handle end session confirmation
+        function handleEndSession(event) {
+            event.preventDefault();
+            if (typeof confirmEndSession === 'function') {
+                confirmEndSession(function() {
+                    document.getElementById('end-session-form').submit();
+                });
+            } else {
+                // Fallback if confirmEndSession is not loaded yet
+                if (confirm('Akhiri sesi piket Anda sekarang?')) {
+                    document.getElementById('end-session-form').submit();
+                }
+            }
+        }
+
+        // Handle guru piket logout confirmation
+        function handleGuruPiketLogout(event) {
+            event.preventDefault();
+            if (typeof confirmLogout === 'function') {
+                confirmLogout(function() {
+                    document.getElementById('guru-piket-logout-form').submit();
+                });
+            } else {
+                // Fallback if confirmLogout is not loaded yet
+                if (confirm('Yakin ingin logout?')) {
+                    document.getElementById('guru-piket-logout-form').submit();
+                }
+            }
+        }
+    </script>
+    @endpush
 
 </x-app-layout>
