@@ -138,28 +138,33 @@
         #camera-container canvas { display: none !important; }
         #camera-container img    { display: none !important; }
 
-        /* Scan Frame Overlay */
+        /* Scan Frame Overlay - ENLARGED to 70-75% of video area */
         .scan-frame-overlay {
             position: absolute; inset: 0;
             display: flex; align-items: center; justify-content: center;
             pointer-events: none;
         }
-        .scan-frame { width: 200px; height: 200px; position: relative; }
+        .scan-frame { 
+            width: 360px; 
+            height: 360px; 
+            position: relative; 
+        }
         .scan-frame::before, .scan-frame::after,
         .scan-frame .corner-br, .scan-frame .corner-bl {
             content: ''; position: absolute;
-            width: 28px; height: 28px;
-            border-color: rgba(255,255,255,0.9);
+            width: 40px; height: 40px;
+            border-color: rgba(255,255,255,0.95);
             border-style: solid;
         }
-        .scan-frame::before  { top: 0; left: 0;   border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
-        .scan-frame::after   { top: 0; right: 0;  border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
-        .scan-frame .corner-br { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
-        .scan-frame .corner-bl { bottom: 0; left: 0;  border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+        .scan-frame::before  { top: 0; left: 0;   border-width: 4px 0 0 4px; border-radius: 6px 0 0 0; }
+        .scan-frame::after   { top: 0; right: 0;  border-width: 4px 4px 0 0; border-radius: 0 6px 0 0; }
+        .scan-frame .corner-br { bottom: 0; right: 0; border-width: 0 4px 4px 0; border-radius: 0 0 6px 0; }
+        .scan-frame .corner-bl { bottom: 0; left: 0;  border-width: 0 0 4px 4px; border-radius: 0 0 0 6px; }
         .scan-line {
             position: absolute;
-            left: 4px; right: 4px; height: 2px;
-            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            left: 8px; right: 8px; height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, #38bdf8, transparent);
+            box-shadow: 0 0 8px #38bdf8;
             top: 10%;
             animation: scan-sweep 2s ease-in-out infinite;
         }
@@ -170,8 +175,25 @@
             100% { top: 88%; opacity: 0; }
         }
         .scan-hint {
-            position: absolute; bottom: 12px; left: 0; right: 0;
-            text-align: center; color: rgba(255,255,255,0.75); font-size: 0.72rem;
+            position: absolute; bottom: -35px; left: 0; right: 0;
+            text-align: center; color: rgba(255,255,255,0.9); 
+            font-size: 0.8rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        /* Responsive frame sizing */
+        @media (max-width: 576px) {
+            .scan-frame { 
+                width: 280px; 
+                height: 280px; 
+            }
+            .scan-frame::before, .scan-frame::after,
+            .scan-frame .corner-br, .scan-frame .corner-bl {
+                width: 32px; height: 32px;
+            }
+            .scan-hint {
+                font-size: 0.72rem;
+                bottom: -30px;
+            }
         }
 
         #camera-overlay-loading {
@@ -666,7 +688,7 @@
                 cameraConstraint,
                 { 
                     fps: 10, 
-                    qrbox: { width: 220, height: 220 },
+                    qrbox: { width: 320, height: 320 },
                     aspectRatio: 1.333,
                 },
                 function(decodedText) {

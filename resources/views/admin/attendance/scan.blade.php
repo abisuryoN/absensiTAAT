@@ -216,6 +216,77 @@
             50% { opacity: 0.5; transform: scale(1.2); }
             100% { opacity: 1; transform: scale(1); }
         }
+        /* Scan Frame Overlay - ENLARGED to 70-75% of video area */
+        .scan-frame-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 3;
+        }
+        .scan-frame {
+            width: 360px;
+            height: 360px;
+            position: relative;
+        }
+        .scan-frame::before, .scan-frame::after,
+        .scan-frame .corner-br, .scan-frame .corner-bl {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-color: rgba(255,255,255,0.95);
+            border-style: solid;
+        }
+        .scan-frame::before  { top: 0; left: 0;   border-width: 4px 0 0 4px; border-radius: 6px 0 0 0; }
+        .scan-frame::after   { top: 0; right: 0;  border-width: 4px 4px 0 0; border-radius: 0 6px 0 0; }
+        .scan-frame .corner-br { bottom: 0; right: 0; border-width: 0 4px 4px 0; border-radius: 0 0 6px 0; }
+        .scan-frame .corner-bl { bottom: 0; left: 0;  border-width: 0 0 4px 4px; border-radius: 0 0 0 6px; }
+        .scan-line {
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, #38bdf8, transparent);
+            box-shadow: 0 0 8px #38bdf8;
+            top: 10%;
+            animation: scan-sweep 2s ease-in-out infinite;
+        }
+        @keyframes scan-sweep {
+            0%   { top: 10%; opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { top: 88%; opacity: 0; }
+        }
+        .scan-hint {
+            position: absolute;
+            bottom: -35px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.8rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        /* Responsive frame sizing */
+        @media (max-width: 576px) {
+            .scan-frame {
+                width: 280px;
+                height: 280px;
+            }
+            .scan-frame::before, .scan-frame::after,
+            .scan-frame .corner-br, .scan-frame .corner-bl {
+                width: 32px;
+                height: 32px;
+            }
+            .scan-hint {
+                font-size: 0.72rem;
+                bottom: -30px;
+            }
+        }
+
         /* Camera dropdown */
         #camera-selector {
             position: absolute;
@@ -412,6 +483,16 @@
                                     <div id="qr-reader-container">
                                         <!-- html5-qrcode injects <video> here -->
                                     </div>
+                                    <div class="scan-frame-overlay" id="scan-frame-overlay" style="display:none;">
+                                        <div class="scan-frame">
+                                            <div class="corner-br"></div>
+                                            <div class="corner-bl"></div>
+                                            <div class="scan-line"></div>
+                                        </div>
+                                    </div>
+                                    <div class="scan-hint" id="scan-hint" style="display:none;">
+                                        Arahkan QR code / barcode ke dalam bingkai
+                                    </div>
                                     <div id="camera-overlay-loading">
                                         <div class="spinner-border text-light" role="status">
                                             <span class="visually-hidden">Loading...</span>
@@ -603,6 +684,8 @@
         const btnSwitchCamera        = getEl('btnSwitchCamera');
         const cameraSelector         = getEl('camera-selector');
         const btnToggleSound         = getEl('btnToggleSound');
+        const scanFrameOverlay       = getEl('scan-frame-overlay');
+        const scanHint               = getEl('scan-hint');
         const scannerBox             = getEl('scannerBox');
         const visualIndicator        = getEl('visualIndicator');
         const indicatorIcon          = getEl('indicatorIcon');
@@ -984,6 +1067,8 @@
             }).then(function() {
                 isCameraActive = true;
                 cameraOverlayLoading.classList.remove('show');
+                scanFrameOverlay.style.display = '';
+                scanHint.style.display = '';
                 applyMirrorFix();
             }).catch(function(err) {
                 console.error('Camera start error:', err);
@@ -1008,6 +1093,8 @@
             }
             isCameraActive = false;
             cameraOverlayLoading.classList.remove('show');
+            scanFrameOverlay.style.display = 'none';
+            scanHint.style.display = 'none';
 
             if (resetUI !== false) {
                 btnStartCamera.classList.remove('d-none');
