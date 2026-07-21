@@ -213,25 +213,25 @@
             body: JSON.stringify({})
         })
         .then(r => r.json())
-        .then(data => {
+        .then(response => {
             qrLoading.classList.add('d-none');
             btnRefresh.disabled = false;
 
-            if (!data.success) {
+            if (!response.success || !response.data) {
                 showExpired();
                 return;
             }
 
             // Render QR SVG
             const img = document.createElement('img');
-            img.src   = 'data:image/svg+xml;base64,' + data.qr_svg;
+            img.src   = 'data:image/svg+xml;base64,' + response.data.qr_svg;
             img.alt   = 'QR Absensi';
             img.style.maxWidth  = '220px';
             img.style.maxHeight = '220px';
             qrContainer.appendChild(img);
 
             // Start countdown
-            startCountdown(data.ttl ?? TTL);
+            startCountdown(response.data.ttl_seconds ?? TTL);
         })
         .catch(() => {
             qrLoading.classList.add('d-none');
