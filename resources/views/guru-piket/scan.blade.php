@@ -189,12 +189,20 @@
             background: rgba(255,255,255,0.15);
             border: 1px solid rgba(255,255,255,0.3);
             color: #fff; border-radius: 50%;
-            width: 40px; height: 40px;
+            width: 44px; height: 44px;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: background 0.2s;
             backdrop-filter: blur(4px);
+            font-size: 1.1rem;
         }
         .btn-switch-camera:hover { background: rgba(255,255,255,0.3); }
+        .btn-switch-camera.spinning i {
+            animation: spin-once 0.4s ease;
+        }
+        @keyframes spin-once {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(180deg); }
+        }
 
         #camera-selector {
             position: absolute; bottom: 12px; left: 12px; z-index: 10;
@@ -478,13 +486,14 @@
     const SCAN_URL   = '{{ route("piket.scan.post") }}';
     const CSRF_TOKEN = '{{ csrf_token() }}';
 
-    let currentTab    = 'camera';
-    let html5QrCode   = null;
-    let cameras       = [];
-    let currentCamIdx = 0;
-    let scanning      = false;
-    let processingQr  = false;
-    let count         = 0;
+    let currentTab        = 'camera';
+    let html5QrCode       = null;
+    let cameras           = [];
+    let currentCamIdx     = 0;
+    let currentFacingMode = 'environment'; // 'environment' = back, 'user' = front
+    let scanning          = false;
+    let processingQr      = false;
+    let count             = 0;
 
     let usbBuffer = '';
     let usbTimer  = null;
@@ -601,47 +610,64 @@
             opt.textContent = cam.label || ('Kamera ' + (i + 1));
             camSelector.appendChild(opt);
         });
-        if (cameras.length > 1) {
+        // Only show dropdown on desktop (multiple named cameras)
+        if (cameras.length > 1 && !isMobileDevice()) {
             camSelector.style.display = '';
-            btnSwitch.style.display   = '';
         } else {
             camSelector.style.display = 'none';
-            btnSwitch.style.display   = 'none';
         }
     }
 
-    async function startCamera(camIdx) {
+    function isMobileDevice() {
+        return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+    }
+
+    function updateFlipButtonLabel() {
+        const icon = btnSwitch.querySelector('i');
+        if (currentFacingMode === 'environment') {
+            icon.className = 'bi bi-camera-fill';
+            btnSwitch.title = 'Kamera Belakang — ketuk untuk ganti ke depan';
+        } else {
+            icon.className = 'bi bi-person-bounding-box';
+            btnSwitch.title = 'Kamera Depan — ketuk untuk ganti ke belakang';
+        }
+    }
+
+    async function startCamera(facingModeOverride) {
         overlay.classList.add('show');
         btnStart.style.display = 'none';
+        btnSwitch.style.display = 'none';
 
         if (!html5QrCode) {
             html5QrCode = new Html5Qrcode('camera-container');
         }
 
-        if (cameras.length === 0) await getCameras();
-        if (cameras.length === 0) {
-            overlay.classList.remove('show');
-            btnStart.style.display = '';
-            showError('Tidak ada kamera yang ditemukan.');
-            return;
-        }
+        const useFacingMode = facingModeOverride || currentFacingMode;
 
-        const idx    = (camIdx !== undefined && camIdx !== null) ? camIdx : currentCamIdx;
-        const camera = cameras[idx];
-        camSelector.value = idx;
+        // Build constraints — on mobile prefer facingMode, on desktop use camera ID
+        let cameraConstraint;
+        if (isMobileDevice()) {
+            cameraConstraint = { facingMode: useFacingMode };
+        } else {
+            // Desktop: enumerate cameras first
+            if (cameras.length === 0) await getCameras();
+            if (cameras.length === 0) {
+                overlay.classList.remove('show');
+                btnStart.style.display = '';
+                showError('Tidak ada kamera yang ditemukan.');
+                return;
+            }
+            cameraConstraint = cameras[currentCamIdx].id;
+            updateCameraSelector();
+        }
 
         try {
             await html5QrCode.start(
-                camera.id,
+                cameraConstraint,
                 { 
                     fps: 10, 
                     qrbox: { width: 220, height: 220 },
                     aspectRatio: 1.333,
-                    videoConstraints: {
-                        width: { ideal: 1280 },
-                        height: { ideal: 960 },
-                        aspectRatio: { ideal: 1.333 }
-                    }
                 },
                 function(decodedText) {
                     if (processingQr) return;
@@ -651,13 +677,17 @@
                 function() {}
             );
             scanning = true;
+            currentFacingMode = useFacingMode;
             overlay.classList.remove('show');
-            btnStop.style.display  = '';
-            btnStart.style.display = 'none';
+            btnStop.style.display   = '';
+            btnStart.style.display  = 'none';
+            btnSwitch.style.display = '';
+            updateFlipButtonLabel();
             setCamStatus(true);
         } catch (e) {
             overlay.classList.remove('show');
             btnStart.style.display = '';
+            btnSwitch.style.display = 'none';
             showError('Gagal memulai kamera: ' + (e.message || e));
             scanning = false;
             setCamStatus(false);
@@ -669,28 +699,30 @@
             try { await html5QrCode.stop(); } catch (_e) {}
         }
         scanning = false;
-        btnStop.style.display  = 'none';
-        btnStart.style.display = '';
+        btnStop.style.display   = 'none';
+        btnStart.style.display  = '';
+        btnSwitch.style.display = 'none';
         setCamStatus(false);
     }
 
-    async function switchCamera() {
-        if (cameras.length <= 1) return;
-        currentCamIdx = (currentCamIdx + 1) % cameras.length;
+    async function flipCamera() {
+        const nextFacing = currentFacingMode === 'environment' ? 'user' : 'environment';
+        // Animate the button
+        btnSwitch.classList.add('spinning');
+        setTimeout(function() { btnSwitch.classList.remove('spinning'); }, 420);
         if (scanning) await stopCamera();
-        await startCamera(currentCamIdx);
+        await startCamera(nextFacing);
     }
 
     btnStart.addEventListener('click', async function() {
-        await getCameras();
-        await startCamera(currentCamIdx);
+        await startCamera(currentFacingMode);
     });
     btnStop.addEventListener('click', stopCamera);
-    btnSwitch.addEventListener('click', switchCamera);
+    btnSwitch.addEventListener('click', flipCamera);
     camSelector.addEventListener('change', async function() {
         currentCamIdx = parseInt(camSelector.value);
         if (scanning) await stopCamera();
-        await startCamera(currentCamIdx);
+        await startCamera();
     });
 
     // ================================================================
