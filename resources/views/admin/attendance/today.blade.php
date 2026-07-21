@@ -4,10 +4,13 @@
     {{-- STAT CARDS --}}
     <div class="row g-3 mb-4 stat-cards-row">
         <div class="col-6 col-md-2">
-            <div class="card bg-primary text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body stat-card-body text-center">
-                    <div class="fw-bold fs-4 stat-number" id="stat-total">{{ number_format($totalSiswa) }}</div>
-                    <div class="fs-8 text-white-50 stat-label">Total Siswa</div>
+            <div class="card text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body p-3 text-center position-relative overflow-hidden">
+                    <div class="position-absolute" style="top: -10px; right: -10px; opacity: 0.15; font-size: 3.5rem;">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div class="fw-bold fs-4 stat-number position-relative" id="stat-total">{{ number_format($totalSiswa) }}</div>
+                    <div class="fs-8 text-white-50 stat-label position-relative">Total Siswa</div>
                 </div>
             </div>
         </div>
@@ -29,20 +32,26 @@
         </div>
         <div class="col-6 col-md-2">
             <a href="{{ request()->fullUrlWithQuery(['status' => 'izin']) }}" class="text-decoration-none">
-                <div class="card bg-info text-white border-0 rounded-4 shadow-sm h-100">
-                    <div class="card-body p-3 text-center">
-                    <div class="fw-bold fs-4 stat-number" id="stat-izin">{{ number_format($izinCount) }}</div>
-                    <div class="fs-8 text-white-50 stat-label">Izin</div>
+                <div class="card text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);">
+                    <div class="card-body p-3 text-center position-relative overflow-hidden">
+                        <div class="position-absolute" style="top: -10px; right: -10px; opacity: 0.15; font-size: 3.5rem;">
+                            <i class="bi bi-envelope-check"></i>
+                        </div>
+                        <div class="fw-bold fs-4 stat-number position-relative" id="stat-izin">{{ number_format($izinCount) }}</div>
+                        <div class="fs-8 text-white-50 stat-label position-relative">Izin</div>
                     </div>
                 </div>
             </a>
         </div>
         <div class="col-6 col-md-2">
             <a href="{{ request()->fullUrlWithQuery(['status' => 'sakit']) }}" class="text-decoration-none">
-                <div class="card bg-secondary text-white border-0 rounded-4 shadow-sm h-100">
-                    <div class="card-body p-3 text-center">
-                    <div class="fw-bold fs-4 stat-number" id="stat-sakit">{{ number_format($sakitCount) }}</div>
-                    <div class="fs-8 text-white-50 stat-label">Sakit</div>
+                <div class="card text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">
+                    <div class="card-body p-3 text-center position-relative overflow-hidden">
+                        <div class="position-absolute" style="top: -10px; right: -10px; opacity: 0.15; font-size: 3.5rem;">
+                            <i class="bi bi-heart-pulse"></i>
+                        </div>
+                        <div class="fw-bold fs-4 stat-number position-relative" id="stat-sakit">{{ number_format($sakitCount) }}</div>
+                        <div class="fs-8 text-white-50 stat-label position-relative">Sakit</div>
                     </div>
                 </div>
             </a>
