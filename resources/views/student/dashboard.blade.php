@@ -84,7 +84,7 @@
                 <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center gap-3 mb-3">
-                            <div style="width:52px;height:52px;border-radius:50%;background:#eef4ff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700;flex-shrink:0;">
+                            <div style="width:52px;height:52px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700;flex-shrink:0;">
                                 {{ strtoupper(substr($student->name ?? auth()->user()->name, 0, 1)) }}
                             </div>
                             <div>
@@ -126,9 +126,9 @@
                         </div>
                         {{-- Progress bar --}}
                         <div class="mb-3">
-                            <div class="d-flex justify-content-between fs-8 text-muted mb-1">
-                                <span>Persentase Kehadiran</span>
-                                <span class="fw-bold text-primary">{{ $attendancePercent }}%</span>
+                            <div class="d-flex justify-content-between fs-8 mb-1">
+                                <span class="text-muted">Persentase Kehadiran</span>
+                                <span class="fw-bold" style="color:#1e293b;">{{ $attendancePercent }}%</span>
                             </div>
                             <div class="progress" style="height:8px;border-radius:50px;">
                                 <div class="progress-bar bg-primary" style="width:{{ $attendancePercent }}%;border-radius:50px;"></div>
@@ -175,7 +175,7 @@
         {{-- ── Stat Cards ───────────────────────────────────────────── --}}
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-4 col-xl">
-                <div class="card stat-card shadow-sm h-100" style="background:#eef4ff;">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
                     <div class="card-body p-3">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <div class="stat-icon" style="background:rgba(255,255,255,.2);">
@@ -240,7 +240,7 @@
                 </div>
             </div>
             <div class="col-6 col-md-4 col-xl">
-                <div class="card stat-card shadow-sm h-100" style="background:#eef4ff;">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">
                     <div class="card-body p-3">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <div class="stat-icon" style="background:rgba(255,255,255,.2);">

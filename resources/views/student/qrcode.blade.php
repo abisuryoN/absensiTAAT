@@ -127,8 +127,8 @@
 
             {{-- Student Info --}}
             <div class="student-info d-flex align-items-center gap-3 mb-3">
-                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
-                     style="width:46px;height:46px;font-size:1.2rem;">
+                <div class="rounded-circle text-white d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
+                     style="width:46px;height:46px;font-size:1.2rem;background:#3b82f6;">
                     {{ strtoupper(substr($student->name, 0, 1)) }}
                 </div>
                 <div class="flex-fill overflow-hidden">

@@ -29,7 +29,7 @@
                                 {{ ucfirst($day) }}
                             </h5>
                             @if(strtolower($today) === $day)
-                                <span class="badge bg-primary bg-opacity-10 text-primary fs-9">
+                                <span class="badge bg-primary fs-9">
                                     <i class="bi bi-geo-fill me-1"></i>Hari Ini
                                 </span>
                             @endif
