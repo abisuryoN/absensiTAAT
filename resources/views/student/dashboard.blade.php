@@ -71,7 +71,7 @@
                 <span class="badge border fs-8" style="background:#1e293b;color:#fff;">
                     <i class="bi bi-clock me-1"></i>{{ now()->format('d M Y') }}
                 </span>
-                <a href="{{ route('student.qrcode') }}" class="btn btn-sm btn-primary">
+                <a href="{{ route('student.qrcode') }}" class="btn btn-primary btn-sm">
                     <i class="bi bi-qr-code me-1"></i>QR Absensi
                 </a>
             </div>
@@ -264,9 +264,9 @@
                             {{ now()->translatedFormat('l, d F Y') }}
                         </span>
                     </h6>
-                    <a href="{{ route('student.schedule') }}" class="btn btn-sm fs-8" style="background:#3b82f6;color:#fff;border:none;">
-                        Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
+                <a href="{{ route('student.schedule') }}" class="btn btn-primary btn-sm">
+                    Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
+                </a>
                 </div>
             </div>
             <div class="card-body p-0">

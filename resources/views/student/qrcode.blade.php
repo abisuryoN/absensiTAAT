@@ -110,7 +110,7 @@
     {{-- Header --}}
     <div class="qr-header d-flex align-items-center justify-content-between">
         <div>
-            <a href="{{ route('student.dashboard') }}" class="btn btn-sm text-white px-2 py-1 border-0" style="background:rgba(255,255,255,0.15);transition:all 0.2s ease;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+            <a href="{{ route('student.dashboard') }}" class="btn btn-primary btn-sm">
                 <i class="bi bi-arrow-left me-1"></i>Dashboard
             </a>
             <h5 class="mb-0 fw-bold mt-1">QR Absensi Gerbang</h5>
