@@ -4,64 +4,73 @@
     {{-- STAT CARDS --}}
     <div class="row g-3 mb-4 stat-cards-row">
         <div class="col-6 col-md-2">
-            <div class="card text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="card-body p-3 text-center position-relative overflow-hidden">
-                    <div class="position-absolute" style="top: -10px; right: -10px; opacity: 0.15; font-size: 3.5rem;">
-                        <i class="bi bi-people-fill"></i>
+            <div class="card card-stat text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+                <div class="card-body p-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-people-fill fs-4"></i>
                     </div>
-                    <div class="fw-bold fs-4 stat-number position-relative" id="stat-total">{{ number_format($totalSiswa) }}</div>
-                    <div class="fs-8 text-white-50 stat-label position-relative">Total Siswa</div>
+                    <div class="stat-value display-6 fw-bold mb-0" id="stat-total">{{ number_format($totalSiswa) }}</div>
+                    <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Total Siswa</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-2">
-            <div class="card bg-success text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body stat-card-body text-center">
-                    <div class="fw-bold fs-4 stat-number" id="stat-hadir">{{ number_format($hadirCount) }}</div>
-                    <div class="fs-8 text-white-50 stat-label">Hadir</div>
+            <div class="card card-stat bg-success text-white border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-check-circle-fill fs-4"></i>
+                    </div>
+                    <div class="stat-value display-6 fw-bold mb-0" id="stat-hadir">{{ number_format($hadirCount) }}</div>
+                    <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Hadir</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-2">
-            <div class="card bg-warning text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body stat-card-body text-center">
-                    <div class="fw-bold fs-4 stat-number" id="stat-terlambat">{{ number_format($terlambatCount) }}</div>
-                    <div class="fs-8 text-white-50 stat-label">Terlambat</div>
+            <div class="card card-stat bg-warning text-white border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-clock-history fs-4"></i>
+                    </div>
+                    <div class="stat-value display-6 fw-bold mb-0" id="stat-terlambat">{{ number_format($terlambatCount) }}</div>
+                    <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Terlambat</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-2">
             <a href="{{ request()->fullUrlWithQuery(['status' => 'izin']) }}" class="text-decoration-none">
-                <div class="card text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);">
-                    <div class="card-body p-3 text-center position-relative overflow-hidden">
-                        <div class="position-absolute" style="top: -10px; right: -10px; opacity: 0.15; font-size: 3.5rem;">
-                            <i class="bi bi-envelope-check"></i>
+                <div class="card card-stat text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%) !important;">
+                    <div class="card-body p-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                            <i class="bi bi-envelope-check fs-4"></i>
                         </div>
-                        <div class="fw-bold fs-4 stat-number position-relative" id="stat-izin">{{ number_format($izinCount) }}</div>
-                        <div class="fs-8 text-white-50 stat-label position-relative">Izin</div>
+                        <div class="stat-value display-6 fw-bold mb-0" id="stat-izin">{{ number_format($izinCount) }}</div>
+                        <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Izin</div>
                     </div>
                 </div>
             </a>
         </div>
         <div class="col-6 col-md-2">
             <a href="{{ request()->fullUrlWithQuery(['status' => 'sakit']) }}" class="text-decoration-none">
-                <div class="card text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">
-                    <div class="card-body p-3 text-center position-relative overflow-hidden">
-                        <div class="position-absolute" style="top: -10px; right: -10px; opacity: 0.15; font-size: 3.5rem;">
-                            <i class="bi bi-heart-pulse"></i>
+                <div class="card card-stat text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;">
+                    <div class="card-body p-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                            <i class="bi bi-heart-pulse fs-4"></i>
                         </div>
-                        <div class="fw-bold fs-4 stat-number position-relative" id="stat-sakit">{{ number_format($sakitCount) }}</div>
-                        <div class="fs-8 text-white-50 stat-label position-relative">Sakit</div>
+                        <div class="stat-value display-6 fw-bold mb-0" id="stat-sakit">{{ number_format($sakitCount) }}</div>
+                        <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Sakit</div>
                     </div>
                 </div>
             </a>
         </div>
         <div class="col-6 col-md-2">
             <a href="{{ request()->fullUrlWithQuery(['status' => 'tidak_hadir']) }}" class="text-decoration-none">
-                <div class="card bg-danger text-white border-0 rounded-4 shadow-sm h-100">
-                    <div class="card-body p-3 text-center">
-                    <div class="fw-bold fs-4 stat-number" id="stat-tidak-hadir">{{ number_format($tidakHadir) }}</div>
-                    <div class="fs-8 text-white-50 stat-label">Tidak Hadir</div>
+                <div class="card card-stat bg-danger text-white border-0 rounded-4 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                            <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                        </div>
+                        <div class="stat-value display-6 fw-bold mb-0" id="stat-tidak-hadir">{{ number_format($tidakHadir) }}</div>
+                        <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Tidak Hadir</div>
                     </div>
                 </div>
             </a>
@@ -549,11 +558,55 @@
     ═══════════════════════════════════════ --}}
     @push('styles')
     <style>
-        /* Stat cards mobile */
-        .stat-card-body {
-            padding: 14px 10px;
+        /* Card Statistik - matching dashboard design */
+        .card-stat {
+            position: relative;
+            border-radius: 16px !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden;
         }
+        .card-stat::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .card-stat .card-body {
+            position: relative;
+            z-index: 1;
+            min-height: 110px;
+        }
+        .card-stat:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.18) !important;
+        }
+        .card-stat .stat-value {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            line-height: 1.1;
+            color: white !important;
+        }
+        .card-stat .stat-label {
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+            color: rgba(255, 255, 255, 0.75) !important;
+        }
+        
         @media (max-width: 767.98px) {
+            .card-stat .card-body {
+                padding: 1rem !important;
+                min-height: 100px;
+            }
+            .card-stat .stat-value {
+                font-size: 1.6rem;
+            }
+            .card-stat .stat-label {
+                font-size: 0.7rem;
+            }
             .stat-card-body {
                 padding: 16px 12px;
             }
