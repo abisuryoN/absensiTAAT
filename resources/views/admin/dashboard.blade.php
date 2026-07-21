@@ -18,7 +18,7 @@
     <div class="row g-0 mb-4 stats-row">
         <!-- Total Siswa -->
         <div class="col-6 col-md-3 stats-col">
-            <div class="card card-stat bg-primary text-white border-0 rounded-4 shadow-sm h-100">
+            <div class="card card-stat text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
                 <div class="card-body position-relative p-4">
                     <div class="position-absolute top-0 end-0 p-3">
                         <i class="bi bi-people-fill fs-3 opacity-50"></i>
@@ -110,9 +110,23 @@
                                     ];
                                     $cfg = $badgeConfig[$log->action] ?? ['bg' => 'bg-secondary', 'icon' => 'bi-info-circle'];
                                 @endphp
-                                <span class="badge {{ $cfg['bg'] }} p-2 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:30px; height:30px;">
-                                    <i class="bi {{ $cfg['icon'] }}"></i>
-                                </span>
+                                <div class="position-relative flex-shrink-0">
+                                    @if($log->user && $log->user->profile_picture)
+                                        <img src="{{ asset('storage/' . $log->user->profile_picture) }}" 
+                                             alt="{{ $log->user->name }}" 
+                                             class="rounded-circle"
+                                             style="width: 30px; height: 30px; object-fit: cover;">
+                                    @else
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-semibold" 
+                                             style="width: 30px; height: 30px; font-size: 0.7rem;">
+                                            {{ strtoupper(substr($log->user->name ?? 'S', 0, 2)) }}
+                                        </div>
+                                    @endif
+                                    <span class="badge {{ $cfg['bg'] }} position-absolute bottom-0 end-0 p-1 rounded-circle d-flex align-items-center justify-content-center" 
+                                          style="width: 16px; height: 16px; border: 2px solid white;">
+                                        <i class="bi {{ $cfg['icon'] }}" style="font-size: 0.5rem;"></i>
+                                    </span>
+                                </div>
                                 <div class="overflow-hidden">
                                     <p class="mb-0 fw-semibold text-dark fs-7 text-truncate" title="{{ $log->description }}">{{ $log->description }}</p>
                                     <span class="text-muted fs-8 d-block">{{ $log->user->name ?? 'System' }} &bull; {{ $log->created_at->diffForHumans() }}</span>
@@ -207,7 +221,10 @@
     @endpush
 
     <style>
-        .bg-light-blue { background-color: #eef4ff; color: #334155; }
+        .bg-light-blue { 
+            background-color: #eef4ff !important; 
+            color: #334155 !important; 
+        }
 
         /* Card Statistik - Grid rapi dengan rounded corner & floating effect */
         .card-stat {
@@ -223,9 +240,11 @@
         .card-stat .stat-value {
             font-size: clamp(1.5rem, 5vw, 2.5rem);
             line-height: 1.1;
+            color: white !important;
         }
         .card-stat .stat-label {
             font-size: clamp(0.7rem, 2vw, 0.85rem);
+            color: rgba(255, 255, 255, 0.75) !important;
         }
         .card-stat .card-body {
             min-height: 110px;

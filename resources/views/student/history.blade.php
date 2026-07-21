@@ -48,7 +48,7 @@
                 </div>
                 <div class="col-6 col-md-2">
                     <div class="card glass-card border-0 shadow-sm p-3 text-center">
-                        <span class="fs-3 fw-bold text-primary">{{ $stats['sakit'] }}</span>
+                        <span class="fs-3 fw-bold" style="color:#1e40af;">{{ $stats['sakit'] }}</span>
                         <span class="fs-8 text-muted text-uppercase fw-semibold">Sakit</span>
                     </div>
                 </div>
