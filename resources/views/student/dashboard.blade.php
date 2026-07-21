@@ -68,7 +68,7 @@
                 <p class="text-muted mb-0 fs-7">Selamat datang, {{ auth()->user()->name }}</p>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-light text-secondary border fs-8">
+                <span class="badge border fs-8" style="background:#1e293b;color:#fff;">
                     <i class="bi bi-clock me-1"></i>{{ now()->format('d M Y') }}
                 </span>
                 <a href="{{ route('student.qrcode') }}" class="btn btn-sm btn-primary">
@@ -259,12 +259,12 @@
             <div class="card-header bg-white border-bottom py-3 px-4" style="border-radius:12px 12px 0 0;">
                 <div class="d-flex align-items-center justify-content-between">
                     <h6 class="fw-bold mb-0" style="color:#1e293b;">
-                        <i class="bi bi-calendar-week me-2 text-primary"></i>Jadwal Hari Ini
-                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-2 fs-8">
+                        <i class="bi bi-calendar-week me-2" style="color:#3b82f6;"></i>Jadwal Hari Ini
+                        <span class="badge ms-2 fs-8" style="background:#3b82f6;color:#fff;">
                             {{ now()->translatedFormat('l, d F Y') }}
                         </span>
                     </h6>
-                    <a href="{{ route('student.schedule') }}" class="btn btn-sm btn-outline-primary fs-8">
+                    <a href="{{ route('student.schedule') }}" class="btn btn-sm fs-8" style="background:#3b82f6;color:#fff;border:none;">
                         Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
                     </a>
                 </div>
