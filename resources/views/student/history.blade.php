@@ -13,7 +13,7 @@
                         {{ $student->name }} &bull; Kelas {{ $student->class->name ?? '-' }}
                     </p>
                 </div>
-                <a href="{{ route('student.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+                <a href="{{ route('student.dashboard') }}" class="btn btn-primary btn-sm">
                     <i class="bi bi-arrow-left me-1"></i>Kembali
                 </a>
             </div>
