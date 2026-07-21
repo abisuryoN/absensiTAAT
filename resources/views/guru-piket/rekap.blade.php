@@ -15,7 +15,7 @@
             <h4 class="fw-bold mb-0">Rekap Aktivitas</h4>
             <div class="small text-muted">{{ $namaLengkap }}</div>
         </div>
-        <a href="{{ route('piket.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+        <a href="{{ route('piket.dashboard') }}" class="btn btn-primary btn-sm">
             <i class="bi bi-arrow-left me-1"></i>Dashboard
         </a>
     </div>
@@ -31,7 +31,9 @@
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i class="bi bi-search me-1"></i>Cari
                 </button>
-                <a href="{{ route('piket.rekap') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+                <a href="{{ route('piket.rekap') }}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                </a>
             </form>
         </div>
     </div>
