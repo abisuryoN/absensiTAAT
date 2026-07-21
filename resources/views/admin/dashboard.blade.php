@@ -117,8 +117,8 @@
                                              class="rounded-circle"
                                              style="width: 30px; height: 30px; object-fit: cover;">
                                     @else
-                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-semibold" 
-                                             style="width: 30px; height: 30px; font-size: 0.7rem;">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-semibold" 
+                                             style="width: 30px; height: 30px; font-size: 0.7rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                                             {{ strtoupper(substr($log->user->name ?? 'S', 0, 2)) }}
                                         </div>
                                     @endif
