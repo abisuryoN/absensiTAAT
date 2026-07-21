@@ -538,7 +538,7 @@ $mobile-radius-lg: 12px;
 
         // Warna sesuai card masing-masing
         &.stat-primary {
-            background: linear-gradient(135deg, #4361ee, #3a56d4);
+            background: #eef4ff;
         }
 
         &.stat-success {
@@ -1382,7 +1382,7 @@ $mobile-radius-lg: 12px;
                 min-width: 48px;
                 width: 48px;
                 padding: 6px 0;
-                background: linear-gradient(180deg, #4361ee 0%, #3a56d4 100%);
+                background: #eef4ff;
                 border-radius: 10px;
                 color: #fff;
                 flex-shrink: 0;
@@ -1708,7 +1708,7 @@ $mobile-radius-lg: 12px;
         width: 40px;
         height: 40px;
         border-radius: 40px;
-        background: linear-gradient(135deg, #4361ee, #3a56d4);
+        background: #eef4ff;
         color: #fff;
         display: flex;
         align-items: center;

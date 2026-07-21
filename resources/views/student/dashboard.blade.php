@@ -84,7 +84,7 @@
                 <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center gap-3 mb-3">
-                            <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#4361ee,#3a0ca3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700;flex-shrink:0;">
+                            <div style="width:52px;height:52px;border-radius:50%;background:#eef4ff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700;flex-shrink:0;">
                                 {{ strtoupper(substr($student->name ?? auth()->user()->name, 0, 1)) }}
                             </div>
                             <div>
@@ -175,7 +175,7 @@
         {{-- ── Stat Cards ───────────────────────────────────────────── --}}
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-4 col-xl">
-                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#4361ee,#3a0ca3);">
+                <div class="card stat-card shadow-sm h-100" style="background:#eef4ff;">
                     <div class="card-body p-3">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <div class="stat-icon" style="background:rgba(255,255,255,.2);">
