@@ -96,7 +96,7 @@
                                     @if($schedule->is_active)
                                         <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-8">Aktif</span>
                                     @else
-                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 fs-8">Tidak Aktif</span>
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fs-8">Tidak Aktif</span>
                                     @endif
                                 </td>
                                 <td data-label="Aksi" class="text-center">
