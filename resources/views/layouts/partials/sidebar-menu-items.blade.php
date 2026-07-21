@@ -130,6 +130,7 @@ PARAMETER:
     } elseif ($role === 'guru_piket') {
         $menuGroups = [
             'MENU UTAMA' => [
+                ['label' => 'Dashboard',          'icon' => 'bi-speedometer2',       'route' => 'piket.dashboard'],
                 ['label' => 'Absensi Gerbang',    'icon' => 'bi-qr-code-scan',       'route' => 'piket.scan'],
                 ['label' => 'Rekap Hari Ini',     'icon' => 'bi-calendar-check',     'route' => 'piket.rekap'],
             ],

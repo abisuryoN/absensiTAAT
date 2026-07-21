@@ -37,6 +37,7 @@
             ];
         } elseif ($role === 'guru_piket') {
             $bottomMenus = [
+                ['label' => 'Dashboard', 'icon' => 'bi-speedometer2',          'route' => 'piket.dashboard'],
                 ['label' => 'Gerbang',   'icon' => 'bi-qr-code-scan',          'route' => 'piket.scan'],
                 ['label' => 'Hari Ini',  'icon' => 'bi-calendar-check',        'route' => 'piket.rekap'],
                 ['label' => 'Profil',    'icon' => 'bi-person-circle',         'route' => 'profile.edit'],
