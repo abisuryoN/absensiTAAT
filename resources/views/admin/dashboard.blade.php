@@ -19,9 +19,9 @@
         <!-- Total Siswa -->
         <div class="col-6 col-md-3 stats-col">
             <div class="card card-stat text-white border-0 rounded-4 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
-                <div class="card-body position-relative p-4">
-                    <div class="position-absolute top-0 end-0 p-3">
-                        <i class="bi bi-people-fill fs-3 opacity-50"></i>
+                <div class="card-body p-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-people-fill fs-4"></i>
                     </div>
                     <div class="stat-value display-6 fw-bold mb-0">{{ number_format($totalSiswa) }}</div>
                     <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Total Siswa</div>
@@ -32,9 +32,9 @@
         <!-- Hadir Hari Ini -->
         <div class="col-6 col-md-3 stats-col">
             <div class="card card-stat bg-success text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body position-relative p-4">
-                    <div class="position-absolute top-0 end-0 p-3">
-                        <i class="bi bi-check-circle-fill fs-3 opacity-50"></i>
+                <div class="card-body p-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-check-circle-fill fs-4"></i>
                     </div>
                     <div class="stat-value display-6 fw-bold mb-0">{{ number_format($hadir) }}</div>
                     <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Hadir Hari Ini</div>
@@ -45,9 +45,9 @@
         <!-- Terlambat -->
         <div class="col-6 col-md-3 stats-col">
             <div class="card card-stat bg-warning text-white border-0 rounded-4 shadow-sm h-100">
-                <div class="card-body position-relative p-4">
-                    <div class="position-absolute top-0 end-0 p-3">
-                        <i class="bi bi-clock-history fs-3 opacity-50"></i>
+                <div class="card-body p-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-clock-history fs-4"></i>
                     </div>
                     <div class="stat-value display-6 fw-bold mb-0">{{ number_format($terlambat) }}</div>
                     <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Terlambat</div>
@@ -59,9 +59,9 @@
         <div class="col-6 col-md-3 stats-col">
             <a href="{{ route('admin.attendance.today') }}" class="text-decoration-none">
                 <div class="card card-stat bg-danger text-white border-0 rounded-4 shadow-sm h-100">
-                    <div class="card-body position-relative p-4">
-                        <div class="position-absolute top-0 end-0 p-3">
-                            <i class="bi bi-exclamation-triangle-fill fs-3 opacity-50"></i>
+                    <div class="card-body p-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                            <i class="bi bi-exclamation-triangle-fill fs-4"></i>
                         </div>
                         <div class="stat-value display-6 fw-bold mb-0">{{ number_format($tidakHadir) }}</div>
                         <div class="stat-label fs-7 fw-medium text-white-50 mt-1">Tidak Hadir</div>
@@ -228,10 +228,26 @@
 
         /* Card Statistik - Grid rapi dengan rounded corner & floating effect */
         .card-stat {
+            position: relative;
             border-radius: 16px !important;
             box-shadow: 0 4px 16px rgba(0,0,0,0.10) !important;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             overflow: hidden;
+        }
+        .card-stat::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .card-stat .card-body {
+            position: relative;
+            z-index: 1;
         }
         .card-stat:hover {
             transform: translateY(-4px);
