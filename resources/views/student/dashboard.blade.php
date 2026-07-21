@@ -130,8 +130,8 @@
                                 <span class="text-muted">Persentase Kehadiran</span>
                                 <span class="fw-bold" style="color:#1e293b;">{{ $attendancePercent }}%</span>
                             </div>
-                            <div class="progress" style="height:8px;border-radius:50px;">
-                                <div class="progress-bar bg-primary" style="width:{{ $attendancePercent }}%;border-radius:50px;"></div>
+                            <div class="progress" style="height:8px;border-radius:50px;background:#e5e7eb;">
+                                <div class="progress-bar" style="width:{{ $attendancePercent }}%;border-radius:50px;background:#3b82f6;"></div>
                             </div>
                         </div>
                         {{-- Mini stats --}}
