@@ -77,7 +77,7 @@
         <div class="col-12 col-lg-8">
             <div class="card glass-card border-0 shadow-sm p-4 h-100">
                 <h5 class="fw-bold mb-3">
-                    <i class="bi bi-bar-chart-line-fill me-2 text-primary"></i>Tren Kehadiran Mingguan
+                    <i class="bi bi-bar-chart-line-fill me-2" style="color: #0d6efd !important;"></i>Tren Kehadiran Mingguan
                 </h5>
                 <div style="position: relative; height: 320px; width: 100%;">
                     <canvas id="weeklyTrendChart"
