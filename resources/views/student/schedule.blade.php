@@ -7,7 +7,7 @@
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <div>
                     <h4 class="fw-bold mb-1">
-                        <i class="bi bi-calendar3 me-2 text-primary"></i>Jadwal Pelajaran
+                        <i class="bi bi-calendar3 me-2" style="color:#3b82f6;"></i>Jadwal Pelajaran
                     </h4>
                     <p class="text-muted mb-0 fs-7">
                         Kelas {{ $student->class->name ?? '-' }} &bull; Semester Aktif
@@ -25,11 +25,11 @@
                 <div class="card glass-card border-0 shadow-sm {{ strtolower($today) === $day ? 'border-start border-4 border-primary' : '' }}">
                     <div class="card-header bg-transparent border-0 pb-0 pt-3 px-4">
                         <div class="d-flex align-items-center gap-2">
-                            <h5 class="fw-bold mb-0 {{ strtolower($today) === $day ? 'text-primary' : '' }}">
+                            <h5 class="fw-bold mb-0" style="color:{{ strtolower($today) === $day ? '#1e40af' : '#1e293b' }};">
                                 {{ ucfirst($day) }}
                             </h5>
                             @if(strtolower($today) === $day)
-                                <span class="badge bg-primary fs-9">
+                                <span class="badge fs-9" style="background:#3b82f6;color:#fff;">
                                     <i class="bi bi-geo-fill me-1"></i>Hari Ini
                                 </span>
                             @endif
