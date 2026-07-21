@@ -407,7 +407,7 @@
                             <i class="bi bi-arrow-repeat"></i>
                         </button>
                     </div>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 mt-3">
                         <button class="btn-camera-action btn-camera-start" id="btn-start-camera" type="button">
                             <i class="bi bi-play-fill"></i> Mulai Kamera
                         </button>
