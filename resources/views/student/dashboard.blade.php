@@ -56,6 +56,41 @@
         .qr-refresh-btn {
             font-size: 0.82rem;
         }
+
+        /* Mobile-specific spacing fixes */
+        @media (max-width: 575.98px) {
+            .stat-card .card-body {
+                padding: 0.85rem 0.7rem !important;
+            }
+            .stat-card .stat-value {
+                font-size: 1.5rem;
+            }
+            .stat-card .stat-label {
+                font-size: 0.68rem;
+            }
+            .stat-card .stat-icon {
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
+            }
+            /* Ensure cards don't touch edges */
+            .row.g-4 > .col-6 {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            .row.g-4 {
+                margin-left: -8px;
+                margin-right: -8px;
+            }
+            /* Jadwal card header mobile spacing */
+            .card-header .d-flex.flex-wrap {
+                gap: 0.5rem !important;
+            }
+            .card-header .badge {
+                font-size: 0.65rem !important;
+                padding: 0.25rem 0.5rem !important;
+            }
+        }
     </style>
     @endpush
 
@@ -173,7 +208,7 @@
         </div>
 
         {{-- ── Stat Cards ───────────────────────────────────────────── --}}
-        <div class="row g-3 mb-4">
+        <div class="row g-4 mb-4">
             <div class="col-6 col-md-4 col-xl">
                 <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
                     <div class="card-body p-3">
@@ -257,16 +292,18 @@
         {{-- ── Jadwal Hari Ini ──────────────────────────────────────── --}}
         <div class="card border-0 shadow-sm" style="border-radius:12px;">
             <div class="card-header bg-white border-bottom py-3 px-4" style="border-radius:12px 12px 0 0;">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h6 class="fw-bold mb-0" style="color:#1e293b;">
-                        <i class="bi bi-calendar-week me-2" style="color:#3b82f6;"></i>Jadwal Hari Ini
-                        <span class="badge ms-2 fs-8" style="background:#3b82f6;color:#fff;">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <h6 class="fw-bold mb-0" style="color:#1e293b;">
+                            <i class="bi bi-calendar-week me-2" style="color:#3b82f6;"></i>Jadwal Hari Ini
+                        </h6>
+                        <span class="badge fs-8" style="background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;font-weight:600;">
                             {{ now()->translatedFormat('l, d F Y') }}
                         </span>
-                    </h6>
-                <a href="{{ route('student.schedule') }}" class="btn btn-primary btn-sm">
-                    Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
-                </a>
+                    </div>
+                    <a href="{{ route('student.schedule') }}" class="btn btn-primary btn-sm">
+                        Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
                 </div>
             </div>
             <div class="card-body p-0">
