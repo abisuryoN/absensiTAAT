@@ -26,12 +26,9 @@
             <p class="text-muted mb-0">Kelola daftar hari libur nasional, sekolah, dan khusus per tahun ajaran.</p>
         </div>
         <div class="col-auto">
-            <button type="button" class="btn btn-success fw-semibold me-2" data-bs-toggle="modal" data-bs-target="#syncModal">
+            <button type="button" class="btn btn-success fw-semibold" data-bs-toggle="modal" data-bs-target="#syncModal">
                 <i class="bi bi-arrow-repeat me-1"></i> Sinkronisasi dari API
             </button>
-            <a href="{{ route('admin.holidays.create') }}" class="btn btn-primary fw-semibold">
-                <i class="bi bi-plus-lg me-1"></i> Tambah Hari Libur
-            </a>
         </div>
     </div>
 
@@ -46,9 +43,6 @@
                 <button type="button" class="btn btn-success mobile-btn" data-bs-toggle="modal" data-bs-target="#syncModal" style="padding:8px 12px; font-size:13px;">
                     <i class="bi bi-arrow-repeat"></i>
                 </button>
-                <a href="{{ route('admin.holidays.create') }}" class="btn btn-primary mobile-btn" style="padding:8px 12px; font-size:13px;">
-                    <i class="bi bi-plus-lg"></i>
-                </a>
             </div>
         </div>
     </div>

@@ -1,64 +1,78 @@
 <section id="profile-photo-section" class="card border-0 shadow-sm rounded-3 overflow-hidden">
-    <div class="card-header bg-white border-bottom py-3 px-4 d-flex align-items-center gap-2">
+    <div class="card-header border-bottom py-3 px-4 d-flex align-items-center gap-2" style="background:#fff;">
         <i class="bi bi-camera-fill text-primary"></i>
-        <h2 class="fw-bold fs-6 mb-0">Foto Profil</h2>
+        <h2 class="fw-bold mb-0" style="font-size:0.95rem;color:#1e293b;">Foto Profil</h2>
     </div>
 
-    <div class="card-body p-4">
-        <div class="d-flex flex-column flex-md-row align-items-center align-items-md-start gap-4">
+    <div class="card-body p-4" style="background:#fff;">
+        <div class="d-flex flex-column flex-md-row align-items-start gap-4">
+
             {{-- Preview Foto --}}
-            <div class="text-center flex-shrink-0">
+            <div class="flex-shrink-0 text-center">
                 <div class="position-relative d-inline-block">
                     <img id="photo-preview"
                          src="{{ auth()->user()->profile_photo_url }}"
                          alt="Foto Profil"
-                         width="120" height="120"
-                         class="rounded-circle object-fit-cover border border-3 border-white shadow"
-                         style="background:#f1f5f9;"
+                         width="110" height="110"
+                         class="rounded-circle object-fit-cover shadow-sm"
+                         style="border:3px solid #e2e8f0;background:#f8fafc;"
                          onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&size=128&bold=true'"
                     >
-                    <label for="photo-input"
-                           class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow"
-                           style="width:32px;height:32px;cursor:pointer;font-size:0.85rem;"
+                    {{-- Kamera overlay di pojok --}}
+                    <label for="photo-input-trigger"
+                           class="position-absolute bottom-0 end-0 rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                           style="width:30px;height:30px;cursor:pointer;background:#3b82f6;border:2px solid #fff;"
                            title="Ganti Foto">
-                        <i class="bi bi-camera-fill"></i>
+                        <i class="bi bi-camera-fill" style="font-size:0.75rem;color:#fff;"></i>
                     </label>
                 </div>
-                <p class="text-muted fs-8 mt-2 mb-0">Maks. 1 MB</p>
             </div>
 
             {{-- Kontrol Upload --}}
-            <div class="flex-grow-1 w-100">
-                <p class="text-secondary mb-3" style="font-size:0.875rem;">
-                    Upload foto profil Anda. Format yang diizinkan: <strong>JPG, JPEG, PNG, WEBP</strong>.
-                    Foto akan dikonversi otomatis ke format <strong>WebP</strong> untuk mengoptimalkan ukuran file.
+            <div class="flex-grow-1">
+                <p style="font-size:0.85rem;color:#475569;margin-bottom:12px;line-height:1.5;">
+                    Upload foto profil Anda. Format yang diizinkan: <strong style="color:#1e293b;">JPG, JPEG, PNG, WEBP</strong>.
+                    Foto akan dikonversi otomatis ke format <strong style="color:#1e293b;">WebP</strong>.
                 </p>
 
-                <input type="file" id="photo-input" name="photo" accept="image/jpeg,image/png,image/webp" class="d-none">
+                {{-- Input file tersembunyi — dipicu dari dua tempat (label kamera + tombol Pilih Foto) --}}
+                <input type="file" id="photo-input-trigger" accept="image/jpeg,image/png,image/webp" class="d-none">
 
-                <div class="d-flex flex-wrap gap-2">
-                    <button type="button" id="btn-upload-photo" class="btn btn-primary btn-sm" disabled>
-                        <i class="bi bi-cloud-upload me-1"></i> Upload Foto
-                    </button>
-                    <label for="photo-input" class="btn btn-outline-secondary btn-sm" style="cursor:pointer;">
-                        <i class="bi bi-image me-1"></i> Pilih Foto
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    {{-- Tombol utama: klik → pilih file → langsung upload --}}
+                    <label for="photo-input-trigger"
+                           class="btn btn-primary btn-sm fw-semibold"
+                           id="btn-pilih-label"
+                           style="cursor:pointer;min-width:120px;">
+                        <i class="bi bi-image me-1"></i>
+                        <span id="label-text">Pilih & Upload Foto</span>
                     </label>
+
                     @if(auth()->user()->profile_photo)
-                    <button type="button" id="btn-delete-photo" class="btn btn-outline-danger btn-sm">
+                    <button type="button" id="btn-delete-photo"
+                            class="btn btn-sm fw-semibold"
+                            style="border:1px solid #fca5a5;color:#dc2626;background:#fff5f5;">
                         <i class="bi bi-trash me-1"></i> Hapus Foto
                     </button>
                     @endif
                 </div>
 
-                <div id="photo-feedback" class="mt-2 d-none">
-                    <small id="photo-feedback-text" class=""></small>
+                {{-- Info ukuran & format --}}
+                <p style="font-size:0.78rem;color:#94a3b8;margin-top:8px;margin-bottom:0;">
+                    <i class="bi bi-info-circle me-1"></i>Maksimal <strong style="color:#64748b;">1 MB</strong>
+                </p>
+
+                {{-- Progress bar --}}
+                <div id="upload-progress" class="mt-3 d-none">
+                    <div class="progress mb-1" style="height:4px;background:#e2e8f0;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width:100%;background:#3b82f6;"></div>
+                    </div>
+                    <small style="color:#64748b;font-size:0.78rem;">Mengupload dan mengkonversi foto...</small>
                 </div>
 
-                <div id="upload-progress" class="mt-2 d-none">
-                    <div class="progress" style="height:4px;">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width:100%"></div>
-                    </div>
-                    <small class="text-muted">Mengupload dan mengkonversi foto...</small>
+                {{-- Feedback pesan --}}
+                <div id="photo-feedback" class="mt-2 d-none">
+                    <small id="photo-feedback-text"></small>
                 </div>
             </div>
         </div>
@@ -67,67 +81,63 @@
 
 <script>
 (function () {
-    const photoInput   = document.getElementById('photo-input');
-    const btnUpload    = document.getElementById('btn-upload-photo');
+    const input        = document.getElementById('photo-input-trigger');
+    const btnLabel     = document.getElementById('btn-pilih-label');
+    const labelText    = document.getElementById('label-text');
     const btnDelete    = document.getElementById('btn-delete-photo');
     const preview      = document.getElementById('photo-preview');
     const feedback     = document.getElementById('photo-feedback');
     const feedbackText = document.getElementById('photo-feedback-text');
     const progress     = document.getElementById('upload-progress');
 
-    // URL-nya di-inline dari Blade
-    const uploadUrl    = "{{ route('profile.photo.update') }}";
-    const deleteUrl    = "{{ route('profile.photo.destroy') }}";
-    const csrfToken    = "{{ csrf_token() }}";
+    const uploadUrl = "{{ route('profile.photo.update') }}";
+    const deleteUrl = "{{ route('profile.photo.destroy') }}";
+    const csrfToken = "{{ csrf_token() }}";
 
-    function showFeedback(message, isSuccess) {
+    function showFeedback(msg, ok) {
         feedback.classList.remove('d-none');
-        feedbackText.textContent = message;
-        feedbackText.className = isSuccess ? 'text-success fw-semibold' : 'text-danger fw-semibold';
+        feedbackText.textContent = msg;
+        feedbackText.style.cssText = ok
+            ? 'color:#16a34a;font-weight:600;font-size:0.82rem;'
+            : 'color:#dc2626;font-weight:600;font-size:0.82rem;';
+    }
+    function hideFeedback() { feedback.classList.add('d-none'); }
+    function showProgress()  { progress.classList.remove('d-none'); }
+    function hideProgress()  { progress.classList.add('d-none'); }
+    function setLoading(on) {
+        btnLabel.style.pointerEvents = on ? 'none' : '';
+        btnLabel.style.opacity = on ? '0.65' : '';
+        labelText.textContent = on ? 'Mengupload...' : 'Pilih & Upload Foto';
     }
 
-    function hideFeedback() {
-        feedback.classList.add('d-none');
-    }
-
-    function showProgress() { progress.classList.remove('d-none'); }
-    function hideProgress() { progress.classList.add('d-none'); }
-
-    // Saat file dipilih: tampilkan preview & aktifkan tombol upload
-    photoInput.addEventListener('change', function () {
+    // Saat file dipilih → langsung upload
+    input.addEventListener('change', async function () {
         const file = this.files[0];
         if (!file) return;
 
+        hideFeedback();
+
         // Validasi client-side
-        const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+        const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
         if (!allowed.includes(file.type)) {
             showFeedback('Format tidak didukung. Gunakan JPG, JPEG, PNG, atau WEBP.', false);
-            btnUpload.disabled = true;
+            input.value = '';
             return;
         }
         if (file.size > 1024 * 1024) {
-            showFeedback('Ukuran file melebihi 1 MB.', false);
-            btnUpload.disabled = true;
+            showFeedback('Ukuran file melebihi 1 MB. Pilih foto yang lebih kecil.', false);
+            input.value = '';
             return;
         }
 
-        hideFeedback();
-        btnUpload.disabled = false;
-
-        // Preview lokal
+        // Preview lokal dulu
         const reader = new FileReader();
         reader.onload = e => { preview.src = e.target.result; };
         reader.readAsDataURL(file);
-    });
 
-    // Upload foto
-    btnUpload.addEventListener('click', async function () {
-        const file = photoInput.files[0];
-        if (!file) return;
-
-        this.disabled = true;
+        // Langsung upload
+        setLoading(true);
         showProgress();
-        hideFeedback();
 
         const form = new FormData();
         form.append('photo', file);
@@ -139,42 +149,39 @@
 
             if (data.success) {
                 // Update semua avatar di halaman
-                document.querySelectorAll('.user-avatar-element').forEach(el => {
-                    el.src = data.url;
-                });
+                document.querySelectorAll('.user-avatar-element').forEach(el => { el.src = data.url; });
                 preview.src = data.url;
                 showFeedback(data.message, true);
 
                 // Tampilkan tombol hapus jika belum ada
-                if (!btnDelete) {
-                    const btnArea = btnUpload.parentElement;
+                if (!document.getElementById('btn-delete-photo')) {
                     const del = document.createElement('button');
                     del.type = 'button';
                     del.id = 'btn-delete-photo';
-                    del.className = 'btn btn-outline-danger btn-sm';
+                    del.className = 'btn btn-sm fw-semibold';
+                    del.style.cssText = 'border:1px solid #fca5a5;color:#dc2626;background:#fff5f5;';
                     del.innerHTML = '<i class="bi bi-trash me-1"></i> Hapus Foto';
-                    btnArea.appendChild(del);
+                    btnLabel.parentElement.appendChild(del);
                     attachDeleteHandler(del);
                 }
             } else {
-                showFeedback(data.message, false);
-                // Kembalikan preview ke foto sebelumnya
                 preview.src = "{{ auth()->user()->profile_photo_url }}";
+                showFeedback(data.message, false);
             }
-        } catch (err) {
+        } catch {
+            preview.src = "{{ auth()->user()->profile_photo_url }}";
             showFeedback('Terjadi kesalahan jaringan. Coba lagi.', false);
         } finally {
             hideProgress();
-            this.disabled = false;
-            photoInput.value = '';
-            btnUpload.disabled = true;
+            setLoading(false);
+            input.value = '';
         }
     });
 
     // Hapus foto
     function attachDeleteHandler(btn) {
         btn.addEventListener('click', async function () {
-            if (!confirm('Hapus foto profil? Anda akan menggunakan avatar default.')) return;
+            if (!confirm('Hapus foto profil? Anda akan kembali menggunakan avatar default.')) return;
 
             this.disabled = true;
             showProgress();
@@ -183,25 +190,22 @@
             try {
                 const res  = await fetch(deleteUrl, {
                     method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                    },
+                    headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
                 });
                 const data = await res.json();
 
                 if (data.success) {
-                    document.querySelectorAll('.user-avatar-element').forEach(el => {
-                        el.src = data.url;
-                    });
+                    document.querySelectorAll('.user-avatar-element').forEach(el => { el.src = data.url; });
                     preview.src = data.url;
                     showFeedback(data.message, true);
-                    this.remove(); // hapus tombol delete
+                    this.remove();
                 } else {
                     showFeedback(data.message, false);
+                    this.disabled = false;
                 }
-            } catch (err) {
+            } catch {
                 showFeedback('Terjadi kesalahan jaringan.', false);
+                this.disabled = false;
             } finally {
                 hideProgress();
             }
