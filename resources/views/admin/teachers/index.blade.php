@@ -59,13 +59,12 @@
                         @forelse($teachers as $teacher)
                             <tr>
                                 <td data-label="Foto">
-                                    @if($teacher->photo)
-                                        <img src="{{ Storage::url($teacher->photo) }}" alt="" class="rounded-circle object-fit-cover" style="width: 40px; height: 40px;">
-                                    @else
-                                        <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px; font-size: 0.9rem;">
-                                            {{ substr($teacher->name, 0, 2) }}
-                                        </div>
-                                    @endif
+                                    <img src="{{ $teacher->user?->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($teacher->name).'&background=4f46e5&color=fff&size=80&bold=true' }}"
+                                         alt="{{ $teacher->name }}"
+                                         class="rounded-circle object-fit-cover"
+                                         style="width:40px;height:40px;border:2px solid #e2e8f0;"
+                                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($teacher->name) }}&background=4f46e5&color=fff&size=80&bold=true'"
+                                    >
                                 </td>
                                 <td data-label="NIP / NUPTK">
                                     <span class="d-block fw-semibold text-dark fs-7">NIP: {{ $teacher->nip ?: '-' }}</span>

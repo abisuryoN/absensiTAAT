@@ -72,6 +72,7 @@
                 <table class="table table-premium align-middle">
                     <thead>
                         <tr>
+                            <th style="width:52px;">Foto</th>
                             <th>Nama Lengkap</th>
                             <th>NIK</th>
                             <th>No. HP</th>
@@ -84,6 +85,14 @@
                     <tbody>
                         @forelse($parents as $parent)
                         <tr>
+                            <td data-label="Foto">
+                                <img src="{{ $parent->user?->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($parent->name).'&background=059669&color=fff&size=80&bold=true' }}"
+                                     alt="{{ $parent->name }}"
+                                     class="rounded-circle object-fit-cover"
+                                     style="width:40px;height:40px;border:2px solid #e2e8f0;"
+                                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($parent->name) }}&background=059669&color=fff&size=80&bold=true'"
+                                >
+                            </td>
                             <td data-label="Nama" class="fw-semibold text-dark">
                                 {{ $parent->name }}
                                 @if($parent->relationship)

@@ -77,6 +77,7 @@
                 <table class="table table-premium align-middle">
                     <thead>
                         <tr>
+                            <th style="width:52px;">Foto</th>
                             <th>NIS / NISN</th>
                             <th>Nama Lengkap</th>
                             <th>Gender</th>
@@ -89,6 +90,14 @@
                     <tbody>
                         @forelse($students as $student)
                             <tr>
+                                <td data-label="Foto">
+                                    <img src="{{ $student->user?->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($student->name).'&background=6366f1&color=fff&size=80&bold=true' }}"
+                                         alt="{{ $student->name }}"
+                                         class="rounded-circle object-fit-cover"
+                                         style="width:40px;height:40px;border:2px solid #e2e8f0;"
+                                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&background=6366f1&color=fff&size=80&bold=true'"
+                                    >
+                                </td>
                                 <td data-label="NIS / NISN">
                                     <span class="d-block fw-semibold text-dark fs-7">NIS: {{ $student->nis }}</span>
                                     <span class="text-muted fs-8">NISN: {{ $student->nisn ?: '-' }}</span>
