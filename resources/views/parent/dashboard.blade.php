@@ -60,14 +60,7 @@
             padding: 1rem 1.25rem;
         }
 
-        /* ── Child Switcher ───────────────────────────── */
-        .child-switcher-card {
-            border-radius: 14px; border: none;
-            background: #f8fafc;
-            box-shadow: 0 1px 4px rgba(0,0,0,.06);
-        }
-
-        /* ── Stat Cards Grid ────────────────────────── */
+        /* ── Stat Cards Grid ─────────────────────────── */
         .stat-cards-grid {
             display: flex;
             flex-wrap: wrap;
@@ -84,181 +77,283 @@
             }
         }
 
+        /* ── Student Selector ────────────────────────── */
+        .selector-section {
+            margin-bottom: 1.5rem;
+        }
+        .selector-label {
+            font-size: .78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: #64748b;
+            margin-bottom: .75rem;
+        }
+        .selector-scroll {
+            display: flex;
+            gap: .75rem;
+            overflow-x: auto;
+            padding-bottom: .5rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .selector-scroll::-webkit-scrollbar { display: none; }
+
+        .student-selector-card {
+            flex: 0 0 auto;
+            width: 170px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            background: #fff;
+            padding: .85rem .9rem;
+            cursor: pointer;
+            transition: border-color .18s, background .18s, box-shadow .18s, transform .18s;
+            position: relative;
+            text-decoration: none;
+            display: block;
+            user-select: none;
+        }
+        .student-selector-card:hover {
+            border-color: #93c5fd;
+            background: #f0f7ff;
+            box-shadow: 0 4px 14px rgba(59,130,246,.12);
+            transform: translateY(-2px);
+        }
+        .student-selector-card.active {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            box-shadow: 0 4px 16px rgba(59,130,246,.2);
+        }
+        .student-selector-card.active .selector-name { color: #1d4ed8; }
+        .student-selector-card .selector-avatar {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: linear-gradient(135deg,#6366f1,#4f46e5);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 700; font-size: 1rem;
+            margin-bottom: .6rem;
+        }
+        .student-selector-card.active .selector-avatar {
+            background: linear-gradient(135deg,#3b82f6,#1d4ed8);
+        }
+        .selector-name {
+            font-weight: 600; font-size: .88rem;
+            color: #1e293b;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            margin-bottom: .2rem;
+        }
+        .selector-meta {
+            font-size: .73rem; color: #64748b;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .selector-check {
+            position: absolute; top: .55rem; right: .6rem;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #3b82f6;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .65rem; color: #fff;
+            opacity: 0; transition: opacity .18s;
+        }
+        .student-selector-card.active .selector-check { opacity: 1; }
+
+        /* ── Loading overlay on dashboard-content ────── */
+        #dashboard-content {
+            position: relative;
+            transition: opacity .2s ease;
+        }
+        #dashboard-content.loading {
+            opacity: .45;
+            pointer-events: none;
+        }
+        #dashboard-spinner {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+        #dashboard-spinner.show { display: block; }
+
         /* Mobile tweaks */
         @media (max-width: 575.98px) {
             .stat-card .stat-value { font-size: 1.6rem; }
             .stat-card .card-body  { padding: 1rem !important; }
             .stat-card .stat-icon  { width: 42px; height: 42px; font-size: 1.15rem; margin-bottom: .5rem !important; }
             .student-avatar        { width: 48px; height: 48px; font-size: 1.2rem; }
+            .student-selector-card { width: 150px; }
         }
     </style>
     @endpush
 
-    {{-- ── Child Switcher (multiple children) ─────────────────────────────── --}}
-    @if($children->count() > 1)
-    <div class="card child-switcher-card mb-4">
-        <div class="card-body p-3">
-            <small class="text-muted fw-semibold d-block mb-2">
-                <i class="bi bi-people me-1"></i>Pilih Anak:
-            </small>
-            <div class="d-flex flex-wrap gap-2">
-                @foreach($children as $child)
-                <a href="?student_id={{ $child->id }}"
-                   class="btn btn-sm {{ $activeStudent && $activeStudent->id === $child->id ? 'btn-primary' : 'btn-outline-secondary' }}">
-                    {{ $child->name }}
-                    <span class="badge {{ $activeStudent && $activeStudent->id === $child->id ? 'bg-white text-primary' : 'bg-secondary-subtle text-secondary' }} ms-1">
-                        {{ $child->schoolClass->name ?? '-' }}
-                    </span>
-                </a>
-                @endforeach
-            </div>
+    {{-- ── Loading Spinner ───────────────────────────────────────────────── --}}
+    <div id="dashboard-spinner">
+        <div class="spinner-border text-primary" style="width:2.5rem;height:2.5rem;" role="status">
+            <span class="visually-hidden">Memuat...</span>
         </div>
     </div>
-    @endif
 
-    @if($activeStudent)
-
-    {{-- ── Student Profile Card ─────────────────────────────────────────────── --}}
-    <div class="card student-profile-card shadow-sm mb-4">
-        <div class="card-body p-3 p-md-4">
-            <div class="d-flex align-items-center gap-3">
-                <div class="student-avatar">
-                    {{ strtoupper(substr($activeStudent->name, 0, 1)) }}
+    {{-- ── Student Selector (outside #dashboard-content, NOT re-rendered) ──── --}}
+    @if($children->count() > 1)
+    <div class="selector-section">
+        <div class="selector-label">
+            <i class="bi bi-people me-1"></i>Pilih Anak
+        </div>
+        <div class="selector-scroll" id="student-selector">
+            @foreach($children as $child)
+            <div class="student-selector-card {{ $activeStudent && $activeStudent->id === $child->id ? 'active' : '' }}"
+                 data-student-id="{{ $child->id }}"
+                 data-url="{{ route('parent.student.data', $child->id) }}"
+                 role="button"
+                 tabindex="0"
+                 aria-label="Pilih {{ $child->name }}">
+                <div class="selector-check"><i class="bi bi-check2"></i></div>
+                <div class="selector-avatar">
+                    @if($child->photo)
+                        <img src="{{ Storage::url($child->photo) }}" alt="" class="w-100 h-100 object-fit-cover" style="border-radius:10px;">
+                    @else
+                        {{ strtoupper(substr($child->name, 0, 1)) }}
+                    @endif
                 </div>
-                <div class="flex-grow-1 min-width-0">
-                    <div class="fw-bold fs-5 mb-1" style="color:#fff;">{{ $activeStudent->name }}</div>
-                    <div style="color:rgba(255,255,255,.82); font-size:.85rem;">
-                        NIS: {{ $activeStudent->nis ?? '-' }}
-                        &bull; {{ $activeStudent->schoolClass->name ?? 'Kelas tidak diketahui' }}
-                        @if($activeStudent->schoolClass?->major)
-                            &bull; {{ $activeStudent->schoolClass->major->name }}
+                <div class="selector-name">{{ $child->name }}</div>
+                <div class="selector-meta">
+                    NIS {{ $child->nis ?? '-' }}<br>
+                    {{ $child->schoolClass->name ?? '-' }}
+                    <div class="mt-1">
+                        @if($child->is_active)
+                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Aktif</span>
+                        @else
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Nonaktif</span>
                         @endif
                     </div>
                 </div>
-                <div class="d-none d-md-block">
-                    <span class="badge" style="background:rgba(255,255,255,.2); color:#fff; font-size:.78rem; padding:.45rem .85rem; border-radius:8px;">
-                        <i class="bi bi-clock me-1"></i>{{ now()->translatedFormat('d M Y') }}
-                    </span>
-                </div>
             </div>
-        </div>
-    </div>
-
-    {{-- ── Stat Cards ───────────────────────────────────────────────────────── --}}
-    <div class="stat-cards-grid">
-        <div class="stat-card-col">
-            <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
-                <div class="card-body">
-                    <div class="stat-icon mb-2">
-                        <i class="bi bi-check-circle-fill text-white"></i>
-                    </div>
-                    <div class="stat-value">{{ $summary['hadir'] ?? 0 }}</div>
-                    <div class="stat-label">Hadir</div>
-                </div>
-            </div>
-        </div>
-        <div class="stat-card-col">
-            <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
-                <div class="card-body">
-                    <div class="stat-icon mb-2">
-                        <i class="bi bi-clock-history text-white"></i>
-                    </div>
-                    <div class="stat-value">{{ $summary['terlambat'] ?? 0 }}</div>
-                    <div class="stat-label">Terlambat</div>
-                </div>
-            </div>
-        </div>
-        <div class="stat-card-col">
-            <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">
-                <div class="card-body">
-                    <div class="stat-icon mb-2">
-                        <i class="bi bi-bandaid-fill text-white"></i>
-                    </div>
-                    <div class="stat-value">{{ ($summary['izin'] ?? 0) + ($summary['sakit'] ?? 0) }}</div>
-                    <div class="stat-label">Izin / Sakit</div>
-                </div>
-            </div>
-        </div>
-        <div class="stat-card-col">
-            <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#ef4444,#b91c1c);">
-                <div class="card-body">
-                    <div class="stat-icon mb-2">
-                        <i class="bi bi-x-circle-fill text-white"></i>
-                    </div>
-                    <div class="stat-value">{{ $summary['alpa'] ?? 0 }}</div>
-                    <div class="stat-label">Alpa</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- ── Recent Attendance Table ───────────────────────────────────────────── --}}
-    <div class="card section-card shadow-sm">
-        <div class="card-header">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <h6 class="fw-bold mb-0" style="color:#1e293b;">
-                    <i class="bi bi-calendar-week me-2 text-primary"></i>Rekap Kehadiran Terbaru (Bulan Ini)
-                </h6>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('parent.rekap_harian', ['student_id' => $activeStudent->id]) }}"
-                       class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-list-ul me-1"></i>Rekap Harian
-                    </a>
-                    <a href="{{ route('parent.rekap_bulanan', ['student_id' => $activeStudent->id]) }}"
-                       class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-bar-chart me-1"></i>Rekap Bulanan
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-premium align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>Status</th>
-                            <th>Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($recentAttendances as $att)
-                        <tr>
-                            <td class="fw-semibold">{{ \Carbon\Carbon::parse($att->date)->isoFormat('ddd, D MMM Y') }}</td>
-                            <td>@include('parent._status_badge', ['status' => $att->status])</td>
-                            <td class="text-muted small">{{ $att->note ?? '-' }}</td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="3" class="text-center text-muted py-5">
-                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-                                Belum ada data absensi bulan ini.
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            @if($recentAttendances->hasPages())
-            <div class="px-4 py-3 border-top">
-                {{ $recentAttendances->appends(request()->only('student_id'))->links() }}
-            </div>
-            @endif
-        </div>
-    </div>
-
-    @else
-    {{-- No student connected --}}
-    <div class="card section-card shadow-sm">
-        <div class="card-body text-center py-5">
-            <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#e0e7ff,#c7d2fe);display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;">
-                <i class="bi bi-people fs-2" style="color:#6366f1;"></i>
-            </div>
-            <h5 class="fw-bold mb-2">Belum Ada Siswa Terhubung</h5>
-            <p class="text-muted mb-0">Akun Anda belum ditautkan ke data siswa manapun.<br>
-            Hubungi admin sekolah untuk menautkan akun Anda ke data anak Anda.</p>
+            @endforeach
         </div>
     </div>
     @endif
+
+    {{-- ── Dashboard Content (replaced via AJAX) ──────────────────────────── --}}
+    <div id="dashboard-content">
+        @if($activeStudent)
+            @include('parent.partials.dashboard-content', [
+                'activeStudent'     => $activeStudent,
+                'summary'           => $summary,
+                'todayRecord'       => $todayRecord,
+                'recentAttendances' => $recentAttendances,
+            ])
+        @else
+        <div class="card section-card shadow-sm">
+            <div class="card-body text-center py-5">
+                <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#e0e7ff,#c7d2fe);display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;">
+                    <i class="bi bi-people fs-2" style="color:#6366f1;"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Belum Ada Siswa Terhubung</h5>
+                <p class="text-muted mb-0">Akun Anda belum ditautkan ke data siswa manapun.<br>
+                Hubungi admin sekolah untuk menautkan akun Anda ke data anak Anda.</p>
+            </div>
+        </div>
+        @endif
+    </div>
+
+    @push('scripts')
+    <script>
+    (function () {
+        'use strict';
+
+        const selector   = document.getElementById('student-selector');
+        const contentBox = document.getElementById('dashboard-content');
+        const spinner    = document.getElementById('dashboard-spinner');
+
+        if (!selector || !contentBox) return;
+
+        // ── Helpers ──────────────────────────────────────────────────────
+        function setLoading(on) {
+            contentBox.classList.toggle('loading', on);
+            spinner.classList.toggle('show', on);
+        }
+
+        function setActiveCard(studentId) {
+            selector.querySelectorAll('.student-selector-card').forEach(card => {
+                const isActive = String(card.dataset.studentId) === String(studentId);
+                card.classList.toggle('active', isActive);
+            });
+        }
+
+        // ── Fetch and swap dashboard content ─────────────────────────────
+        async function loadStudent(card) {
+            const studentId = card.dataset.studentId;
+            const url       = card.dataset.url;
+
+            if (card.classList.contains('active')) return; // already selected
+
+            setLoading(true);
+            setActiveCard(studentId);
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html',
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+
+                const html = await response.text();
+                contentBox.innerHTML = html;
+
+                // Smooth scroll to dashboard content on mobile
+                if (window.innerWidth < 768) {
+                    contentBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } catch (err) {
+                console.error('Gagal memuat data siswa:', err);
+                // Restore active state on error
+                const prevActive = selector.querySelector('.student-selector-card.active');
+                if (prevActive) prevActive.classList.add('active');
+                card.classList.remove('active');
+
+                // Show small error toast
+                showToast('Gagal memuat data. Silakan coba lagi.');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // ── Event listeners (click + keyboard Enter/Space) ────────────────
+        selector.querySelectorAll('.student-selector-card').forEach(card => {
+            card.addEventListener('click', () => loadStudent(card));
+            card.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    loadStudent(card);
+                }
+            });
+        });
+
+        // ── Simple toast notification ─────────────────────────────────────
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = [
+                'position:fixed', 'bottom:1.5rem', 'left:50%',
+                'transform:translateX(-50%)',
+                'background:#1e293b', 'color:#fff',
+                'padding:.55rem 1.2rem', 'border-radius:8px',
+                'font-size:.85rem', 'z-index:10000',
+                'box-shadow:0 4px 16px rgba(0,0,0,.2)',
+                'opacity:0', 'transition:opacity .25s',
+            ].join(';');
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            requestAnimationFrame(() => { toast.style.opacity = '1'; });
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    })();
+    </script>
+    @endpush
 
 </x-app-layout>

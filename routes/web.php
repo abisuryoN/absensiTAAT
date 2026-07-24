@@ -176,6 +176,7 @@ Route::middleware(['auth', 'active', 'role:parent'])
     ->name('parent.')
     ->group(function () {
         Route::get('/dashboard', [ParentPortalController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard/student/{student}', [ParentPortalController::class, 'studentData'])->name('student.data');
         Route::get('/rekap-harian', [ParentPortalController::class, 'rekapHarian'])->name('rekap_harian');
         Route::get('/rekap-bulanan', [ParentPortalController::class, 'rekapBulanan'])->name('rekap_bulanan');
     });
