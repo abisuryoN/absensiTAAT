@@ -13,9 +13,23 @@ class StudentRequest extends FormRequest
 
     public function rules(): array
     {
-        $studentId = $this->route('student');
-        $student = $studentId ? \App\Models\Student::find($studentId) : null;
-        $userId = $student ? $student->user_id : null;
+        // $this->route('student') returns the Student model (route model binding)
+        // or a plain ID string on create. Handle both cases.
+        $routeParam = $this->route('student');
+
+        if ($routeParam instanceof \App\Models\Student) {
+            $student   = $routeParam;
+            $studentId = $student->id;
+            $userId    = $student->user_id;
+        } elseif ($routeParam) {
+            $student   = \App\Models\Student::find($routeParam);
+            $studentId = $routeParam;
+            $userId    = $student?->user_id;
+        } else {
+            $student   = null;
+            $studentId = null;
+            $userId    = null;
+        }
 
         return [
             'nis' => 'required|string|max:30|unique:students,nis,' . $studentId,
