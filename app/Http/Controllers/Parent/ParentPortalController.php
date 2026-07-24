@@ -122,30 +122,35 @@ class ParentPortalController extends Controller
         $selectedYear = (int) $request->get('year', now()->year);
 
         $months = [
-            1 => 'Januari',
-            2 => 'Februari',
-            3 => 'Maret',
-            4 => 'April',
-            5 => 'Mei',
-            6 => 'Juni',
-            7 => 'Juli',
-            8 => 'Agustus',
-            9 => 'September',
-            10 => 'Oktober',
-            11 => 'November',
-            12 => 'Desember',
+            1 => 'Januari', 2 => 'Februari',  3 => 'Maret',
+            4 => 'April',   5 => 'Mei',        6 => 'Juni',
+            7 => 'Juli',    8 => 'Agustus',    9 => 'September',
+            10 => 'Oktober', 11 => 'November', 12 => 'Desember',
         ];
 
-        // Build 12-month summary
-        $monthlyData = [];
+        // Build all 12 months
+        $allMonths = [];
         foreach ($months as $m => $label) {
             $stats = $activeStudent
                 ? $this->buildMonthStats($activeStudent->id, $selectedYear, $m)
                 : $this->emptyMonthStats();
-            
             $stats['month_label'] = $label;
-            $monthlyData[] = $stats;
+            $allMonths[] = $stats;
         }
+
+        // Paginate the 12-month array manually (6 per page)
+        $perPage     = 6;
+        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage();
+        $offset      = ($currentPage - 1) * $perPage;
+        $pageItems   = array_slice($allMonths, $offset, $perPage);
+
+        $monthlyData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $pageItems,
+            count($allMonths),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         return view('parent.rekap_bulanan', compact('children', 'activeStudent', 'monthlyData', 'selectedYear'));
     }

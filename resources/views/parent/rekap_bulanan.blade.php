@@ -152,6 +152,11 @@
                     </tbody>
                 </table>
             </div>
+            @if($monthlyData->hasPages())
+            <div class="px-4 py-3 border-top">
+                {{ $monthlyData->appends(['year' => $selectedYear, 'student_id' => $activeStudent->id])->links() }}
+            </div>
+            @endif
         </div>
     </div>
 

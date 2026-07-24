@@ -13,6 +13,9 @@
             transform: translateY(-4px);
             box-shadow: 0 10px 28px rgba(0,0,0,.15) !important;
         }
+        .stat-card .card-body {
+            padding: 1.1rem 1rem;
+        }
         .stat-card .stat-icon {
             width: 48px; height: 48px;
             border-radius: 12px;
@@ -64,10 +67,28 @@
             box-shadow: 0 1px 4px rgba(0,0,0,.06);
         }
 
+        /* ── Stat Cards Grid ────────────────────────── */
+        .stat-cards-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-cards-grid .stat-card-col {
+            flex: 0 0 calc(50% - .5rem);
+            min-width: 0;
+        }
+        @media (min-width: 768px) {
+            .stat-cards-grid .stat-card-col {
+                flex: 0 0 calc(25% - .75rem);
+            }
+        }
+
         /* Mobile tweaks */
         @media (max-width: 575.98px) {
-            .stat-card .stat-value { font-size: 1.7rem; }
-            .stat-card .card-body  { padding: .85rem !important; }
+            .stat-card .stat-value { font-size: 1.6rem; }
+            .stat-card .card-body  { padding: 1rem !important; }
+            .stat-card .stat-icon  { width: 42px; height: 42px; font-size: 1.15rem; margin-bottom: .5rem !important; }
             .student-avatar        { width: 48px; height: 48px; font-size: 1.2rem; }
         }
     </style>
@@ -124,10 +145,10 @@
     </div>
 
     {{-- ── Stat Cards ───────────────────────────────────────────────────────── --}}
-    <div class="row g-3 mb-4">
-        <div class="col-6 col-md-3">
+    <div class="stat-cards-grid">
+        <div class="stat-card-col">
             <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
-                <div class="card-body p-3">
+                <div class="card-body">
                     <div class="stat-icon mb-2">
                         <i class="bi bi-check-circle-fill text-white"></i>
                     </div>
@@ -136,9 +157,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-3">
+        <div class="stat-card-col">
             <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
-                <div class="card-body p-3">
+                <div class="card-body">
                     <div class="stat-icon mb-2">
                         <i class="bi bi-clock-history text-white"></i>
                     </div>
@@ -147,9 +168,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-3">
+        <div class="stat-card-col">
             <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">
-                <div class="card-body p-3">
+                <div class="card-body">
                     <div class="stat-icon mb-2">
                         <i class="bi bi-bandaid-fill text-white"></i>
                     </div>
@@ -158,9 +179,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-3">
+        <div class="stat-card-col">
             <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#ef4444,#b91c1c);">
-                <div class="card-body p-3">
+                <div class="card-body">
                     <div class="stat-icon mb-2">
                         <i class="bi bi-x-circle-fill text-white"></i>
                     </div>
