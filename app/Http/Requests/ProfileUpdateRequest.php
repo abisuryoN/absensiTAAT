@@ -28,4 +28,19 @@ class ProfileUpdateRequest extends FormRequest
             ],
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required'  => 'Nama lengkap wajib diisi.',
+            'name.max'       => 'Nama tidak boleh lebih dari 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email'    => 'Format email tidak valid.',
+            'email.unique'   => 'Email sudah digunakan oleh akun lain.',
+            'email.max'      => 'Email tidak boleh lebih dari 255 karakter.',
+        ];
+    }
 }
