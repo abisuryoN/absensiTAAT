@@ -100,7 +100,7 @@
                                 {{ $student->schoolClass->name ?? 'Kelas tidak diketahui' }}
                             </small>
                         </div>
-                        <a href="{{ route('admin.students.show', $student) }}" class="btn btn-light btn-sm border flex-shrink-0">
+                        <a href="{{ route('admin.students.edit', $student) }}" class="btn btn-light btn-sm border flex-shrink-0">
                             <i class="bi bi-arrow-right text-primary"></i>
                         </a>
                     </div>

@@ -43,6 +43,11 @@ class StudentController extends Controller
         return redirect()->route('admin.students.index')->with('success', 'Data siswa berhasil ditambahkan.');
     }
 
+    public function show(Student $student)
+    {
+        return redirect()->route('admin.students.edit', $student);
+    }
+
     public function edit(Student $student)
     {
         $classes = SchoolClass::where('is_active', true)->orderBy('grade_level')->orderBy('name')->get();
