@@ -258,6 +258,12 @@ $mobile-radius-lg: 12px;
             }
         }
 
+        // ─── TAHUN AJARAN SECTION ─────────────────────────────────
+        .drawer-tahun-ajaran-wrap {
+            padding: 16px 12px;
+            flex-shrink: 0;
+        }
+
         // ─── NAVIGATION MENU ─────────────────────────────────────
         .drawer-nav {
             padding: 6px 0;
