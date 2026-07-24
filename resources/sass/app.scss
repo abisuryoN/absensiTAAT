@@ -4,7 +4,7 @@
 // Bootstrap Variable Overrides (must be before Bootstrap import)
 $font-family-sans-serif: 'Outfit', sans-serif;
 $font-size-base: 0.875rem; // Reduced from default 1rem to 0.875rem (14px)
-$primary: #eef4ff;
+$primary: #2563eb;
 $secondary: #c7dcff;
 $success: #10b981;
 $info: #0ea5e9;
@@ -130,6 +130,23 @@ body {
     &:focus {
         border-color: $primary;
         box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+}
+
+// Custom Checkbox & Radio Styles for better visibility
+.form-check-input {
+    border: 1.5px solid #94a3b8 !important; // Clearly visible border when unchecked
+    background-color: #ffffff;
+    transition: all 0.2s ease-in-out;
+    
+    &:focus {
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15) !important;
+    }
+    
+    &:checked {
+        background-color: #2563eb !important;
+        border-color: #2563eb !important;
     }
 }
 
@@ -278,7 +295,7 @@ body {
             color: #1e293b;
             background: #eef2ff;
             i {
-                color: #eef4ff;
+                color: $primary;
             }
         }
 
@@ -633,11 +650,11 @@ body {
         }
         
         &.active .page-link {
-            background: linear-gradient(135deg, $primary 0%, $secondary 100%);
-            border-color: $primary;
-            color: #ffffff;
+            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+            border-color: #1d4ed8 !important;
+            color: #ffffff !important;
             font-weight: 600;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+            box-shadow: 0 2px 8px rgba(29, 78, 216, 0.25);
         }
         
         &.disabled .page-link {
