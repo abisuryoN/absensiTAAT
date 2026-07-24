@@ -1,0 +1,123 @@
+[33m916026a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m fix
+[33mbb1a767[m fix
+[33m0e8c912[m fix
+[33m42d8bf7[m fix
+[33me134f68[m fix
+[33mdafea5c[m fix
+[33m46a715d[m fix
+[33m5155937[m fix
+[33mb5222fb[m fix
+[33m0a71c5e[m fix
+[33m31a5135[m fix
+[33mafd24a8[m fix
+[33md3ab963[m fix
+[33m5c301f0[m fix
+[33md2f39df[m fix
+[33m88c064c[m fix
+[33ma3448ac[m fix
+[33med10ddc[m fox
+[33m94a3d67[m fixx
+[33m9854486[m fixx
+[33m967a5fb[m fixx
+[33m2fad1c7[m fixx
+[33ma0433b9[m fixx
+[33mac735a6[m fixx
+[33m1ef6350[m fixx
+[33m9804980[m fixx
+[33ma4a60e5[m fixx
+[33m4063fb9[m fixx
+[33m5c5ebb7[m fixx
+[33m40692ea[m fixx
+[33m662a4dd[m fixx
+[33m9a0d66d[m fixx
+[33m111c793[m fixx
+[33mbef72ed[m fixx
+[33mc926e36[m fixx
+[33m6cd1729[m fixx
+[33mfd4b758[m fixx
+[33m602b04e[m fixx
+[33m4ed66dd[m fixx
+[33mdc1acb2[m fixx
+[33m6db6f1c[m fixx
+[33m6e4220d[m fixx
+[33mbef2fb7[m fixx
+[33m4237949[m fixx
+[33m6c96ca3[m fixx
+[33m6b5b5fb[m[33m ([m[1;31morigin/ui/button-gradient-blue[m[33m)[m ui: replace all purple/indigo button gradients with light blue
+[33m0453b4a[m[33m ([m[1;31morigin/feature/mobile-friendly-all-roles[m[33m, [m[1;32mfeature/mobile-friendly-all-roles[m[33m)[m feat: mobile-friendly layout for all roles
+[33mc6623a3[m[33m ([m[1;31morigin/fix/parent-role-error[m[33m)[m fix: resolve parent role crash after login
+[33m806945a[m[33m ([m[1;31morigin/feature/student-qrcode[m[33m)[m feat: add dedicated QR code page for student role
+[33m3e610c9[m[33m ([m[1;31morigin/feature/piket-camera-scanner[m[33m, [m[1;32mfeature/piket-camera-scanner[m[33m)[m feat: upgrade scan piket with camera + USB scanner support
+[33me6d369e[m[33m ([m[1;31morigin/ui/button-color-blue[m[33m)[m ui: fix remaining indigo/purple colors to light blue #eef4ff
+[33me420a73[m ui: replace all purple/indigo button colors with #eef4ff (light blue)
+[33m447b203[m[33m ([m[1;31morigin/security/fixes[m[33m)[m security: fix critical and medium security issues
+[33mad81449[m fix
+[33ma7a667e[m fix
+[33mbf3fef9[m fix
+[33m9219a8c[m fix
+[33m5aa8da7[m fix
+[33mffe880b[m fix
+[33mf60d1bf[m fix
+[33m70059ba[m fix
+[33m4af70dc[m fix
+[33mf7153de[m fix
+[33me6d3a39[m fix
+[33mf8b31fe[m fix
+[33md7db1d4[m fix
+[33m7c64392[m fix
+[33mbdaa7fc[m fix
+[33md37a802[m fix
+[33m48f9b4b[m ftur
+[33m09652af[m ftur
+[33m9d09098[m ftur
+[33mfeffa38[m ftur
+[33m54dc406[m ftur
+[33m835b1f0[m fix
+[33m0430be0[m fix
+[33m7937df8[m fix
+[33m4c40ff3[m fix
+[33md6ea755[m fix
+[33mafab018[m fix
+[33mc982695[m fix
+[33ma4ed167[m fix
+[33m1fd761d[m feat(attendance): replace audio files with Web Audio API beep generation
+[33me216905[m updte
+[33md5a03cd[m updte
+[33md2e1843[m updte
+[33mf1fe36b[m updte
+[33m7bdcc61[m updte
+[33me49c5a2[m updte
+[33m8727086[m updte
+[33ma8a85a1[m updte
+[33m72cd2ad[m updte
+[33mab8d3f8[m updte
+[33ma9681a3[m updte
+[33m38f5db5[m updte
+[33m87b3ef1[m updte
+[33mb4c56b6[m updte
+[33mfeb07b1[m fixx
+[33ma28b51e[m fixx
+[33m9afc321[m fixx
+[33maf4b1de[m fixx
+[33mf31a31f[m fixx
+[33m6f5af06[m fixx
+[33ma2f4405[m update
+[33mb844d07[m update
+[33m1ed00c6[m Delete HOLIDAY_API_INTEGRATION.md
+[33m8961c5d[m Delete DROPDOWN_UPDATE_SUMMARY.md
+[33m777e27b[m Delete CUSTOM_DROPDOWN_GUIDE.md
+[33mb8c77e0[m fix
+[33m3c78d7b[m fix
+[33m63be056[m fix
+[33mf7a7b24[m fix
+[33mef996f0[m fix
+[33m4ec8e33[m fix
+[33m92d010b[m ftur
+[33mcd0486f[m fitur
+[33md027916[m fse 7
+[33m89b2b96[m fse 6
+[33m6694ffe[m fse 5
+[33m4de71a8[m fse 4
+[33m6e69756[m up
+[33m4216b6d[m updte
+[33mbab4126[m Initial commit

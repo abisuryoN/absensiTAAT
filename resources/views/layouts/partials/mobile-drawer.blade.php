@@ -1,4 +1,5 @@
 @php
+    $schoolProfile = \App\Models\SchoolProfile::first();
     $user = auth()->user();
     $role = $user->roles->first()?->name;
 
@@ -36,10 +37,10 @@
     {{-- ============================================================ --}}
     <div class="drawer-header">
         <a href="{{ route($dashboardRoute) }}" class="drawer-logo-link">
-            <img src="{{ asset('images.png') }}" alt="Logo" class="drawer-logo-img">
+            <x-application-logo class="drawer-logo-img" style="width:28px;height:28px;border-radius:50%;object-fit:contain;" />
             <div class="drawer-title-container">
-                <span class="drawer-title-line1">SMAN 1</span>
-                <span class="drawer-title-line2">Tajurhalang</span>
+                <span class="drawer-title-line1">{{ $schoolProfile->name ?? 'SMAN 1' }}</span>
+                <span class="drawer-title-line2">{{ $schoolProfile->address ? (strlen($schoolProfile->address) > 15 ? substr($schoolProfile->address, 0, 15) . '...' : $schoolProfile->address) : 'Tajurhalang' }}</span>
             </div>
         </a>
         <span class="badge badge-official drawer-badge">Official</span>
@@ -70,7 +71,7 @@
         <div class="drawer-profile">
             <div class="drawer-avatar-wrap">
                 @if($user->avatar)
-                    <img src="{{ Storage::url($user->avatar) }}" alt="" class="drawer-avatar-img">
+                    <img src="{{ \Illuminate\Support\Facades\Storage::url($user->avatar) }}" alt="" class="drawer-avatar-img">
                 @else
                     <img src="{{ $user->profile_photo_url }}"
                          alt="Avatar"
