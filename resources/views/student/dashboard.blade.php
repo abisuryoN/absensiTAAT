@@ -59,6 +59,12 @@
 
         /* Mobile-specific spacing fixes */
         @media (max-width: 575.98px) {
+            /* Add container padding on mobile */
+            .container-fluid {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+            
             .stat-card .card-body {
                 padding: 0.85rem 0.7rem !important;
             }
@@ -73,15 +79,20 @@
                 height: 38px;
                 font-size: 1rem;
             }
-            /* Ensure cards don't touch edges */
-            .row.g-4 > .col-6 {
-                padding-left: 8px;
-                padding-right: 8px;
-            }
+            
+            /* Ensure cards don't touch each other or edges */
             .row.g-4 {
-                margin-left: -8px;
-                margin-right: -8px;
+                --bs-gutter-x: 0.75rem;
+                --bs-gutter-y: 1rem;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
             }
+            
+            .row.g-4 > [class*='col-'] {
+                padding-left: 0.375rem !important;
+                padding-right: 0.375rem !important;
+            }
+            
             /* Jadwal card header mobile spacing */
             .card-header .d-flex.flex-wrap {
                 gap: 0.5rem !important;
