@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\AccountManagementController;
 use App\Http\Controllers\Admin\SuperAdminController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\GuruPiketAccountController;
+use App\Http\Controllers\Admin\SchoolHolidayController;
 use App\Http\Controllers\Parent\ParentPortalController;
 use App\Http\Controllers\GuruPiket\GuruPiketController;
 
@@ -40,6 +41,8 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+    Route::delete('/profile/photo', [ProfileController::class, 'destroyPhoto'])->name('profile.photo.destroy');
 });
 
 // 1. Super Admin Group (Operator TU)
@@ -87,6 +90,9 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         Route::resource('schedules', ScheduleController::class);
         Route::resource('holidays', HolidayController::class);
         Route::post('/holidays/sync', [HolidayController::class, 'sync'])->name('holidays.sync');
+
+        // Hari Libur Sekolah Khusus
+        Route::resource('school-holidays', SchoolHolidayController::class);
 
         // Laporan & Reporting
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

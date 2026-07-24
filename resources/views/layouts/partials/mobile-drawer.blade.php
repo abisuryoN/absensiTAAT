@@ -72,9 +72,11 @@
                 @if($user->avatar)
                     <img src="{{ Storage::url($user->avatar) }}" alt="" class="drawer-avatar-img">
                 @else
-                    <div class="drawer-avatar-placeholder">
-                        {{ strtoupper(substr($user->name, 0, 1)) }}
-                    </div>
+                    <img src="{{ $user->profile_photo_url }}"
+                         alt="Avatar"
+                         class="drawer-avatar-img user-avatar-element"
+                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=4f46e5&color=fff&size=128&bold=true'"
+                    >
                 @endif
                 <span class="drawer-online-dot"></span>
             </div>

@@ -8,6 +8,13 @@
     <div class="py-4">
         <div class="container-fluid px-4">
             <div class="row g-4">
+                {{-- Foto Profil --}}
+                <div class="col-12">
+                    <div class="profile-section">
+                        @include('profile.partials.update-profile-photo-form')
+                    </div>
+                </div>
+
                 <div class="col-12">
                     <div class="profile-section">
                         @include('profile.partials.update-profile-information-form')

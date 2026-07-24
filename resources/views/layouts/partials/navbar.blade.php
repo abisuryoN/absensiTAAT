@@ -18,13 +18,12 @@
             <!-- Profile Dropdown -->
             <div class="dropdown">
                 <button class="btn btn-link text-decoration-none dropdown-toggle p-0 d-flex align-items-center gap-2" type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    @if(auth()->user()->avatar)
-                        <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="" width="36" height="36" class="rounded-circle shadow-sm">
-                    @else
-                        <div class="bg-blue-200 text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width:36px; height:36px; font-weight:600;">
-                            {{ substr(auth()->user()->name, 0, 1) }}
-                        </div>
-                    @endif
+                    <img src="{{ auth()->user()->profile_photo_url }}"
+                         alt="Avatar"
+                         width="36" height="36"
+                         class="rounded-circle shadow-sm object-fit-cover user-avatar-element"
+                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&size=128&bold=true'"
+                    >
                     <div class="d-none d-lg-block text-start">
                         <span class="d-block text-dark fw-semibold fs-7 lh-sm">{{ auth()->user()->name }}</span>
                         <span class="text-muted fs-8">{{ auth()->user()->email }}</span>

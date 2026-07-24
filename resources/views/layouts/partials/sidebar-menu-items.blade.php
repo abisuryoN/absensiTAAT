@@ -77,6 +77,7 @@ PARAMETER:
                 ['label' => 'Mata Pelajaran',     'icon' => 'bi-book',               'route' => 'admin.subjects.index'],
                 ['label' => 'Jadwal Pelajaran',   'icon' => 'bi-calendar3',          'route' => 'admin.schedules.index'],
                 ['label' => 'Hari Libur',         'icon' => 'bi-calendar-event',     'route' => 'admin.holidays.index'],
+                ['label' => 'Libur Sekolah',      'icon' => 'bi-calendar-heart',     'route' => 'admin.school-holidays.index'],
             ],
             'LAPORAN & PENGATURAN' => [
                 ['label' => 'Laporan Absensi',    'icon' => 'bi-file-earmark-bar-graph', 'route' => 'admin.reports.index'],

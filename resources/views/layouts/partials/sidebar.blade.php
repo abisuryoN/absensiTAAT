@@ -40,9 +40,12 @@
                     @if(auth()->user()->avatar)
                         <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="" width="36" height="36" class="rounded-circle border border-2 border-white shadow-sm">
                     @else
-                        <div class="sidebar-avatar-placeholder">
-                            {{ substr(auth()->user()->name, 0, 1) }}
-                        </div>
+                        <img src="{{ auth()->user()->profile_photo_url }}"
+                             alt="Avatar"
+                             width="36" height="36"
+                             class="rounded-circle border border-2 border-white shadow-sm object-fit-cover user-avatar-element"
+                             onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&size=128&bold=true'"
+                        >
                     @endif
                     <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-white rounded-circle animate-pulse" style="width: 10px; height: 10px;"></span>
                 </div>

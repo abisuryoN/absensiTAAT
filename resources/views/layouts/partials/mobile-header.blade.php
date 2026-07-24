@@ -14,9 +14,12 @@
                 @if(auth()->user()->avatar)
                     <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="" class="mobile-avatar-img" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
                 @else
-                    <div class="mobile-avatar-placeholder" style="width:34px;height:34px;border-radius:50%;background:{{ auth()->user()->roles->first()?->name === 'Admin' ? '#4361ee' : '#10b981' }};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
+                    <img src="{{ auth()->user()->profile_photo_url }}"
+                         alt="Avatar"
+                         class="mobile-avatar-img user-avatar-element"
+                         style="width:34px;height:34px;border-radius:50%;object-fit:cover;"
+                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&size=128&bold=true'"
+                    >
                 @endif
             </button>
             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2 p-2 rounded-3" aria-labelledby="mobileUserMenu" style="width: 200px;">
