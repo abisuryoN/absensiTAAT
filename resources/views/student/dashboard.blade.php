@@ -133,7 +133,7 @@
                             @if(auth()->user()->profile_photo)
                                 <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" 
                                      alt="Profile Photo" 
-                                     class="rounded-circle"
+                                     class="rounded-circle user-avatar-element"
                                      style="width:52px;height:52px;object-fit:cover;flex-shrink:0;">
                             @else
                                 <div style="width:52px;height:52px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700;flex-shrink:0;">

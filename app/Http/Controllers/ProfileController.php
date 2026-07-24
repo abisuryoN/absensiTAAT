@@ -88,7 +88,7 @@ class ProfileController extends Controller
 
             return response()->json([
                 'success' => true,
-                'url'     => $user->profile_photo_url,
+                'url'     => $user->profile_photo_url . '?t=' . time(),
                 'message' => 'Foto profil berhasil diperbarui.',
             ]);
         } catch (\Throwable $e) {
@@ -129,7 +129,7 @@ class ProfileController extends Controller
 
             return response()->json([
                 'success' => true,
-                'url'     => $user->profile_photo_url,
+                'url'     => $user->profile_photo_url . '?t=' . time(),
                 'message' => 'Foto profil berhasil dihapus.',
             ]);
         } catch (\Throwable $e) {

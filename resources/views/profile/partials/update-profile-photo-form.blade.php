@@ -14,7 +14,7 @@
                          src="{{ auth()->user()->profile_photo_url }}"
                          alt="Foto Profil"
                          width="110" height="110"
-                         class="rounded-circle object-fit-cover shadow-sm"
+                         class="rounded-circle object-fit-cover shadow-sm user-avatar-element"
                          style="border:3px solid #e2e8f0;background:#f8fafc;"
                          onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&size=128&bold=true'"
                     >

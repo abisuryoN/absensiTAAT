@@ -11,15 +11,15 @@
         {{-- Avatar with quick dropdown --}}
         <div class="mobile-avatar-wrapper dropdown">
             <button class="mobile-avatar-btn dropdown-toggle" type="button" id="mobileUserMenu" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu pengguna" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;">
-                @if(auth()->user()->avatar)
-                    <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="" class="mobile-avatar-img" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
+                @if(auth()->user()->profile_photo)
+                    <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" 
+                         alt="Profile Photo" 
+                         class="mobile-avatar-img user-avatar-element" 
+                         style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
                 @else
-                    <img src="{{ auth()->user()->profile_photo_url }}"
-                         alt="Avatar"
-                         class="mobile-avatar-img user-avatar-element"
-                         style="width:34px;height:34px;border-radius:50%;object-fit:cover;"
-                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&size=128&bold=true'"
-                    >
+                    <div style="width:34px;height:34px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.9rem;font-weight:700;">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
                 @endif
             </button>
             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2 p-2 rounded-3" aria-labelledby="mobileUserMenu" style="width: 200px;">
