@@ -130,9 +130,16 @@
                 <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center gap-3 mb-3">
-                            <div style="width:52px;height:52px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700;flex-shrink:0;">
-                                {{ strtoupper(substr($student->name ?? auth()->user()->name, 0, 1)) }}
-                            </div>
+                            @if(auth()->user()->profile_photo)
+                                <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" 
+                                     alt="Profile Photo" 
+                                     class="rounded-circle"
+                                     style="width:52px;height:52px;object-fit:cover;flex-shrink:0;">
+                            @else
+                                <div style="width:52px;height:52px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700;flex-shrink:0;">
+                                    {{ strtoupper(substr($student->name ?? auth()->user()->name, 0, 1)) }}
+                                </div>
+                            @endif
                             <div>
                                 <div class="fw-bold" style="color:#1e293b;font-size:1rem;">{{ $student->name }}</div>
                                 <div class="text-muted fs-8">NIS: {{ $student->student_id_number ?? $student->nis ?? '-' }}</div>
