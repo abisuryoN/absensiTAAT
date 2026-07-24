@@ -192,9 +192,10 @@
                                     </p>
                                 </div>
                             `,
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
+                            showConfirmButton: true,
+                            confirmButtonText: 'Tutup',
+                            confirmButtonColor: '#10b981',
+                            showCloseButton: true,
                             showClass: {
                                 popup: 'animate__animated animate__fadeInUp animate__faster'
                             },
@@ -202,8 +203,10 @@
                                 popup: 'animate__animated animate__fadeOutDown animate__faster'
                             },
                             customClass: {
-                                popup: 'rounded-4 shadow border-0'
-                            }
+                                popup: 'rounded-4 shadow border-0',
+                                confirmButton: 'btn btn-success px-4 py-2 fw-semibold rounded-3'
+                            },
+                            buttonsStyling: false
                         });
                     }
                 }, 300);
