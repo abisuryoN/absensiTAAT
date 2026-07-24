@@ -27,5 +27,13 @@ class AppServiceProvider extends ServiceProvider
 
         // Parent → Student authorization
         Gate::policy(Student::class, StudentParentPolicy::class);
+
+        // Listen to login event to show welcome SweetAlert
+        \Illuminate\Support\Facades\Event::listen(
+            \Illuminate\Auth\Events\Login::class,
+            function ($event) {
+                session(['show_welcome_notification' => true]);
+            }
+        );
     }
 }
