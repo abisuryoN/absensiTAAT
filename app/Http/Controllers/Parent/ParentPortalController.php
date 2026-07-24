@@ -54,13 +54,12 @@ class ParentPortalController extends Controller
         // Current month summary
         $summary = $this->buildMonthStats($activeStudent->id, now()->year, now()->month);
 
-        // Recent attendances (last 10 records this month)
+        // Recent attendances this month – paginated
         $monthStart        = Carbon::now()->startOfMonth()->toDateString();
         $recentAttendances = AttendanceGate::where('student_id', $activeStudent->id)
             ->whereBetween('date', [$monthStart, $today])
             ->orderBy('date', 'desc')
-            ->limit(10)
-            ->get();
+            ->paginate(10);
 
         return view('parent.dashboard', compact(
             'children', 'activeStudent', 'todayRecord', 'summary', 'recentAttendances'
@@ -81,21 +80,26 @@ class ParentPortalController extends Controller
 
         $children = $parent->students()->with('class')->where('is_active', true)->get();
 
-        $studentId = $request->get('student_id', $children->first()?->id);
-        $student   = $children->firstWhere('id', $studentId) ?? $children->first();
+        $studentId     = $request->get('student_id', $children->first()?->id);
+        $activeStudent = $children->firstWhere('id', $studentId) ?? $children->first();
 
-        $dateFrom = $request->get('date_from', Carbon::now()->startOfMonth()->toDateString());
-        $dateTo   = $request->get('date_to', Carbon::now()->toDateString());
+        $from = $request->get('from', Carbon::now()->startOfMonth()->toDateString());
+        $to   = $request->get('to', Carbon::now()->toDateString());
+        $status = $request->get('status');
 
-        $records = collect();
-        if ($student) {
-            $records = AttendanceGate::where('student_id', $student->id)
-                ->whereBetween('date', [$dateFrom, $dateTo])
-                ->orderBy('date', 'desc')
-                ->get();
+        $attendances = new \Illuminate\Pagination\LengthAwarePaginator(collect(), 0, 15);
+        if ($activeStudent) {
+            $query = AttendanceGate::where('student_id', $activeStudent->id)
+                ->whereBetween('date', [$from, $to]);
+
+            if ($status) {
+                $query->where('status', $status);
+            }
+
+            $attendances = $query->orderBy('date', 'desc')->paginate(15);
         }
 
-        return view('parent.rekap_harian', compact('children', 'student', 'records', 'dateFrom', 'dateTo'));
+        return view('parent.rekap_harian', compact('children', 'activeStudent', 'attendances', 'from', 'to'));
     }
 
     /**
@@ -112,20 +116,38 @@ class ParentPortalController extends Controller
 
         $children = $parent->students()->with('class')->where('is_active', true)->get();
 
-        $studentId = $request->get('student_id', $children->first()?->id);
-        $student   = $children->firstWhere('id', $studentId) ?? $children->first();
+        $studentId     = $request->get('student_id', $children->first()?->id);
+        $activeStudent = $children->firstWhere('id', $studentId) ?? $children->first();
 
-        $year = (int) $request->get('year', now()->year);
+        $selectedYear = (int) $request->get('year', now()->year);
+
+        $months = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ];
 
         // Build 12-month summary
-        $monthlyStats = [];
-        for ($m = 1; $m <= 12; $m++) {
-            $monthlyStats[$m] = $student
-                ? $this->buildMonthStats($student->id, $year, $m)
+        $monthlyData = [];
+        foreach ($months as $m => $label) {
+            $stats = $activeStudent
+                ? $this->buildMonthStats($activeStudent->id, $selectedYear, $m)
                 : $this->emptyMonthStats();
+            
+            $stats['month_label'] = $label;
+            $monthlyData[] = $stats;
         }
 
-        return view('parent.rekap_bulanan', compact('children', 'student', 'monthlyStats', 'year'));
+        return view('parent.rekap_bulanan', compact('children', 'activeStudent', 'monthlyData', 'selectedYear'));
     }
 
     // ──────────────────────────────────────────────
