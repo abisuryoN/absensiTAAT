@@ -36,13 +36,13 @@
     {{-- HEADER — Logo, School Name & Official Badge                  --}}
     {{-- ============================================================ --}}
     <div class="drawer-header">
-        <a href="{{ route($dashboardRoute) }}" class="drawer-logo-link">
-            <x-application-logo class="drawer-logo-img" style="width:28px;height:28px;border-radius:50%;object-fit:contain;" />
+        <div class="drawer-logo-link">
+            <img src="{{ asset('images.png') }}" alt="Logo" class="drawer-logo-img" style="width:28px;height:28px;border-radius:50%;object-fit:contain;" onerror="this.src='{{ asset('images/logo-placeholder.svg') }}'">
             <div class="drawer-title-container">
                 <span class="drawer-title-line1">{{ $schoolProfile->name ?? 'SMAN 1' }}</span>
                 <span class="drawer-title-line2">{{ $schoolProfile->address ? (strlen($schoolProfile->address) > 15 ? substr($schoolProfile->address, 0, 15) . '...' : $schoolProfile->address) : 'Tajurhalang' }}</span>
             </div>
-        </a>
+        </div>
         <span class="badge badge-official drawer-badge">Official</span>
         <button id="mobileDrawerClose" class="drawer-close-btn" aria-label="Tutup menu">
             <i class="bi bi-x-lg"></i>
