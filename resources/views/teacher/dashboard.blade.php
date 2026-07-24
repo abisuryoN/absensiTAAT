@@ -79,7 +79,7 @@
         {{-- ── Stat Cards ───────────────────────────────────────────── --}}
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
-                <div class="card stat-card shadow-sm h-100" style="background:#eef4ff;">
+                <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">
                     <div class="card-body p-3">
                         <div class="stat-icon mb-2" style="background:rgba(255,255,255,.2);">
                             <i class="bi bi-calendar3 text-white"></i>
