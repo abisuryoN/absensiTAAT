@@ -11,6 +11,7 @@ use App\Exports\Templates\StudentImportWithParentsExport;
 use App\Exports\Templates\TeacherImportTemplate;
 use App\Exports\Templates\ClassImportTemplate;
 use App\Exports\Templates\ScheduleImportTemplate;
+use App\Exports\ImportErrorReportExport;
 
 class ImportController extends Controller
 {
@@ -38,36 +39,31 @@ class ImportController extends Controller
 
         $type = $request->input('type');
         $file = $request->file('file');
-        
-        try {
-            $previewRows = $this->service->preview($file->getRealPath(), $type);
-            
-            // Store preview in session for committing later
-            session([
-                'import_type' => $type,
-                'import_rows' => array_column($previewRows, 'data'),
-            ]);
-
-            return view('admin.imports.preview', compact('previewRows', 'type'));
-        } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memproses file: ' . $e->getMessage());
-        }
-    }
-
-    public function commit()
-    {
-        $type = session('import_type');
-        $rows = session('import_rows');
-
-        if (!$type || !$rows) {
-            return redirect()->route('admin.imports.index')->with('error', 'Tidak ada data import yang sedang ditangguhkan.');
-        }
 
         try {
-            $successCount = $this->service->import($rows, $type);
-            
-            // Clear session data
-            session()->forget(['import_type', 'import_rows']);
+            // Validate template and parse all rows
+            $result = $this->service->previewAndValidate($file->getRealPath(), $type);
+
+            // If there are validation errors, save them to session and redirect to preview page
+            if (!empty($result['errors'])) {
+                session([
+                    'import_errors' => $result['errors'],
+                    'import_type'   => $type,
+                    'import_stats'  => [
+                        'total_rows'         => $result['total_rows'],
+                        'valid_rows_count'   => $result['valid_rows_count'],
+                        'invalid_rows_count' => $result['invalid_rows_count'],
+                    ]
+                ]);
+
+                $errors = $result['errors'];
+                $stats = session('import_stats');
+
+                return view('admin.imports.preview', compact('errors', 'type', 'stats'));
+            }
+
+            // If ALL rows are valid: Save immediately! (Atomic all-or-nothing)
+            $successCount = $this->service->import($result['valid_data'], $type);
 
             $typeLabel = match($type) {
                 'students' => 'Siswa',
@@ -78,16 +74,49 @@ class ImportController extends Controller
             };
             ActivityLogService::logImport($typeLabel, $successCount);
 
-            return redirect()->route('admin.imports.index')->with('success', "Berhasil mengimpor {$successCount} data {$type}.");
+            return redirect()->route('admin.imports.index')
+                ->with('success', "Berhasil mengimpor {$successCount} data {$typeLabel}.");
+
         } catch (\Exception $e) {
-            return redirect()->route('admin.imports.index')->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
+    }
+
+    /**
+     * Download error report for currently failed import.
+     */
+    public function downloadErrorReport()
+    {
+        $errors = session('import_errors');
+        $type = session('import_type');
+
+        if (empty($errors)) {
+            return redirect()->route('admin.imports.index')->with('error', 'Tidak ada laporan error untuk diunduh.');
+        }
+
+        $typeLabel = match($type) {
+            'students' => 'Siswa',
+            'teachers' => 'Guru',
+            'classes'  => 'Kelas',
+            'schedules'=> 'Jadwal',
+            default    => ucfirst($type),
+        };
+
+        $filename = "Laporan_Error_Import_" . $typeLabel . "_" . date('Ymd_His') . ".xlsx";
+
+        return Excel::download(new ImportErrorReportExport($errors), $filename);
+    }
+
+    public function commit()
+    {
+        // Deprecated as valid files are processed automatically and invalid files are aborted
+        return redirect()->route('admin.imports.index')->with('error', 'Metode ini tidak lagi digunakan.');
     }
 
     public function cancel()
     {
-        session()->forget(['import_type', 'import_rows']);
-        return redirect()->route('admin.imports.index')->with('success', 'Import data dibatalkan.');
+        session()->forget(['import_errors', 'import_type', 'import_stats']);
+        return redirect()->route('admin.imports.index')->with('success', 'Proses import dibatalkan.');
     }
 
     public function downloadTemplate($type)
@@ -116,7 +145,7 @@ class ImportController extends Controller
         }
 
         $template = $templates[$type];
-        
+
         return Excel::download(new $template['class'], $template['filename']);
     }
 }

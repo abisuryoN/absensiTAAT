@@ -1,107 +1,99 @@
 <x-app-layout>
-    @section('title', 'Preview Import Data')
+    @section('title', 'Hasil Validasi Import Data')
 
     <div class="row mb-4">
         <div class="col">
-            <h3 class="fw-bold tracking-tight text-dark mb-1">Preview & Validasi Import</h3>
-            <p class="text-muted mb-0">Tinjau hasil validasi baris spreadsheet sebelum menyimpannya ke database.</p>
+            <a href="{{ route('admin.imports.index') }}" class="btn btn-light border btn-sm mb-3">
+                <i class="bi bi-arrow-left me-1"></i> Kembali ke Halaman Import
+            </a>
+            <h3 class="fw-bold tracking-tight text-dark mb-1">
+                <i class="bi bi-exclamation-octagon-fill text-danger me-2"></i>Hasil Validasi Import
+            </h3>
+            <p class="text-muted mb-0">Terdapat data tidak valid. Silakan unduh laporan error, perbaiki spreadsheet Anda, lalu upload kembali.</p>
         </div>
     </div>
 
     @php
-        $totalRows = count($previewRows);
-        $validRows = count(array_filter($previewRows, fn($r) => $r['is_valid']));
-        $invalidRows = $totalRows - $validRows;
+        $total = $stats['total_rows'] ?? count($errors);
+        $valid = $stats['valid_rows_count'] ?? 0;
+        $invalid = $stats['invalid_rows_count'] ?? count($errors);
     @endphp
 
     <!-- Summary Statistics -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 bg-primary-subtle text-primary p-3">
-                <span class="fs-8 fw-semibold text-uppercase">Total Baris</span>
-                <h3 class="fw-bold mb-0 mt-1">{{ $totalRows }}</h3>
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 text-center text-md-start" style="border-radius:12px;background:#f8fafc;">
+                <span class="fs-8 fw-bold text-uppercase text-secondary">Total Data Baris</span>
+                <h3 class="fw-bold mb-0 mt-2 text-dark">{{ $total }}</h3>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 bg-success-subtle text-success p-3">
-                <span class="fs-8 fw-semibold text-uppercase">Baris Valid</span>
-                <h3 class="fw-bold mb-0 mt-1">{{ $validRows }}</h3>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 text-center text-md-start" style="border-radius:12px;background:#eff6ff;">
+                <span class="fs-8 fw-bold text-uppercase text-primary">Baris Valid</span>
+                <h3 class="fw-bold mb-0 mt-2 text-primary">{{ $valid }}</h3>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 bg-danger-subtle text-danger p-3">
-                <span class="fs-8 fw-semibold text-uppercase">Baris Error</span>
-                <h3 class="fw-bold mb-0 mt-1">{{ $invalidRows }}</h3>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 text-center text-md-start" style="border-radius:12px;background:#fff5f5;">
+                <span class="fs-8 fw-bold text-uppercase text-danger">Baris dengan Error</span>
+                <h3 class="fw-bold mb-0 mt-2 text-danger">{{ $invalid }}</h3>
             </div>
-        </div>
-        <div class="col-md-3 d-flex align-items-center justify-content-end gap-2">
-            <form method="POST" action="{{ route('admin.imports.cancel') }}" class="d-inline">
-                @csrf
-                <button type="submit" class="btn btn-light border fw-semibold">Batal</button>
-            </form>
-            <form method="POST" action="{{ route('admin.imports.commit') }}" class="d-inline">
-                @csrf
-                <button type="submit" class="btn btn-primary fw-semibold" {{ $validRows === 0 ? 'disabled' : '' }}>
-                    <i class="bi bi-check-lg"></i> Impor Data Valid
-                </button>
-            </form>
         </div>
     </div>
 
-    <!-- Error Alert if any -->
-    @if($invalidRows > 0)
-        <div class="alert alert-warning d-flex align-items-center gap-2 mb-4 fs-7" role="alert">
-            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
-            <div>
-                Ditemukan <strong>{{ $invalidRows }} baris error</strong> yang tidak akan diimpor. Baris valid tetap dapat diimpor dengan mengklik tombol "Impor Data Valid".
+    <!-- Alert and Actions -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius:12px;background:#fff;">
+        <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-start gap-3">
+                <div class="bg-danger-subtle text-danger rounded-circle p-2 d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
+                    <i class="bi bi-x-circle-fill fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark mb-1">Import Dibatalkan secara Otomatis (Atomic)</h5>
+                    <p class="text-secondary mb-0" style="font-size:0.875rem;">
+                        Demi keamanan integritas data, tidak ada data yang masuk ke database karena terdapat baris yang tidak valid.
+                    </p>
+                </div>
+            </div>
+            <div class="d-flex gap-2 w-100 w-md-auto justify-content-end">
+                <a href="{{ route('admin.imports.error-report') }}" class="btn btn-danger fw-semibold px-4 d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-excel-fill"></i> Download Laporan Error
+                </a>
+                <a href="{{ route('admin.imports.index') }}" class="btn btn-light border fw-semibold px-4">
+                    Tutup
+                </a>
             </div>
         </div>
-    @endif
+    </div>
 
-    <!-- Preview Table -->
-    <div class="card glass-card border-0">
-        <div class="card-body p-4">
+    <!-- Error Detail Table -->
+    <div class="card glass-card border-0 shadow-sm" style="border-radius:12px;overflow:hidden;">
+        <div class="card-header border-bottom py-3 px-4" style="background:#fff;">
+            <h6 class="fw-bold mb-0 text-dark">Detail Kesalahan Data</h6>
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered align-middle fs-7">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle mb-0" style="font-size:0.875rem;">
+                    <thead class="table-light text-uppercase text-secondary" style="font-size:0.75rem;">
                         <tr>
-                            <th style="width: 80px;" class="text-center">Baris Excel</th>
-                            <th style="width: 100px;">Status</th>
-                            <th>Data</th>
-                            <th>Keterangan / Error</th>
+                            <th class="py-3 ps-4 text-center" style="width:100px;">Baris Excel</th>
+                            <th class="py-3" style="width:180px;">Nama Kolom</th>
+                            <th class="py-3" style="width:220px;">Nilai yang Diisi</th>
+                            <th class="py-3 pe-4 text-danger">Pesan Kesalahan (Error)</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($previewRows as $row)
-                                    <tr class="{{ $row['is_valid'] ? 'table-success-subtle' : 'table-danger-subtle' }}">
-                                        <td data-label="Baris Excel" class="text-center fw-bold">{{ $row['row_number'] }}</td>
-                                        <td data-label="Status">
-                                    @if($row['is_valid'])
-                                        <span class="badge bg-success text-white px-2 py-1 fs-8">Valid</span>
-                                    @else
-                                        <span class="badge bg-danger text-white px-2 py-1 fs-8">Error</span>
-                                    @endif
+                        @foreach($errors as $error)
+                            <tr style="border-bottom:1px solid #f1f5f9;">
+                                <td class="py-3 ps-4 text-center fw-bold text-dark">{{ $error['row'] }}</td>
+                                <td class="py-3 fw-semibold text-secondary">{{ $error['column'] }}</td>
+                                <td class="py-3">
+                                    <code class="px-2 py-1 bg-light rounded text-dark font-monospace" style="font-size:0.8rem;">
+                                        {{ $error['value'] === '' || $error['value'] === null ? '[KOSONG]' : $error['value'] }}
+                                    </code>
                                 </td>
-                                        <td data-label="Data">
-                                            <div class="row g-1">
-                                                @foreach($row['data'] as $key => $val)
-                                                    <div class="col-6">
-                                                        <span class="fw-semibold text-muted text-uppercase" style="font-size: 0.65rem;">{{ str_replace('_', ' ', $key) }}:</span>
-                                                        <span class="text-dark d-block text-truncate fs-8">{{ $val ?: '-' }}</span>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </td>
-                                        <td data-label="Keterangan">
-                                    @if($row['is_valid'])
-                                        <span class="text-success"><i class="bi bi-check-circle me-1"></i> Data siap diimpor</span>
-                                    @else
-                                        <ul class="text-danger ps-3 mb-0 fs-8">
-                                            @foreach($row['errors'] as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
+                                <td class="py-3 pe-4 text-danger fw-medium">
+                                    <i class="bi bi-x-circle me-1"></i>{{ $error['message'] }}
                                 </td>
                             </tr>
                         @endforeach
@@ -110,13 +102,4 @@
             </div>
         </div>
     </div>
-
-    <style>
-        .table-success-subtle {
-            background-color: rgba(25, 135, 84, 0.05) !important;
-        }
-        .table-danger-subtle {
-            background-color: rgba(220, 53, 69, 0.05) !important;
-        }
-    </style>
 </x-app-layout>

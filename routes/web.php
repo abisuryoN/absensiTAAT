@@ -99,16 +99,17 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         Route::get('/reports/excel', [ReportController::class, 'exportExcel'])->name('reports.excel');
         Route::get('/reports/pdf', [ReportController::class, 'exportPdf'])->name('reports.pdf');
 
-        // System Settings
-        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
-        Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
-
         // Excel Imports
         Route::get('/imports', [\App\Http\Controllers\Admin\ImportController::class, 'index'])->name('imports.index');
         Route::get('/imports/template/{type}', [\App\Http\Controllers\Admin\ImportController::class, 'downloadTemplate'])->name('imports.template');
+        Route::get('/imports/error-report', [\App\Http\Controllers\Admin\ImportController::class, 'downloadErrorReport'])->name('imports.error-report');
         Route::post('/imports/preview', [\App\Http\Controllers\Admin\ImportController::class, 'preview'])->name('imports.preview');
         Route::post('/imports/commit', [\App\Http\Controllers\Admin\ImportController::class, 'commit'])->name('imports.commit');
         Route::post('/imports/cancel', [\App\Http\Controllers\Admin\ImportController::class, 'cancel'])->name('imports.cancel');
+
+        // System Settings
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 
         // Manajemen Akun Login
         Route::get('/accounts', [AccountManagementController::class, 'index'])->name('accounts.index');

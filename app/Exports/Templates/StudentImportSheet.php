@@ -29,6 +29,7 @@ class StudentImportSheet implements FromArray, WithHeadings, WithStyles, WithCol
             'phone',
             'class_name',
             'parent_id',
+            'template_version',
         ];
     }
 
@@ -36,7 +37,7 @@ class StudentImportSheet implements FromArray, WithHeadings, WithStyles, WithCol
     {
         return [
             // Example row
-            ['20240001', '1234567890', 'Nama Siswa Contoh', 'siswa@example.com', 'L', '081234567890', 'X RPL 1', ''],
+            ['20240001', '1234567890', 'Nama Siswa Contoh', 'siswa@example.com', 'L', '081234567890', 'X RPL 1', '', 'v1.0'],
         ];
     }
 
@@ -51,13 +52,14 @@ class StudentImportSheet implements FromArray, WithHeadings, WithStyles, WithCol
             'F' => 18,  // phone
             'G' => 20,  // class_name
             'H' => 15,  // parent_id
+            'I' => 18,  // template_version
         ];
     }
 
     public function styles(Worksheet $sheet): array
     {
         // Style the header row
-        $sheet->getStyle('A1:H1')->applyFromArray([
+        $sheet->getStyle('A1:I1')->applyFromArray([
             'fill' => [
                 'fillType'   => Fill::FILL_SOLID,
                 'startColor' => ['rgb' => '4472C4'],
@@ -67,7 +69,7 @@ class StudentImportSheet implements FromArray, WithHeadings, WithStyles, WithCol
         ]);
 
         // Style the example row
-        $sheet->getStyle('A2:H2')->applyFromArray([
+        $sheet->getStyle('A2:I2')->applyFromArray([
             'fill' => [
                 'fillType'   => Fill::FILL_SOLID,
                 'startColor' => ['rgb' => 'D9E1F2'],
@@ -77,8 +79,8 @@ class StudentImportSheet implements FromArray, WithHeadings, WithStyles, WithCol
         // Add notes row 1 - general
         $sheet->setCellValue('A3', 'CATATAN:');
         $sheet->setCellValue('B3', 'Kolom gender diisi L (Laki-laki) atau P (Perempuan). Kolom class_name harus sesuai nama kelas yang sudah ada. Kolom parent_id diisi ID orang tua dari sheet "Data Orang Tua/Wali" di file ini (opsional).');
-        $sheet->mergeCells('B3:H3');
-        $sheet->getStyle('A3:H3')->applyFromArray([
+        $sheet->mergeCells('B3:I3');
+        $sheet->getStyle('A3:I3')->applyFromArray([
             'fill' => [
                 'fillType'   => Fill::FILL_SOLID,
                 'startColor' => ['rgb' => 'FFF2CC'],
@@ -89,8 +91,8 @@ class StudentImportSheet implements FromArray, WithHeadings, WithStyles, WithCol
         // Add notes row 2 - password info
         $sheet->setCellValue('A4', 'PASSWORD:');
         $sheet->setCellValue('B4', 'Password login siswa otomatis dibuat dari NISN + Tahun Masuk (kolom tahun_masuk di sistem). Pastikan kolom nisn diisi dengan benar dan lengkap untuk keperluan ini.');
-        $sheet->mergeCells('B4:H4');
-        $sheet->getStyle('A4:H4')->applyFromArray([
+        $sheet->mergeCells('B4:I4');
+        $sheet->getStyle('A4:I4')->applyFromArray([
             'fill' => [
                 'fillType'   => Fill::FILL_SOLID,
                 'startColor' => ['rgb' => 'E2EFDA'],
