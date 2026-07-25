@@ -6,7 +6,12 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\Schedule;
 use App\Policies\StudentParentPolicy;
+use App\Policies\StudentPolicy;
+use App\Policies\TeacherPolicy;
+use App\Policies\SchedulePolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
+        // Register authorization policies
+        Gate::policy(Student::class, StudentPolicy::class);
+        Gate::policy(Teacher::class, TeacherPolicy::class);
+        Gate::policy(Schedule::class, SchedulePolicy::class);
         // Parent → Student authorization
         Gate::policy(Student::class, StudentParentPolicy::class);
 

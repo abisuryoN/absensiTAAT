@@ -11,6 +11,7 @@ use App\Models\StudentParent;
 use App\Services\StudentService;
 use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class StudentController extends Controller
 {
@@ -23,6 +24,7 @@ class StudentController extends Controller
 
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Student::class);
         $students = $this->service->getAll($request->all());
         $classes = SchoolClass::where('is_active', true)->orderBy('grade_level')->orderBy('name')->get();
         $majors = Major::orderBy('name')->get();

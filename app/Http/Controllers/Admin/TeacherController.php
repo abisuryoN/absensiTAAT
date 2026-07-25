@@ -9,6 +9,7 @@ use App\Models\Subject;
 use App\Services\TeacherService;
 use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TeacherController extends Controller
 {
@@ -21,6 +22,7 @@ class TeacherController extends Controller
 
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Teacher::class);
         $teachers = $this->service->getAll($request->all());
         return view('admin.teachers.index', compact('teachers'));
     }
