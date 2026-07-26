@@ -55,7 +55,7 @@
                 <div class="col-6 col-md-2">
                     <div class="card glass-card border-0 shadow-sm p-3 text-center">
                         <span class="fs-3 fw-bold text-danger">{{ $stats['alpha'] }}</span>
-                        <span class="fs-8 text-muted text-uppercase fw-semibold">Alpha</span>
+                        <span class="fs-8 text-muted text-uppercase fw-semibold">Tidak Hadir</span>
                     </div>
                 </div>
             </div>
@@ -82,7 +82,7 @@
                             <option value="terlambat" {{ $selectedStatus === 'terlambat' ? 'selected' : '' }}>Terlambat</option>
                             <option value="izin" {{ $selectedStatus === 'izin' ? 'selected' : '' }}>Izin</option>
                             <option value="sakit" {{ $selectedStatus === 'sakit' ? 'selected' : '' }}>Sakit</option>
-                            <option value="alpha" {{ $selectedStatus === 'alpha' ? 'selected' : '' }}>Alpha</option>
+                            <option value="alpha" {{ $selectedStatus === 'alpha' ? 'selected' : '' }}>Tidak Hadir</option>
                         </select>
                         </div>
                     </div>
@@ -145,7 +145,7 @@
                                                         'terlambat' => ['bg' => 'bg-warning text-dark', 'icon' => 'bi-clock-fill'],
                                                         'izin' => ['bg' => 'bg-info', 'icon' => 'bi-envelope-fill'],
                                                         'sakit' => ['bg' => 'bg-primary', 'icon' => 'bi-heart-pulse-fill'],
-                                                        'alpha' => ['bg' => 'bg-danger', 'icon' => 'bi-x-circle-fill'],
+                                                        'tidak_hadir' => ['bg' => 'bg-danger', 'icon' => 'bi-x-circle-fill'],
                                                     ];
                                                     $cfg = $statusConfig[$att->status] ?? ['bg' => 'bg-secondary', 'icon' => 'bi-question-circle'];
                                                 @endphp

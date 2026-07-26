@@ -73,11 +73,11 @@ class AttendanceGateExport implements FromCollection, WithHeadings, WithMapping,
         }
 
         $statusMap = [
-            'hadir'     => 'Hadir',
-            'terlambat' => 'Terlambat',
-            'izin'      => 'Izin',
-            'sakit'     => 'Sakit',
-            'alpha'     => 'Alpha',
+            'hadir'      => 'Hadir',
+            'terlambat'  => 'Terlambat',
+            'izin'       => 'Izin',
+            'sakit'      => 'Sakit',
+            'tidak_hadir' => 'Tidak Hadir',
         ];
 
         $methodMap = [

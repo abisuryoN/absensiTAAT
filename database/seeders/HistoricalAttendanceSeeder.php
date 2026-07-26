@@ -126,13 +126,13 @@ class HistoricalAttendanceSeeder extends Seeder
             '2024-10-01', '2024-10-07', '2024-10-14', '2024-10-21', '2024-10-28',
         ];
 
-        // Status pool: 80% hadir, 8% terlambat, 4% izin, 4% sakit, 4% alpha
+        // Status pool: 80% hadir, 8% terlambat, 4% izin, 4% sakit, 4% tidak_hadir
         $statusPool = array_merge(
             array_fill(0, 80, 'hadir'),
             array_fill(0, 8, 'terlambat'),
             array_fill(0, 4, 'izin'),
             array_fill(0, 4, 'sakit'),
-            array_fill(0, 4, 'alpha')
+            array_fill(0, 4, 'tidak_hadir')
         );
 
         // Method pool for hadir/terlambat: 88% barcode, 12% manual
@@ -149,7 +149,7 @@ class HistoricalAttendanceSeeder extends Seeder
             foreach ($studentIds as $studentId) {
                 $status = $faker->randomElement($statusPool);
 
-                if ($status === 'alpha') {
+                if ($status === 'tidak_hadir') {
                     continue;
                 }
 

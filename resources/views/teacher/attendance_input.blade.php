@@ -135,7 +135,7 @@
                                                            value="alpha"
                                                            {{ $detail->status === 'alpha' ? 'checked' : '' }}>
                                                     <label class="btn btn-sm btn-outline-danger fs-8 px-2.5 py-1" for="status_{{ $student->id }}_alpha">
-                                                        Alpha
+                                                        Tidak Hadir
                                                     </label>
 
                                                     <input type="radio"

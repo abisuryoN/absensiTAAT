@@ -132,7 +132,7 @@ class TeacherPortalController extends Controller
             'attendance_id' => 'required|exists:attendance_subjects,id',
             'status' => 'required|in:draft,submitted',
             'students' => 'required|array',
-            'students.*.status' => 'required|in:hadir,izin,sakit,alpha,dispensasi',
+            'students.*.status' => 'required|in:hadir,izin,sakit,tidak_hadir,dispensasi',
             'students.*.note' => 'nullable|string|max:255',
             'note' => 'nullable|string',
         ]);

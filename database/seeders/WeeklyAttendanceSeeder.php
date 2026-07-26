@@ -43,7 +43,7 @@ class WeeklyAttendanceSeeder extends Seeder
             }
             
             foreach ($students as $studentId) {
-                $statuses = ['hadir', 'hadir', 'hadir', 'terlambat', 'sakit', 'izin', 'alpha'];
+                $statuses = ['hadir', 'hadir', 'hadir', 'terlambat', 'sakit', 'izin', 'tidak_hadir'];
                 $status = $statuses[array_rand($statuses)];
                 $time = $status === 'terlambat' ? '07:45:00' : '07:15:00';
                 

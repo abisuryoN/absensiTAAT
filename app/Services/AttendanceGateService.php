@@ -254,7 +254,7 @@ class AttendanceGateService
     }
 
     /**
-     * Mark active students who haven't scanned today as Absent (Alpha).
+     * Mark active students who haven't scanned today as Tidak Hadir.
      */
     public function markAbsentStudents(?string $date = null): int
     {
@@ -290,7 +290,7 @@ class AttendanceGateService
                     'semester_id'      => $semester->id,
                     'date'             => $targetDate,
                     'time_in'          => '00:00:00',
-                    'status'           => 'alpha',
+                    'status'           => 'tidak_hadir',
                     'method'           => 'manual',
                 ]);
                 $count++;
@@ -299,7 +299,7 @@ class AttendanceGateService
             if ($count > 0) {
                 ActivityLogService::log(
                     'system',
-                    "Auto-mark Alpha: {$count} siswa ditandai Alpha pada tanggal {$targetDate}",
+                    "Auto-mark Tidak Hadir: {$count} siswa ditandai Tidak Hadir pada tanggal {$targetDate}",
                     null
                 );
             }

@@ -131,22 +131,22 @@ class AttendanceGateController extends Controller
         $classes  = SchoolClass::where('is_active', true)->orderBy('name')->get();
         $majors   = Major::orderBy('name')->get();
 
-        // Stats (unchanged — direct count on attendance_gates)
+        // Stats
         $totalSiswa     = Student::where('is_active', true)->count();
         $hadirCount     = AttendanceGate::where('date', $today)->whereIn('status', ['hadir', 'terlambat'])->count();
         $terlambatCount = AttendanceGate::where('date', $today)->where('status', 'terlambat')->count();
         $izinCount      = AttendanceGate::where('date', $today)->where('status', 'izin')->count();
         $sakitCount     = AttendanceGate::where('date', $today)->where('status', 'sakit')->count();
-        $alphaCount     = AttendanceGate::where('date', $today)->where('status', 'alpha')->count();
+        $tidakHadirCount = AttendanceGate::where('date', $today)->where('status', 'tidak_hadir')->count();
         $totalCheckedIn = AttendanceGate::where('date', $today)
-            ->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit', 'alpha'])
+            ->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit', 'tidak_hadir'])
             ->count();
         $tidakHadir = max(0, $totalSiswa - $totalCheckedIn);
 
         return view('admin.attendance.today', compact(
             'students', 'classes', 'majors',
             'totalSiswa', 'hadirCount', 'terlambatCount',
-            'izinCount', 'sakitCount', 'alphaCount', 'tidakHadir'
+            'izinCount', 'sakitCount', 'tidakHadirCount', 'tidakHadir'
         ));
     }
 
@@ -184,7 +184,7 @@ class AttendanceGateController extends Controller
 
                 if ($attendance) {
                     // Only update if currently not marked (no check-in)
-                    // but allow overwrite if it's still alpha/tidak_hadir
+                    // but allow overwrite if it's still tidak_hadir
                     if (in_array($attendance->status, ['hadir', 'terlambat'])) {
                         continue; // skip siswa yang sudah hadir / terlambat
                     }
@@ -220,10 +220,10 @@ class AttendanceGateController extends Controller
         $terlambatCount = AttendanceGate::where('date', $today)->where('status', 'terlambat')->count();
         $izinCount      = AttendanceGate::where('date', $today)->where('status', 'izin')->count();
         $sakitCount     = AttendanceGate::where('date', $today)->where('status', 'sakit')->count();
-        $alphaCount     = AttendanceGate::where('date', $today)->where('status', 'alpha')->count();
+        $tidakHadirCount = AttendanceGate::where('date', $today)->where('status', 'tidak_hadir')->count();
         $totalSiswa     = Student::where('is_active', true)->count();
         $totalCheckedIn = AttendanceGate::where('date', $today)
-            ->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit', 'alpha'])
+            ->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit', 'tidak_hadir'])
             ->count();
         $tidakHadir = max(0, $totalSiswa - $totalCheckedIn);
 
@@ -237,7 +237,7 @@ class AttendanceGateController extends Controller
                 'terlambat'  => $terlambatCount,
                 'izin'       => $izinCount,
                 'sakit'      => $sakitCount,
-                'alpha'      => $alphaCount,
+                'tidak_hadir' => $tidakHadirCount,
                 'tidakHadir' => $tidakHadir,
             ],
         ]);
@@ -396,7 +396,6 @@ class AttendanceGateController extends Controller
                 'terlambat'   => 'Terlambat',
                 'izin'        => 'Izin',
                 'sakit'       => 'Sakit',
-                'alpha'       => 'Alpha',
                 'tidak_hadir' => 'Tidak Hadir',
             ];
             $labels[] = 'Status: ' . ($statusMap[$request->status] ?? ucfirst($request->status));
@@ -421,7 +420,7 @@ class AttendanceGateController extends Controller
     {
         $request->validate([
             'student_id' => 'required|exists:students,id',
-            'status'     => 'required|in:hadir,terlambat,izin,sakit,alpha',
+            'status'     => 'required|in:hadir,terlambat,izin,sakit,tidak_hadir',
             'note'       => 'nullable|string',
         ]);
 

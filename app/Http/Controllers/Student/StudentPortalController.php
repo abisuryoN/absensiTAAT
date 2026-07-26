@@ -50,7 +50,7 @@ class StudentPortalController extends Controller
         $terlambatCount = $monthlyAttendance->where('status', 'terlambat')->count();
         $izinCount = $monthlyAttendance->where('status', 'izin')->count();
         $sakitCount = $monthlyAttendance->where('status', 'sakit')->count();
-        $alphaCount = $monthlyAttendance->where('status', 'alpha')->count();
+        $tidakHadirCount = $monthlyAttendance->where('status', 'tidak_hadir')->count();
 
         $attendancePercent = $totalDays > 0
             ? round((($hadirCount + $terlambatCount) / $totalDays) * 100, 1)
@@ -79,7 +79,7 @@ class StudentPortalController extends Controller
             'terlambatCount',
             'izinCount',
             'sakitCount',
-            'alphaCount',
+            'tidakHadirCount',
             'totalDays',
             'todaySchedules',
             'qrTtl',
@@ -217,12 +217,12 @@ class StudentPortalController extends Controller
         $summary = $summaryQuery->get();
 
         $stats = [
-            'total' => $summary->count(),
-            'hadir' => $summary->where('status', 'hadir')->count(),
-            'terlambat' => $summary->where('status', 'terlambat')->count(),
-            'izin' => $summary->where('status', 'izin')->count(),
-            'sakit' => $summary->where('status', 'sakit')->count(),
-            'alpha' => $summary->where('status', 'alpha')->count(),
+            'total'      => $summary->count(),
+            'hadir'      => $summary->where('status', 'hadir')->count(),
+            'terlambat'  => $summary->where('status', 'terlambat')->count(),
+            'izin'       => $summary->where('status', 'izin')->count(),
+            'sakit'      => $summary->where('status', 'sakit')->count(),
+            'tidak_hadir' => $summary->where('status', 'tidak_hadir')->count(),
         ];
 
         return view('student.history', compact('student', 'attendances', 'stats', 'selectedMonth', 'selectedStatus'));

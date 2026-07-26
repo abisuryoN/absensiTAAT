@@ -216,7 +216,7 @@
                             <div class="col">
                                 <div class="text-center p-2 rounded" style="background:#fee2e2;">
                                     <div class="fw-bold" style="color:#dc2626;font-size:1.1rem;">{{ $alphaCount }}</div>
-                                    <div class="fs-8" style="color:#b91c1c;">Alpha</div>
+                                    <div class="fs-8" style="color:#b91c1c;">Tidak Hadir</div>
                                 </div>
                             </div>
                         </div>
@@ -288,7 +288,7 @@
                             </div>
                         </div>
                         <div class="stat-value text-white">{{ $alphaCount }}</div>
-                        <div class="stat-label text-white opacity-75">Alpha</div>
+                        <div class="stat-label text-white opacity-75">Tidak Hadir</div>
                     </div>
                 </div>
             </div>

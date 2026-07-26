@@ -18,7 +18,7 @@ class AttendanceSeeder extends Seeder
      *  - terlambat: 8%
      *  - izin     : 4%
      *  - sakit    : 4%
-     *  - (alpha)  : 4% — no record at all
+     *  - (tidak_hadir)  : 4% — no record at all
      *
      * Waktu scan:
      *  - hadir    : 06:15 – 07:00
@@ -88,21 +88,21 @@ class AttendanceSeeder extends Seeder
         $batchSize = 200;
         $inserted  = 0;
 
-        // Status weights: 80% hadir, 8% terlambat, 4% izin, 4% sakit, 4% alpha (skip)
+        // Status weights: 80% hadir, 8% terlambat, 4% izin, 4% sakit, 4% tidak_hadir (skip)
         $statusPool = array_merge(
             array_fill(0, 80, 'hadir'),
             array_fill(0, 8, 'terlambat'),
             array_fill(0, 4, 'izin'),
             array_fill(0, 4, 'sakit'),
-            array_fill(0, 4, 'alpha') // alpha = no record
+            array_fill(0, 4, 'tidak_hadir') // tidak_hadir = no record
         );
 
         foreach ($workDays as $date) {
             foreach ($studentIds as $studentId) {
                 $statusRoll = $faker->randomElement($statusPool);
 
-                if ($statusRoll === 'alpha') {
-                    continue; // No record for alpha
+                if ($statusRoll === 'tidak_hadir') {
+                    continue; // No record for tidak_hadir
                 }
 
                 $timeIn = match ($statusRoll) {

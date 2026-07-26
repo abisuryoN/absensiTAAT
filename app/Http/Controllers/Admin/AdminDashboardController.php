@@ -35,7 +35,7 @@ class AdminDashboardController extends Controller
         
         // Total siswa yang SUDAH punya record attendance hari ini (apapun statusnya)
         $totalCheckedIn = AttendanceGate::where('date', $today)
-            ->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit', 'alpha'])
+            ->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit', 'tidak_hadir'])
             ->count();
         
         // Tidak Hadir = Total Siswa - (yang sudah punya record hari ini)
@@ -48,8 +48,8 @@ class AdminDashboardController extends Controller
         $sakit = AttendanceGate::where('date', $today)
             ->where('status', 'sakit')
             ->count();
-        $alpha = AttendanceGate::where('date', $today)
-            ->where('status', 'alpha')
+        $tidakHadirCount = AttendanceGate::where('date', $today)
+            ->where('status', 'tidak_hadir')
             ->count();
 
         // 2. Query 7 Days Trend
@@ -67,7 +67,7 @@ class AdminDashboardController extends Controller
         $chartTerlambat = [];
         $chartSakit = [];
         $chartIzin = [];
-        $chartAlpha = [];
+        $chartTidakHadir = [];
 
         for ($i = 6; $i >= 0; $i--) {
             $dateObj = Carbon::today()->subDays($i);
@@ -81,7 +81,7 @@ class AdminDashboardController extends Controller
             $chartTerlambat[] = $dayStats->where('status', 'terlambat')->sum('count');
             $chartSakit[] = $dayStats->where('status', 'sakit')->sum('count');
             $chartIzin[] = $dayStats->where('status', 'izin')->sum('count');
-            $chartAlpha[] = $dayStats->where('status', 'alpha')->sum('count');
+            $chartTidakHadir[] = $dayStats->where('status', 'tidak_hadir')->sum('count');
         }
 
         // 3. System activity log (last 10 entries)
@@ -97,13 +97,13 @@ class AdminDashboardController extends Controller
             'tidakHadir',
             'izin',
             'sakit',
-            'alpha',
+            'tidakHadirCount',
             'chartLabels',
             'chartHadir',
             'chartTerlambat',
             'chartSakit',
             'chartIzin',
-            'chartAlpha',
+            'chartTidakHadir',
             'activities'
         ));
     }

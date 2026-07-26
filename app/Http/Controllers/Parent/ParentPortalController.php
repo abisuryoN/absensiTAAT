@@ -228,13 +228,13 @@ class ParentPortalController extends Controller
             'terlambat' => $records->where('status', 'terlambat')->count(),
             'izin'      => $records->where('status', 'izin')->count(),
             'sakit'     => $records->where('status', 'sakit')->count(),
-            'alpa'      => $records->where('status', 'alpa')->count(),
+            'tidak_hadir' => $records->where('status', 'tidak_hadir')->count(),
             'total'     => $records->count(),
         ];
     }
 
     private function emptyMonthStats(): array
     {
-        return ['hadir' => 0, 'terlambat' => 0, 'izin' => 0, 'sakit' => 0, 'alpa' => 0, 'total' => 0];
+        return ['hadir' => 0, 'terlambat' => 0, 'izin' => 0, 'sakit' => 0, 'tidak_hadir' => 0, 'total' => 0];
     }
 }
