@@ -14,6 +14,54 @@ use Illuminate\Support\Facades\DB;
 
 class AttendanceGateService
 {
+    protected HolidayService $holidayService;
+
+    public function __construct(HolidayService $holidayService)
+    {
+        $this->holidayService = $holidayService;
+    }
+
+    /**
+     * Get current time — uses mock time if testing mode is active.
+     */
+    private function getCurrentTime(): Carbon
+    {
+        $mockEnabled = Setting::getVal('attendance_mock_enabled', false);
+        $mockTime = Setting::getVal('attendance_mock_time', '');
+
+        if ($mockEnabled && !empty($mockTime)) {
+            return Carbon::createFromFormat('H:i', $mockTime);
+        }
+
+        return Carbon::now();
+    }
+
+    /**
+     * Validate that the current time is within attendance operating hours.
+     * Skips validation if attendance_time_enabled is false.
+     */
+    private function validateAttendanceTime(): void
+    {
+        if (!Setting::getVal('attendance_time_enabled', true)) {
+            return;
+        }
+
+        $currentTime = $this->getCurrentTime();
+        $gateOpen = Setting::getVal('gate_open_time', '05:30');
+        $gateClose = Setting::getVal('gate_close_time', '08:00');
+
+        $openTime = Carbon::createFromFormat('H:i', $gateOpen);
+        $closeTime = Carbon::createFromFormat('H:i', $gateClose);
+
+        if ($currentTime->lessThan($openTime)) {
+            throw new \Exception("Belum waktunya absen. Gerbang buka pukul {$gateOpen}.");
+        }
+
+        if ($currentTime->greaterThan($closeTime)) {
+            throw new \Exception("Waktu absen sudah ditutup pukul {$gateClose}.");
+        }
+    }
+
     /**
      * Process barcode scanning.
      */
@@ -40,6 +88,9 @@ class AttendanceGateService
                 throw new \Exception("Hari ini adalah hari libur sekolah. Absensi tidak dapat dilakukan.");
             }
 
+            // Cek jam operasional
+            $this->validateAttendanceTime();
+
             $academicYear = AcademicYear::active()->first();
             $semester = Semester::active()->first();
 
@@ -47,7 +98,7 @@ class AttendanceGateService
                 throw new \Exception("Tahun ajaran atau semester aktif tidak ditemukan.");
             }
 
-            $timeIn = Carbon::now()->format('H:i:s');
+            $timeIn = $this->getCurrentTime()->format('H:i:s');
             $status = $this->getStatusByTime($timeIn);
 
             $attendance = AttendanceGate::create([
@@ -108,6 +159,9 @@ class AttendanceGateService
                 throw new \Exception("Hari ini adalah hari libur sekolah. Absensi tidak dapat dilakukan.");
             }
 
+            // Cek jam operasional
+            $this->validateAttendanceTime();
+
             $academicYear = AcademicYear::active()->first();
             $semester = Semester::active()->first();
 
@@ -121,7 +175,7 @@ class AttendanceGateService
                 'used_at' => Carbon::now(),
             ]);
 
-            $timeIn = Carbon::now()->format('H:i:s');
+            $timeIn = $this->getCurrentTime()->format('H:i:s');
             $status = $this->getStatusByTime($timeIn);
 
             $attendance = AttendanceGate::create([
@@ -164,7 +218,7 @@ class AttendanceGateService
             }
 
             $today = Carbon::today()->format('Y-m-d');
-            
+
             // Check if already scanned, update if exists, otherwise create
             $attendance = AttendanceGate::where('student_id', $studentId)
                 ->where('date', $today)
@@ -242,7 +296,7 @@ class AttendanceGateService
     public function checkHoliday(string $date): bool
     {
         $dayOfWeek = Carbon::parse($date)->dayOfWeek;
-        
+
         // Saturday (6) and Sunday (0) are holidays
         if ($dayOfWeek === Carbon::SATURDAY || $dayOfWeek === Carbon::SUNDAY) {
             return true;
@@ -261,7 +315,7 @@ class AttendanceGateService
         $targetDate = $date ?? Carbon::today()->format('Y-m-d');
 
         if ($this->checkHoliday($targetDate)) {
-            return 0; // Don't run on holidays
+            return 0;
         }
 
         $academicYear = AcademicYear::active()->first();
@@ -272,7 +326,6 @@ class AttendanceGateService
         }
 
         return DB::transaction(function () use ($targetDate, $academicYear, $semester) {
-            // Find all active students who don't have gate attendance for this date
             $studentsWithoutAttendance = Student::where('is_active', true)
                 ->whereNotExists(function ($query) use ($targetDate) {
                     $query->select(DB::raw(1))
