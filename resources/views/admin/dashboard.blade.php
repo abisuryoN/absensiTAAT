@@ -84,6 +84,8 @@
                         data-labels='{{ json_encode($chartLabels ?? []) }}'
                         data-hadir='{{ json_encode($chartHadir ?? []) }}'
                         data-terlambat='{{ json_encode($chartTerlambat ?? []) }}'
+                        data-sakit='{{ json_encode($chartSakit ?? []) }}'
+                        data-izin='{{ json_encode($chartIzin ?? []) }}'
                         data-alpha='{{ json_encode($chartAlpha ?? []) }}'></canvas>
                 </div>
             </div>
@@ -154,42 +156,99 @@
             const labels = JSON.parse(canvas.dataset.labels);
             const dataHadir = JSON.parse(canvas.dataset.hadir);
             const dataTerlambat = JSON.parse(canvas.dataset.terlambat);
+            const dataSakit = JSON.parse(canvas.dataset.sakit);
+            const dataIzin = JSON.parse(canvas.dataset.izin);
             const dataAlpha = JSON.parse(canvas.dataset.alpha);
 
+            // Compute totals per day for tooltip
+            const totals = labels.map((_, i) => 
+                dataHadir[i] + dataTerlambat[i] + dataSakit[i] + dataIzin[i] + dataAlpha[i]
+            );
+
             new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Hadir (Tepat + Terlambat)',
+                            label: 'Hadir',
                             data: dataHadir,
-                            backgroundColor: 'rgba(25, 135, 84, 0.85)', // bg-success
-                            borderColor: 'rgb(25, 135, 84)',
-                            borderWidth: 1,
-                            borderRadius: 4
+                            backgroundColor: 'rgba(40, 167, 69, 0.15)',
+                            borderColor: 'rgb(40, 167, 69)',
+                            borderWidth: 3,
+                            pointBackgroundColor: 'rgb(40, 167, 69)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            tension: 0.3,
+                            fill: false
                         },
                         {
                             label: 'Terlambat',
                             data: dataTerlambat,
-                            backgroundColor: 'rgba(255, 193, 7, 0.85)', // bg-warning
+                            backgroundColor: 'rgba(255, 193, 7, 0.15)',
                             borderColor: 'rgb(255, 193, 7)',
-                            borderWidth: 1,
-                            borderRadius: 4
+                            borderWidth: 3,
+                            pointBackgroundColor: 'rgb(255, 193, 7)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            tension: 0.3,
+                            fill: false
+                        },
+                        {
+                            label: 'Sakit',
+                            data: dataSakit,
+                            backgroundColor: 'rgba(23, 162, 184, 0.15)',
+                            borderColor: 'rgb(23, 162, 184)',
+                            borderWidth: 3,
+                            pointBackgroundColor: 'rgb(23, 162, 184)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            tension: 0.3,
+                            fill: false
+                        },
+                        {
+                            label: 'Izin',
+                            data: dataIzin,
+                            backgroundColor: 'rgba(253, 126, 20, 0.15)',
+                            borderColor: 'rgb(253, 126, 20)',
+                            borderWidth: 3,
+                            pointBackgroundColor: 'rgb(253, 126, 20)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            tension: 0.3,
+                            fill: false
                         },
                         {
                             label: 'Alpha (Tanpa Keterangan)',
                             data: dataAlpha,
-                            backgroundColor: 'rgba(220, 53, 69, 0.85)', // bg-danger
+                            backgroundColor: 'rgba(220, 53, 69, 0.15)',
                             borderColor: 'rgb(220, 53, 69)',
-                            borderWidth: 1,
-                            borderRadius: 4
+                            borderWidth: 3,
+                            pointBackgroundColor: 'rgb(220, 53, 69)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            tension: 0.3,
+                            fill: false
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     scales: {
                         x: {
                             grid: {
@@ -210,6 +269,19 @@
                                 boxWidth: 12,
                                 font: {
                                     size: 11
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                afterBody: function(tooltipItems) {
+                                    const index = tooltipItems[0].dataIndex;
+                                    return '\n\u{1F4CA} Total: ' + totals[index] + ' siswa';
+                                },
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    let val = context.parsed.y;
+                                    return label + ': ' + val + ' siswa';
                                 }
                             }
                         }

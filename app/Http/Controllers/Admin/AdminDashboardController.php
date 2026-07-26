@@ -60,11 +60,13 @@ class AdminDashboardController extends Controller
             ->select('date', 'status', DB::raw('count(*) as count'))
             ->groupBy('date', 'status')
             ->get()
-            ->groupBy(fn($row) => $row->date);
+            ->groupBy(fn($row) => Carbon::parse($row->date)->format('Y-m-d'));
 
         $chartLabels = [];
         $chartHadir = [];
         $chartTerlambat = [];
+        $chartSakit = [];
+        $chartIzin = [];
         $chartAlpha = [];
 
         for ($i = 6; $i >= 0; $i--) {
@@ -75,9 +77,11 @@ class AdminDashboardController extends Controller
 
             $dayStats = $dailyStats->get($dateStr) ?? collect();
 
-            $chartHadir[] = $dayStats->whereIn('status', ['hadir', 'terlambat'])->sum('count');
-            $chartTerlambat[] = $dayStats->where('status', 'terlambat')->first()?->count ?? 0;
-            $chartAlpha[] = $dayStats->where('status', 'alpha')->first()?->count ?? 0;
+            $chartHadir[] = $dayStats->where('status', 'hadir')->sum('count');
+            $chartTerlambat[] = $dayStats->where('status', 'terlambat')->sum('count');
+            $chartSakit[] = $dayStats->where('status', 'sakit')->sum('count');
+            $chartIzin[] = $dayStats->where('status', 'izin')->sum('count');
+            $chartAlpha[] = $dayStats->where('status', 'alpha')->sum('count');
         }
 
         // 3. System activity log (last 10 entries)
@@ -97,6 +101,8 @@ class AdminDashboardController extends Controller
             'chartLabels',
             'chartHadir',
             'chartTerlambat',
+            'chartSakit',
+            'chartIzin',
             'chartAlpha',
             'activities'
         ));
