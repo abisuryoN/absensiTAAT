@@ -150,7 +150,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const canvas = document.getElementById('weeklyTrendChart');
+            // Cari canvas yang visible (ada 2 karena $slot di-render untuk desktop & mobile)
+            const allCanvases = document.querySelectorAll('#weeklyTrendChart');
+            let canvas = null;
+            for (let c of allCanvases) {
+                if (c.offsetParent !== null) { canvas = c; break; }
+            }
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
             
             const labels = JSON.parse(canvas.dataset.labels);
