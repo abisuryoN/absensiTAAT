@@ -90,6 +90,15 @@ class ParentController extends Controller
     }
 
     /**
+     * AJAX endpoint to return a single parent's detail as JSON (for the parent picker detail modal).
+     */
+    public function detailJson(StudentParent $parent)
+    {
+        $parent->load(['user', 'students.class']);
+        return response()->json($parent);
+    }
+
+    /**
      * Export all parents as Excel reference file for student import.
      */
     public function exportReference()

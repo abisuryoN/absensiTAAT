@@ -84,6 +84,7 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         Route::resource('teachers', TeacherController::class);
         // Custom parent routes MUST come before resource to avoid {parent} wildcard matching
         Route::get('/parents/picker-search', [ParentController::class, 'pickerSearch'])->name('parents.picker');
+        Route::get('/parents/{parent}/detail-json', [ParentController::class, 'detailJson'])->name('parents.detail-json');
         Route::get('/parents/export-reference', [ParentController::class, 'exportReference'])->name('parents.export');
         Route::resource('parents', ParentController::class);
         Route::resource('students', StudentController::class);
