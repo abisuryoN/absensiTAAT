@@ -22,46 +22,18 @@ class AttendanceGateService
     }
 
     /**
-     * Get current datetime — uses mock time & date if testing mode is active.
+     * Get current time — uses mock time if testing mode is active.
      */
-    private function getCurrentDateTime(): Carbon
+    private function getCurrentTime(): Carbon
     {
         $mockEnabled = Setting::getVal('attendance_mock_enabled', false);
         $mockTime = Setting::getVal('attendance_mock_time', '');
-        $mockDate = Setting::getVal('attendance_mock_date', '');
 
-        if (!$mockEnabled) {
-            return Carbon::now();
+        if ($mockEnabled && !empty($mockTime)) {
+            return Carbon::createFromFormat('H:i', $mockTime);
         }
 
-        $mockDateTime = Carbon::now();
-
-        if (!empty($mockDate)) {
-            $mockDateTime = Carbon::createFromFormat('Y-m-d H:i', $mockDate . ' ' . $mockDateTime->format('H:i'));
-        }
-
-        if (!empty($mockTime)) {
-            $parts = explode(':', $mockTime);
-            $mockDateTime->setHour((int)$parts[0])->setMinute((int)$parts[1])->setSecond(0);
-        }
-
-        return $mockDateTime;
-    }
-
-    /**
-     * Get current time string (H:i:s) using mock if active.
-     */
-    private function getCurrentTimeString(): string
-    {
-        return $this->getCurrentDateTime()->format('H:i:s');
-    }
-
-    /**
-     * Get current date string (Y-m-d) using mock if active.
-     */
-    private function getCurrentDateString(): string
-    {
-        return $this->getCurrentDateTime()->format('Y-m-d');
+        return Carbon::now();
     }
 
     /**
@@ -74,7 +46,7 @@ class AttendanceGateService
             return;
         }
 
-        $currentTime = $this->getCurrentDateTime();
+        $currentTime = $this->getCurrentTime();
         $gateOpen = Setting::getVal('gate_open_time', '05:30');
         $gateClose = Setting::getVal('gate_close_time', '08:00');
 
@@ -106,7 +78,7 @@ class AttendanceGateService
                 throw new \Exception("Siswa {$student->name} berstatus tidak aktif.");
             }
 
-            $today = $this->getCurrentDateString();
+            $today = Carbon::today()->format('Y-m-d');
             if ($this->checkAlreadyScanned($student->id, $today)) {
                 throw new \Exception("Siswa {$student->name} sudah melakukan absensi hari ini.");
             }
@@ -126,7 +98,7 @@ class AttendanceGateService
                 throw new \Exception("Tahun ajaran atau semester aktif tidak ditemukan.");
             }
 
-            $timeIn = $this->getCurrentTimeString();
+            $timeIn = $this->getCurrentTime()->format('H:i:s');
             $status = $this->getStatusByTime($timeIn);
 
             $attendance = AttendanceGate::create([
@@ -177,7 +149,7 @@ class AttendanceGateService
                 throw new \Exception("Siswa {$student->name} berstatus tidak aktif.");
             }
 
-            $today = $this->getCurrentDateString();
+            $today = Carbon::today()->format('Y-m-d');
             if ($this->checkAlreadyScanned($student->id, $today)) {
                 throw new \Exception("Siswa {$student->name} sudah melakukan absensi hari ini.");
             }
@@ -197,13 +169,13 @@ class AttendanceGateService
                 throw new \Exception("Tahun ajaran atau semester aktif tidak ditemukan.");
             }
 
-            // Mark token as used (pakai waktu real, bukan mock — buat keamanan)
+            // Mark token as used
             $qrToken->update([
                 'is_used' => true,
                 'used_at' => Carbon::now(),
             ]);
 
-            $timeIn = $this->getCurrentTimeString();
+            $timeIn = $this->getCurrentTime()->format('H:i:s');
             $status = $this->getStatusByTime($timeIn);
 
             $attendance = AttendanceGate::create([
@@ -323,8 +295,7 @@ class AttendanceGateService
      */
     public function checkHoliday(string $date): bool
     {
-        $checkDate = $this->getCurrentDateTime();
-        $dayOfWeek = $checkDate->dayOfWeek;
+        $dayOfWeek = Carbon::parse($date)->dayOfWeek;
 
         // Saturday (6) and Sunday (0) are holidays
         if ($dayOfWeek === Carbon::SATURDAY || $dayOfWeek === Carbon::SUNDAY) {

@@ -83,13 +83,6 @@ class SettingSeeder extends Seeder
                 'type' => 'string',
                 'description' => 'Waktu virtual untuk testing (HH:MM) — kosongkan jika tidak pakai mode testing'
             ],
-            [
-                'group' => 'attendance',
-                'key' => 'attendance_mock_date',
-                'value' => '',
-                'type' => 'string',
-                'description' => 'Tanggal virtual untuk testing (YYYY-MM-DD) — biarkan kosong jika tidak pakai mode testing'
-            ],
 
             // QR Token config
             [
