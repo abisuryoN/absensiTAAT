@@ -99,44 +99,19 @@
                                 </div>
                                 @endif
 
-                                @if($mockDate)
+                                @if($mockTime)
                                 <div class="col-md-6">
-                                    <label for="{{ $mockDate->key }}" class="form-label fw-semibold fs-7 mb-1">Tanggal Virtual</label>
-                                    <input type="date" name="{{ $mockDate->key }}" id="{{ $mockDate->key }}" class="form-control" value="{{ old($mockDate->key, $mockDate->value) }}">
-                                    <div class="form-text fs-8 mt-1 text-muted">{{ $mockDate->description }}</div>
+                                    <label for="{{ $mockTime->key }}" class="form-label fw-semibold fs-7 mb-1">Waktu Virtual (HH:MM)</label>
+                                    <input type="text" name="{{ $mockTime->key }}" id="{{ $mockTime->key }}" class="form-control" value="{{ old($mockTime->key, $mockTime->value) }}" placeholder="07:00">
+                                    <div class="form-text fs-8 mt-1 text-muted">{{ $mockTime->description }}</div>
                                 </div>
                                 @endif
 
-                                @if($mockTime)
-                                @php
-                                    $mockTimeVal = old($mockTime->key, $mockTime->value);
-                                    $mockHour = '';
-                                    $mockMinute = '';
-                                    if (!empty($mockTimeVal) && str_contains($mockTimeVal, ':')) {
-                                        $parts = explode(':', $mockTimeVal);
-                                        $mockHour = $parts[0] ?? '';
-                                        $mockMinute = $parts[1] ?? '';
-                                    }
-                                @endphp
+                                @if($mockDate)
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold fs-7 mb-1">Jam Virtual</label>
-                                    <div class="d-flex gap-2">
-                                        <select name="attendance_mock_hour" id="attendance_mock_hour" class="form-select w-50">
-                                            <option value="">Jam</option>
-                                            @foreach(range(0, 23) as $h)
-                                                <option value="{{ sprintf('%02d', $h) }}" {{ $mockHour === sprintf('%02d', $h) ? 'selected' : '' }}>{{ sprintf('%02d', $h) }}</option>
-                                            @endforeach
-                                        </select>
-                                        <span class="align-self-center fw-bold text-muted">:</span>
-                                        <select name="attendance_mock_minute" id="attendance_mock_minute" class="form-select w-50">
-                                            <option value="">Menit</option>
-                                            @foreach(range(0, 59) as $m)
-                                                <option value="{{ sprintf('%02d', $m) }}" {{ $mockMinute === sprintf('%02d', $m) ? 'selected' : '' }}>{{ sprintf('%02d', $m) }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <input type="hidden" name="{{ $mockTime->key }}" id="{{ $mockTime->key }}" value="{{ $mockTimeVal }}">
-                                    <div class="form-text fs-8 mt-1 text-muted">{{ $mockTime->description }}</div>
+                                    <label for="{{ $mockDate->key }}" class="form-label fw-semibold fs-7 mb-1">Tanggal Virtual (YYYY-MM-DD)</label>
+                                    <input type="text" name="{{ $mockDate->key }}" id="{{ $mockDate->key }}" class="form-control" value="{{ old($mockDate->key, $mockDate->value) }}" placeholder="2026-07-27">
+                                    <div class="form-text fs-8 mt-1 text-muted">{{ $mockDate->description }}</div>
                                 </div>
                                 @endif
                             </div>
@@ -162,22 +137,6 @@
                         mockCheckbox.addEventListener('change', function() {
                             warning.style.display = this.checked ? '' : 'none';
                         });
-                    }
-
-                    // Sync jam:menit dropdown ke hidden input attendance_mock_time
-                    const hourSelect = document.getElementById('attendance_mock_hour');
-                    const minuteSelect = document.getElementById('attendance_mock_minute');
-                    const mockTimeHidden = document.getElementById('attendance_mock_time');
-                    if (hourSelect && minuteSelect && mockTimeHidden) {
-                        function syncMockTime() {
-                            if (hourSelect.value && minuteSelect.value) {
-                                mockTimeHidden.value = hourSelect.value + ':' + minuteSelect.value;
-                            } else {
-                                mockTimeHidden.value = '';
-                            }
-                        }
-                        hourSelect.addEventListener('change', syncMockTime);
-                        minuteSelect.addEventListener('change', syncMockTime);
                     }
                 });
                 </script>
