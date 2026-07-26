@@ -60,30 +60,7 @@ class SettingSeeder extends Seeder
                 'type' => 'integer',
                 'description' => 'Batas waktu guru mengisi absensi pelajaran (jam)'
             ],
-
-            // Pembatasan Jam Absen + Mode Testing
-            [
-                'group' => 'attendance',
-                'key' => 'attendance_time_enabled',
-                'value' => 'true',
-                'type' => 'boolean',
-                'description' => 'Aktifkan pembatasan jam absensi — scan hanya bisa di jam operasional'
-            ],
-            [
-                'group' => 'attendance',
-                'key' => 'attendance_mock_enabled',
-                'value' => 'false',
-                'type' => 'boolean',
-                'description' => 'Aktifkan mode simulasi/testing — waktu virtual dipakai untuk uji coba absen'
-            ],
-            [
-                'group' => 'attendance',
-                'key' => 'attendance_mock_time',
-                'value' => '',
-                'type' => 'string',
-                'description' => 'Waktu virtual untuk testing (HH:MM) — kosongkan jika tidak pakai mode testing'
-            ],
-
+            
             // QR Token config
             [
                 'group' => 'qr_token',
@@ -92,7 +69,7 @@ class SettingSeeder extends Seeder
                 'type' => 'integer',
                 'description' => 'Masa berlaku token QR Code siswa (detik)'
             ],
-
+            
             // WhatsApp config
             [
                 'group' => 'whatsapp',
