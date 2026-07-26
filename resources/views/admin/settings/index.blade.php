@@ -27,7 +27,7 @@
 
                             <div class="row g-3">
                                 @foreach($settings['attendance'] as $setting)
-                                    @continue(in_array($setting->key, ['attendance_time_enabled', 'attendance_mock_enabled', 'attendance_mock_time']))
+                                    @continue(in_array($setting->key, ['attendance_time_enabled', 'attendance_mock_enabled', 'attendance_mock_time', 'attendance_mock_date']))
                                     <div class="col-md-6">
                                         <label for="{{ $setting->key }}" class="form-label fw-semibold fs-7 mb-1">{{ Str::headline($setting->key) }}</label>
                                         
@@ -56,6 +56,7 @@
                         $timeEnabled = $settings['attendance']->firstWhere('key', 'attendance_time_enabled');
                         $mockEnabled = $settings['attendance']->firstWhere('key', 'attendance_mock_enabled');
                         $mockTime = $settings['attendance']->firstWhere('key', 'attendance_mock_time');
+                        $mockDate = $settings['attendance']->firstWhere('key', 'attendance_mock_date');
                     @endphp
                     <div class="card glass-card border-0 mb-4">
                         <div class="card-body p-4">
@@ -103,6 +104,14 @@
                                     <label for="{{ $mockTime->key }}" class="form-label fw-semibold fs-7 mb-1">Waktu Virtual (HH:MM)</label>
                                     <input type="text" name="{{ $mockTime->key }}" id="{{ $mockTime->key }}" class="form-control" value="{{ old($mockTime->key, $mockTime->value) }}" placeholder="07:00">
                                     <div class="form-text fs-8 mt-1 text-muted">{{ $mockTime->description }}</div>
+                                </div>
+                                @endif
+
+                                @if($mockDate)
+                                <div class="col-md-6">
+                                    <label for="{{ $mockDate->key }}" class="form-label fw-semibold fs-7 mb-1">Tanggal Virtual (YYYY-MM-DD)</label>
+                                    <input type="text" name="{{ $mockDate->key }}" id="{{ $mockDate->key }}" class="form-control" value="{{ old($mockDate->key, $mockDate->value) }}" placeholder="2026-07-27">
+                                    <div class="form-text fs-8 mt-1 text-muted">{{ $mockDate->description }}</div>
                                 </div>
                                 @endif
                             </div>
