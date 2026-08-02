@@ -1,19 +1,25 @@
 <x-app-layout>
     @section('title', 'Laporan Absensi')
 
-    @push('head')
+    @push('styles')
     <style>
         .btn-export-excel {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
             border: none !important;
             color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important;
             transition: all 0.25s ease !important;
             font-weight: 600;
+            padding: 8px 16px !important;
+            border-radius: 10px !important;
+            display: inline-flex !important;
+            align-items: center;
+            gap: 6px;
         }
         .btn-export-excel:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35) !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.55) !important;
         }
         .btn-export-excel:active {
             transform: translateY(0);
@@ -22,13 +28,19 @@
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
             border: none !important;
             color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important;
             transition: all 0.25s ease !important;
             font-weight: 600;
+            padding: 8px 16px !important;
+            border-radius: 10px !important;
+            display: inline-flex !important;
+            align-items: center;
+            gap: 6px;
         }
         .btn-export-pdf:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35) !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.55) !important;
         }
         .btn-export-pdf:active {
             transform: translateY(0);
