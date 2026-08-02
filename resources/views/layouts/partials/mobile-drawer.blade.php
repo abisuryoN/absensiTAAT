@@ -40,7 +40,7 @@
             <img src="{{ asset('images.png') }}" alt="Logo" class="drawer-logo-img" style="width:28px;height:28px;border-radius:50%;object-fit:contain;" onerror="this.src='{{ asset('images/logo-placeholder.svg') }}'">
             <div class="drawer-title-container">
                 <span class="drawer-title-line1">{{ $schoolProfile->name ?? 'SMAN 1' }}</span>
-                <span class="drawer-title-line2">{{ $schoolProfile->address ? (strlen($schoolProfile->address) > 15 ? substr($schoolProfile->address, 0, 15) . '...' : $schoolProfile->address) : 'Tajurhalang' }}</span>
+                <span class="drawer-title-line2">{{ $schoolProfile?->address ? (strlen($schoolProfile->address) > 15 ? substr($schoolProfile->address, 0, 15) . '...' : $schoolProfile->address) : 'Tajurhalang' }}</span>
             </div>
         </div>
         <span class="badge badge-official drawer-badge">Official</span>

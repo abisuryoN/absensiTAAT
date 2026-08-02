@@ -111,6 +111,11 @@ Route::middleware(['auth', 'active', 'role:super_admin'])
         // System Settings
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+        Route::post('/settings/simulation', [SettingController::class, 'updateSimulation'])->name('settings.simulation');
+        Route::post('/settings/sessions', [SettingController::class, 'storeSessions'])->name('settings.sessions.store');
+        Route::delete('/settings/sessions/{session}', [SettingController::class, 'destroySession'])->name('settings.sessions.destroy');
+        Route::post('/settings/grade-mappings', [SettingController::class, 'updateGradeMappings'])->name('settings.grade-mappings');
+        Route::get('/settings/session-preview', [SettingController::class, 'sessionPreview'])->name('settings.session-preview');
 
         // Manajemen Akun Login
         Route::get('/accounts', [AccountManagementController::class, 'index'])->name('accounts.index');

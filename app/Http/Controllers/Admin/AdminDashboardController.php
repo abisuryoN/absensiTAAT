@@ -10,31 +10,39 @@ use App\Models\ActivityLog;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\DateTimeService;
 
 class AdminDashboardController extends Controller
 {
+    protected DateTimeService $dateTimeService;
+
+    public function __construct(DateTimeService $dateTimeService)
+    {
+        $this->dateTimeService = $dateTimeService;
+    }
+
     /**
      * Show real-time statistics and weekly trend on the Admin Dashboard.
      */
     public function index()
     {
-        $today = Carbon::today()->format('Y-m-d');
+        $today = $this->dateTimeService->currentDate();
 
         // 1. Current Stats (New Logic)
         $totalSiswa = Student::where('is_active', true)->count();
         
         // Hadir = attendance hari ini status 'hadir' ATAU 'terlambat' (tetap dianggap hadir walau telat)
-        $hadir = AttendanceGate::where('date', $today)
+        $hadir = AttendanceGate::whereBetween('date', [Carbon::parse($today)->startOfDay(), Carbon::parse($today)->endOfDay()])
             ->whereIn('status', ['hadir', 'terlambat'])
             ->count();
         
         // Terlambat = subset dari hadir, hanya yang 'terlambat'
-        $terlambat = AttendanceGate::where('date', $today)
+        $terlambat = AttendanceGate::whereBetween('date', [Carbon::parse($today)->startOfDay(), Carbon::parse($today)->endOfDay()])
             ->where('status', 'terlambat')
             ->count();
         
         // Total siswa yang SUDAH punya record attendance hari ini (apapun statusnya)
-        $totalCheckedIn = AttendanceGate::where('date', $today)
+        $totalCheckedIn = AttendanceGate::whereBetween('date', [Carbon::parse($today)->startOfDay(), Carbon::parse($today)->endOfDay()])
             ->whereIn('status', ['hadir', 'terlambat', 'izin', 'sakit', 'tidak_hadir'])
             ->count();
         
@@ -42,21 +50,22 @@ class AdminDashboardController extends Controller
         $tidakHadir = max(0, $totalSiswa - $totalCheckedIn);
 
         // Stat tambahan untuk breakdown
-        $izin = AttendanceGate::where('date', $today)
+        $izin = AttendanceGate::whereBetween('date', [Carbon::parse($today)->startOfDay(), Carbon::parse($today)->endOfDay()])
             ->where('status', 'izin')
             ->count();
-        $sakit = AttendanceGate::where('date', $today)
+        $sakit = AttendanceGate::whereBetween('date', [Carbon::parse($today)->startOfDay(), Carbon::parse($today)->endOfDay()])
             ->where('status', 'sakit')
             ->count();
-        $tidakHadirCount = AttendanceGate::where('date', $today)
+        $tidakHadirCount = AttendanceGate::whereBetween('date', [Carbon::parse($today)->startOfDay(), Carbon::parse($today)->endOfDay()])
             ->where('status', 'tidak_hadir')
             ->count();
 
         // 2. Query 7 Days Trend
-        $startWeek = Carbon::today()->subDays(6)->format('Y-m-d');
-        $endWeek = Carbon::today()->format('Y-m-d');
+        $todayObj = $this->dateTimeService->today();
+        $startWeek = $todayObj->copy()->subDays(6)->format('Y-m-d');
+        $endWeek = $todayObj->format('Y-m-d');
 
-        $dailyStats = AttendanceGate::whereBetween('date', [$startWeek, $endWeek])
+        $dailyStats = AttendanceGate::whereBetween('date', [Carbon::parse($startWeek)->startOfDay(), Carbon::parse($endWeek)->endOfDay()])
             ->select('date', 'status', DB::raw('count(*) as count'))
             ->groupBy('date', 'status')
             ->get()
@@ -70,7 +79,7 @@ class AdminDashboardController extends Controller
         $chartTidakHadir = [];
 
         for ($i = 6; $i >= 0; $i--) {
-            $dateObj = Carbon::today()->subDays($i);
+            $dateObj = $todayObj->copy()->subDays($i);
             $dateStr = $dateObj->format('Y-m-d');
 
             $chartLabels[] = $dateObj->translatedFormat('D, d M');

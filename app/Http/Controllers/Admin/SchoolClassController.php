@@ -33,7 +33,8 @@ class SchoolClassController extends Controller
         $academicYears = AcademicYear::orderByDesc('start_date')->get();
         $majors = Major::where('is_active', true)->orderBy('name')->get();
         $teachers = Teacher::where('is_active', true)->orderBy('name')->get();
-        return view('admin.classes.create', compact('academicYears', 'majors', 'teachers'));
+        $schoolSessions = \App\Models\SchoolSession::where('is_active', true)->orderBy('gate_open_time')->get();
+        return view('admin.classes.create', compact('academicYears', 'majors', 'teachers', 'schoolSessions'));
     }
 
     public function store(SchoolClassRequest $request)
@@ -47,7 +48,8 @@ class SchoolClassController extends Controller
         $academicYears = AcademicYear::orderByDesc('start_date')->get();
         $majors = Major::where('is_active', true)->orderBy('name')->get();
         $teachers = Teacher::where('is_active', true)->orderBy('name')->get();
-        return view('admin.classes.edit', compact('class', 'academicYears', 'majors', 'teachers'));
+        $schoolSessions = \App\Models\SchoolSession::where('is_active', true)->orderBy('gate_open_time')->get();
+        return view('admin.classes.edit', compact('class', 'academicYears', 'majors', 'teachers', 'schoolSessions'));
     }
 
     public function update(SchoolClassRequest $request, SchoolClass $class)

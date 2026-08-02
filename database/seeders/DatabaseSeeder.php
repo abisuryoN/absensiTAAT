@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             // Foundational
             RoleSeeder::class,
             SettingSeeder::class,
+            SchoolSessionSeeder::class,  // ← sesi pagi & siang + default session setting
             WhatsappTemplateSeeder::class,
             SchoolProfileSeeder::class,
 

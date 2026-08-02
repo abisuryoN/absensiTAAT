@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class AttendanceSubjectService
 {
+    public function __construct(protected DateTimeService $dateTimeService) {}
     /**
      * Get active academic year and semester.
      */
@@ -41,7 +42,7 @@ class AttendanceSubjectService
             return collect();
         }
 
-        $dayName = strtolower(Carbon::now()->translatedFormat('l'));
+        $dayName = strtolower($this->dateTimeService->now()->translatedFormat('l'));
 
         return Schedule::with(['subject', 'class'])
             ->where('teacher_id', $teacher->id)

@@ -104,6 +104,26 @@
                             </div>
                         </div>
 
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="school_session_id" class="form-label fw-semibold">Override Sesi Sekolah</label>
+                                <div class="custom-select-wrapper" data-placeholder="Pilih Sesi Override (Opsional)">
+                                <select name="school_session_id" id="school_session_id" class="form-select @error('school_session_id') is-invalid @enderror">
+                                    <option value="">Gunakan Mapping Default / Tingkat</option>
+                                    @foreach($schoolSessions as $session)
+                                        <option value="{{ $session->id }}" {{ old('school_session_id', $class->school_session_id) == $session->id ? 'selected' : '' }}>
+                                            {{ $session->name }} ({{ substr($session->school_start_time, 0, 5) }} - {{ substr($session->school_end_time, 0, 5) }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                </div>
+                                <div class="form-text fs-8 mt-1 text-muted">Gunakan ini hanya jika kelas ini memiliki sesi berbeda dari tingkatannya.</div>
+                                @error('school_session_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <div class="mb-4">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $class->is_active) ? 'checked' : '' }}>

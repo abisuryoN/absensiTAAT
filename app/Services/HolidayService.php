@@ -12,10 +12,12 @@ use Illuminate\Support\Facades\DB;
 class HolidayService
 {
     protected LiburApiService $liburApiService;
+    protected DateTimeService $dateTimeService;
 
-    public function __construct(LiburApiService $liburApiService)
+    public function __construct(LiburApiService $liburApiService, DateTimeService $dateTimeService)
     {
-        $this->liburApiService = $liburApiService;
+        $this->liburApiService  = $liburApiService;
+        $this->dateTimeService  = $dateTimeService;
     }
 
     // =========================================================================
@@ -78,8 +80,8 @@ class HolidayService
         if ($date) {
             Cache::forget("holiday_{$date->format('Y-m-d')}");
         } else {
-            // Clear cache untuk 365 hari ke depan & belakang dari hari ini
-            $today = Carbon::today();
+            // Clear cache for 365 days around today (using simulated today)
+            $today = $this->dateTimeService->today();
             for ($i = -365; $i <= 365; $i++) {
                 Cache::forget("holiday_{$today->copy()->addDays($i)->format('Y-m-d')}");
             }

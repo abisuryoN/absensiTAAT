@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class SchoolClass extends Model
 {
@@ -23,6 +24,7 @@ class SchoolClass extends Model
         'capacity',
         'homeroom_teacher_id',
         'is_active',
+        'school_session_id',
     ];
 
     protected $casts = [
@@ -54,5 +56,14 @@ class SchoolClass extends Model
     public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class, 'class_id');
+    }
+
+    /**
+     * Explicit session override for this class (nullable).
+     * If null → use grade-level mapping or default session.
+     */
+    public function schoolSession(): BelongsTo
+    {
+        return $this->belongsTo(SchoolSession::class);
     }
 }

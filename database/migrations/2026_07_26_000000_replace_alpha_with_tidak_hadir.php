@@ -15,6 +15,15 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // SQLite (used in tests) does not support MODIFY COLUMN or ENUM types.
+        // The initial schema already creates the correct column type for SQLite.
+        if (DB::getDriverName() === 'sqlite') {
+            // Just data-fix: update any stale 'alpha' rows
+            DB::statement("UPDATE attendance_gates SET status = 'tidak_hadir' WHERE status = 'alpha'");
+            DB::statement("UPDATE attendance_subject_details SET status = 'tidak_hadir' WHERE status = 'alpha'");
+            return;
+        }
+
         // ----------------------------------------------------------------
         // attendance_gates table
         // ----------------------------------------------------------------

@@ -118,6 +118,21 @@
                         <h5 class="fw-bold text-primary mb-3">Penempatan & Akun</h5>
 
                         <div class="mb-3">
+                            <label for="class_id" class="form-label fw-semibold">Kelas <span class="text-danger">*</span></label>
+                            <div class="custom-select-wrapper" data-placeholder="Pilih Kelas">
+                                <select name="class_id" id="class_id" class="form-select @error('class_id') is-invalid @enderror" required>
+                                    <option value="">Pilih Kelas</option>
+                                    @foreach($classes as $class)
+                                        <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @error('class_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label fw-semibold">Orang Tua / Wali</label>
                             <input type="hidden" name="parent_id" id="parent_id" value="{{ old('parent_id') }}">
 

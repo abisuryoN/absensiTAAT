@@ -1,7 +1,9 @@
 <x-app-layout>
     @section('title', 'Dashboard Super Admin')
 
-    
+    {{-- Simulation mode banner --}}
+    <x-simulation-banner />
+
     <div class="d-flex align-items-center gap-3 mb-4">
         <div class="bg-dark bg-opacity-10 text-dark rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background-color: #334155 !important;">
             <i class="bi bi-eye-slash text-white fs-5"></i>

@@ -15,6 +15,25 @@
                 </span>
             </div>
 
+            {{-- Simulation Badge (admin only, when simulation is active) --}}
+            @if(auth()->user()?->hasAnyRole(['super_admin', 'admin']) && app(\App\Services\DateTimeService::class)->isSimulationEnabled())
+                <a href="{{ route('admin.settings.index') }}"
+                   class="badge bg-warning text-dark text-decoration-none d-none d-md-flex align-items-center gap-1 px-3 py-2 fs-8 fw-bold"
+                   style="animation: simPulse 2s infinite; border-radius: 999px;"
+                   title="Simulasi aktif — klik untuk ke pengaturan">
+                    ⚡ SIMULASI
+                    <span class="fw-normal ms-1">
+                        {{ app(\App\Services\DateTimeService::class)->now()->format('d M H:i') }}
+                    </span>
+                </a>
+                <style>
+                    @keyframes simPulse {
+                        0%,100% { box-shadow: 0 0 0 0 rgba(251,191,36,0.5); }
+                        50%      { box-shadow: 0 0 0 6px rgba(251,191,36,0); }
+                    }
+                </style>
+            @endif
+
             <!-- Profile Dropdown -->
             <div class="dropdown">
                 <button class="btn btn-link text-decoration-none dropdown-toggle p-0 d-flex align-items-center gap-2" type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">

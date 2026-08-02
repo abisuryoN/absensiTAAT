@@ -21,6 +21,7 @@ class SchoolClassRequest extends FormRequest
             'capacity' => 'required|integer|min:1|max:100',
             'homeroom_teacher_id' => 'nullable|exists:teachers,id',
             'is_active' => 'nullable|boolean',
+            'school_session_id' => 'nullable|exists:school_sessions,id',
         ];
     }
 

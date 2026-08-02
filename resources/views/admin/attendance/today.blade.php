@@ -1,6 +1,9 @@
 <x-app-layout>
     @section('title', 'Rekap Absensi Hari Ini')
 
+    {{-- Simulation mode banner --}}
+    <x-simulation-banner />
+
     {{-- STAT CARDS --}}
     <div class="row g-3 mb-4 stat-cards-row">
         <div class="col-6 col-md-2">

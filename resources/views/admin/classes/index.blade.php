@@ -1,6 +1,9 @@
 <x-app-layout>
     @section('title', 'Data Kelas')
 
+    {{-- Simulation mode banner --}}
+    <x-simulation-banner />
+
     <div class="row mb-4 align-items-center">
         <div class="col">
             <h3 class="fw-bold tracking-tight text-dark mb-1">
@@ -67,6 +70,7 @@
                         <tr>
                             <th>Tingkat</th>
                             <th>Nama Kelas</th>
+                            <th>Sesi</th>
                             <th>Jurusan</th>
                             <th>Tahun Ajaran</th>
                             <th>Wali Kelas</th>
@@ -80,6 +84,24 @@
                             <tr>
                                 <td data-label="Tingkat"><span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold">Kelas {{ $class->grade_level }}</span></td>
                                 <td data-label="Nama Kelas" class="fw-semibold text-dark">{{ $class->name }}</td>
+                                <td data-label="Sesi">
+                                    @if($class->schoolSession)
+                                        <span class="badge bg-warning-subtle text-warning border px-2 py-1 fw-bold fs-8" title="Override Sesi Kelas">
+                                            ⚡ {{ $class->schoolSession->name }} (Override)
+                                        </span>
+                                    @else
+                                        @php
+                                            $resolvedSess = app(\App\Services\SchoolSessionResolverService::class)->resolveForGrade($class->grade_level);
+                                        @endphp
+                                        @if($resolvedSess)
+                                            <span class="badge bg-primary-subtle text-primary border px-2 py-1 fw-bold fs-8">
+                                                {{ $resolvedSess->name }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted fs-8">-</span>
+                                        @endif
+                                    @endif
+                                </td>
                                 <td data-label="Jurusan">{{ $class->major->code }}</td>
                                 <td data-label="Tahun Ajaran">{{ $class->academicYear->name }}</td>
                                 <td data-label="Wali Kelas">{{ $class->homeroomTeacher ? $class->homeroomTeacher->name : '-' }}</td>

@@ -48,27 +48,45 @@ class AttendanceGateTest extends TestCase
         $class = SchoolClass::create(['academic_year_id' => $year->id, 'major_id' => $major->id, 'grade_level' => 10, 'name' => 'X RPL 1', 'capacity' => 36, 'is_active' => true]);
 
         // Create Parent & Student
-        $parent = StudentParent::create(['name' => 'Bapak Budi', 'phone' => '08123456789', 'relationship' => 'Ayah']);
+        $parent = StudentParent::create([
+            'name'         => 'Bapak Budi',
+            'phone'        => '08123456789',
+            'nik'          => '3201234567890001',
+            'relationship' => 'Ayah',
+        ]);
         $studentUser = User::factory()->create(['is_active' => true]);
         $studentUser->assignRole('siswa');
 
         $this->student = Student::create([
-            'user_id' => $studentUser->id,
-            'parent_id' => $parent->id,
-            'class_id' => $class->id,
-            'nis' => '12345',
-            'name' => 'Andi Siswa',
-            'gender' => 'L',
+            'user_id'    => $studentUser->id,
+            'parent_id'  => $parent->id,
+            'class_id'   => $class->id,
+            'nis'        => '12345',
+            'name'       => 'Andi Siswa',
+            'gender'     => 'L',
             'barcode_id' => 'ANDI-12345',
-            'is_active' => true,
+            'is_active'  => true,
         ]);
 
-        $this->service = new AttendanceGateService();
+        // Use Laravel container so constructor DI is resolved automatically
+        $this->service = app(AttendanceGateService::class);
+
+        // Mock HolidayService so tests are day-of-week agnostic
+        // (real HolidayService would flag weekends as holidays)
+        $mockHoliday = $this->createMock(\App\Services\HolidayService::class);
+        $mockHoliday->method('isHoliday')->willReturn(['is_holiday' => false, 'reason' => null]);
+        $mockHoliday->method('isHolidayDate')->willReturn(false);
+        $this->app->instance(\App\Services\HolidayService::class, $mockHoliday);
+        // Re-resolve service with mocked holiday service
+        $this->service = app(AttendanceGateService::class);
 
         // Standard configuration seeding
-        Setting::updateOrCreate(['key' => 'school_start_time'], ['group' => 'attendance', 'value' => '06:30', 'type' => 'string']);
-        Setting::updateOrCreate(['key' => 'late_threshold_minutes'], ['group' => 'attendance', 'value' => '15', 'type' => 'integer']);
-        Setting::updateOrCreate(['key' => 'whatsapp_enabled'], ['group' => 'whatsapp', 'value' => 'true', 'type' => 'boolean']);
+        Setting::updateOrCreate(['key' => 'school_start_time'],        ['group' => 'attendance', 'value' => '06:30', 'type' => 'string']);
+        Setting::updateOrCreate(['key' => 'late_threshold_minutes'],    ['group' => 'attendance', 'value' => '15',    'type' => 'integer']);
+        Setting::updateOrCreate(['key' => 'whatsapp_enabled'],          ['group' => 'whatsapp',   'value' => 'true',  'type' => 'boolean']);
+        Setting::updateOrCreate(['key' => 'simulation_enabled'],        ['group' => 'simulation', 'value' => 'false', 'type' => 'boolean']);
+        Setting::updateOrCreate(['key' => 'multiple_sessions_enabled'], ['group' => 'session',    'value' => 'false', 'type' => 'boolean']);
+        Setting::updateOrCreate(['key' => 'auto_alpha_time'],           ['group' => 'attendance', 'value' => '23:00', 'type' => 'string']);
     }
 
     public function test_barcode_scan_records_attendance_and_dispatches_notification(): void
@@ -103,16 +121,15 @@ class AttendanceGateTest extends TestCase
 
     public function test_cannot_scan_on_holidays(): void
     {
-        // Add holiday for today
-        Holiday::create([
-            'academic_year_id' => AcademicYear::active()->first()->id,
-            'name' => 'Hari Libur Uji Coba',
-            'date' => Carbon::today()->format('Y-m-d'),
-            'type' => 'national',
-        ]);
+        // Override the global mock to return a holiday for today
+        $holidayMock = $this->createMock(\App\Services\HolidayService::class);
+        $holidayMock->method('isHoliday')->willReturn(['is_holiday' => true, 'reason' => 'Hari Libur Uji Coba']);
+        $holidayMock->method('isHolidayDate')->willReturn(true);
+        $this->app->instance(\App\Services\HolidayService::class, $holidayMock);
+        $this->service = app(AttendanceGateService::class);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage("adalah hari libur sekolah");
+        $this->expectExceptionMessage("hari libur");
 
         $this->service->processBarcodeScan('ANDI-12345', $this->admin->id);
     }
@@ -135,9 +152,9 @@ class AttendanceGateTest extends TestCase
         $token = 'random-dynamic-hex-token-32-bytes-long';
         $qrToken = QrToken::create([
             'student_id' => $this->student->id,
-            'token' => $token,
-            'expires_at' => Carbon::now()->addSeconds(30),
-            'is_used' => false,
+            'token'      => $token,
+            'expires_at' => app(\App\Services\DateTimeService::class)->now()->addSeconds(30),
+            'is_used'    => false,
         ]);
 
         $attendance = $this->service->processQrScan($token, $this->admin->id);
@@ -156,13 +173,20 @@ class AttendanceGateTest extends TestCase
 
     public function test_auto_alpha_scheduler_marks_missing_students(): void
     {
-        // Total active students: 1 (this->student). Currently no attendance gate records.
+        // Total active students: 1 (this->student). auto_alpha_time = 23:00 so set sim time past it.
+        // In single-session mode auto_alpha_time is read from settings (23:00).
+        // We set simulation to 23:01 to trigger auto-alpha.
+        Setting::updateOrCreate(['key' => 'simulation_enabled'], ['group' => 'simulation', 'value' => 'true',  'type' => 'boolean']);
+        Setting::updateOrCreate(['key' => 'simulation_date'],    ['group' => 'simulation', 'value' => '2026-08-02', 'type' => 'string']);
+        Setting::updateOrCreate(['key' => 'simulation_time'],    ['group' => 'simulation', 'value' => '23:01', 'type' => 'string']);
+        \App\Services\DateTimeService::clearCache();
+
         $count = $this->service->markAbsentStudents();
 
         $this->assertEquals(1, $count);
         $this->assertDatabaseHas('attendance_gates', [
             'student_id' => $this->student->id,
-            'status' => 'alpha',
+            'status' => 'tidak_hadir',
         ]);
     }
 }

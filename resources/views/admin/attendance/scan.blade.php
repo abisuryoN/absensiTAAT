@@ -450,7 +450,6 @@
     </style>
 
     <div class="container-fluid px-2 px-sm-3 scan-container py-3">
-        <!-- Header -->
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h5 class="mb-0 fw-bold"><i class="bi bi-qr-code-scan me-2"></i>Absensi Gerbang</h5>
             <div class="d-flex align-items-center gap-2">
@@ -458,6 +457,8 @@
                     <div id="liveDate" class="fw-semibold"></div>
                     <div id="liveTime" class="fw-bold" style="font-size: 1.2rem;"></div>
                 </div>
+                {{-- Compact simulation badge --}}
+                <x-simulation-banner :compact="true" />
             </div>
         </div>
 

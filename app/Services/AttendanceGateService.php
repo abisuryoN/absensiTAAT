@@ -3,29 +3,33 @@
 namespace App\Services;
 
 use App\Models\AcademicYear;
-use App\Models\Semester;
-use App\Models\Student;
 use App\Models\AttendanceGate;
 use App\Models\QrToken;
+use App\Models\SchoolSession;
+use App\Models\Semester;
 use App\Models\Setting;
+use App\Models\Student;
 use App\Jobs\SendWhatsAppNotificationJob;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class AttendanceGateService
 {
-    protected HolidayService $holidayService;
+    public function __construct(
+        protected HolidayService              $holidayService,
+        protected DateTimeService             $dateTimeService,
+        protected SchoolSessionResolverService $sessionResolver,
+    ) {}
 
-    public function __construct(HolidayService $holidayService)
-    {
-        $this->holidayService = $holidayService;
-    }
+    // =========================================================================
+    // BARCODE SCAN
+    // =========================================================================
 
-    /**
-     * Process barcode scanning.
-     */
-    public function processBarcodeScan(string $barcodeValue, ?int $scannedBy = null, ?int $petugasPiketId = null): AttendanceGate
-    {
+    public function processBarcodeScan(
+        string $barcodeValue,
+        ?int   $scannedBy      = null,
+        ?int   $petugasPiketId = null
+    ): AttendanceGate {
         return DB::transaction(function () use ($barcodeValue, $scannedBy, $petugasPiketId) {
             $student = Student::where('barcode_id', $barcodeValue)->first();
 
@@ -33,67 +37,23 @@ class AttendanceGateService
                 throw new \Exception("Barcode ID '{$barcodeValue}' tidak terdaftar.");
             }
 
-            if (!$student->is_active) {
-                throw new \Exception("Siswa {$student->name} berstatus tidak aktif.");
-            }
-
-            $today = Carbon::today()->format('Y-m-d');
-            if ($this->checkAlreadyScanned($student->id, $today)) {
-                throw new \Exception("Siswa {$student->name} sudah melakukan absensi hari ini.");
-            }
-
-            // Check if today is holiday via centralized HolidayService
-            $holidayCheck = $this->holidayService->isHoliday(Carbon::today());
-            if ($holidayCheck['is_holiday']) {
-                throw new \Exception("Hari ini adalah hari libur ({$holidayCheck['reason']}). Absensi tidak dapat dilakukan.");
-            }
-
-            $academicYear = AcademicYear::active()->first();
-            $semester     = Semester::active()->first();
-
-            if (!$academicYear || !$semester) {
-                throw new \Exception("Tahun ajaran atau semester aktif tidak ditemukan.");
-            }
-
-            $timeIn = Carbon::now()->format('H:i:s');
-            $status = $this->getStatusByTime($timeIn);
-
-            $attendance = AttendanceGate::create([
-                'student_id'       => $student->id,
-                'academic_year_id' => $academicYear->id,
-                'semester_id'      => $semester->id,
-                'date'             => $today,
-                'time_in'          => $timeIn,
-                'status'           => $status,
-                'method'           => 'barcode',
-                'scanned_by'       => $scannedBy,
-                'petugas_piket_id' => $petugasPiketId,
-            ]);
-
-            // Dispatch notification to parents via queue job
-            if (Setting::getVal('whatsapp_enabled', false)) {
-                SendWhatsAppNotificationJob::dispatch($attendance);
-            }
-
-            ActivityLogService::log(
-                'scan',
-                "Absensi Gerbang (Barcode): {$student->name} status {$status}",
-                $attendance
-            );
-
-            return $attendance;
+            return $this->createAttendance($student, 'barcode', $scannedBy, $petugasPiketId);
         });
     }
 
-    /**
-     * Process QR Token scanning.
-     */
-    public function processQrScan(string $token, ?int $scannedBy = null, ?int $petugasPiketId = null): AttendanceGate
-    {
+    // =========================================================================
+    // QR SCAN
+    // =========================================================================
+
+    public function processQrScan(
+        string $token,
+        ?int   $scannedBy      = null,
+        ?int   $petugasPiketId = null
+    ): AttendanceGate {
         return DB::transaction(function () use ($token, $scannedBy, $petugasPiketId) {
             $qrToken = QrToken::where('token', $token)
                 ->where('is_used', false)
-                ->where('expires_at', '>', Carbon::now())
+                ->where('expires_at', '>', $this->dateTimeService->now())
                 ->first();
 
             if (!$qrToken) {
@@ -102,69 +62,26 @@ class AttendanceGateService
 
             $student = $qrToken->student;
 
-            if (!$student->is_active) {
-                throw new \Exception("Siswa {$student->name} berstatus tidak aktif.");
-            }
-
-            $today = Carbon::today()->format('Y-m-d');
-            if ($this->checkAlreadyScanned($student->id, $today)) {
-                throw new \Exception("Siswa {$student->name} sudah melakukan absensi hari ini.");
-            }
-
-            // Check if today is holiday via centralized HolidayService
-            $holidayCheck = $this->holidayService->isHoliday(Carbon::today());
-            if ($holidayCheck['is_holiday']) {
-                throw new \Exception("Hari ini adalah hari libur ({$holidayCheck['reason']}). Absensi tidak dapat dilakukan.");
-            }
-
-            $academicYear = AcademicYear::active()->first();
-            $semester     = Semester::active()->first();
-
-            if (!$academicYear || !$semester) {
-                throw new \Exception("Tahun ajaran atau semester aktif tidak ditemukan.");
-            }
-
             // Mark token as used
             $qrToken->update([
                 'is_used' => true,
-                'used_at' => Carbon::now(),
+                'used_at' => $this->dateTimeService->now(),
             ]);
 
-            $timeIn = Carbon::now()->format('H:i:s');
-            $status = $this->getStatusByTime($timeIn);
-
-            $attendance = AttendanceGate::create([
-                'student_id'       => $student->id,
-                'academic_year_id' => $academicYear->id,
-                'semester_id'      => $semester->id,
-                'date'             => $today,
-                'time_in'          => $timeIn,
-                'status'           => $status,
-                'method'           => 'qr_code',
-                'scanned_by'       => $scannedBy,
-                'petugas_piket_id' => $petugasPiketId,
-            ]);
-
-            // Dispatch notification to parents
-            if (Setting::getVal('whatsapp_enabled', false)) {
-                SendWhatsAppNotificationJob::dispatch($attendance);
-            }
-
-            ActivityLogService::log(
-                'scan',
-                "Absensi Gerbang (QR): {$student->name} status {$status}",
-                $attendance
-            );
-
-            return $attendance;
+            return $this->createAttendance($student, 'qr_code', $scannedBy, $petugasPiketId);
         });
     }
 
-    /**
-     * Record manual attendance (e.g. from office).
-     */
-    public function manualAttendance(int $studentId, string $status, ?string $note = null, ?int $scannedBy = null): AttendanceGate
-    {
+    // =========================================================================
+    // MANUAL ATTENDANCE
+    // =========================================================================
+
+    public function manualAttendance(
+        int     $studentId,
+        string  $status,
+        ?string $note      = null,
+        ?int    $scannedBy = null
+    ): AttendanceGate {
         return DB::transaction(function () use ($studentId, $status, $note, $scannedBy) {
             $student = Student::findOrFail($studentId);
 
@@ -172,19 +89,13 @@ class AttendanceGateService
                 throw new \Exception("Siswa {$student->name} berstatus tidak aktif.");
             }
 
-            $today = Carbon::today()->format('Y-m-d');
+            $today = $this->dateTimeService->currentDate();
 
-            // Check if already scanned, update if exists, otherwise create
+            [$academicYear, $semester] = $this->getActiveContext();
+
             $attendance = AttendanceGate::where('student_id', $studentId)
                 ->where('date', $today)
                 ->first();
-
-            $academicYear = AcademicYear::active()->first();
-            $semester     = Semester::active()->first();
-
-            if (!$academicYear || !$semester) {
-                throw new \Exception("Tahun ajaran atau semester aktif tidak ditemukan.");
-            }
 
             if ($attendance) {
                 $original = $attendance->getAttributes();
@@ -201,7 +112,7 @@ class AttendanceGateService
                     'academic_year_id' => $academicYear->id,
                     'semester_id'      => $semester->id,
                     'date'             => $today,
-                    'time_in'          => Carbon::now()->format('H:i:s'),
+                    'time_in'          => $this->dateTimeService->currentTime(),
                     'status'           => $status,
                     'method'           => 'manual',
                     'note'             => $note,
@@ -210,7 +121,6 @@ class AttendanceGateService
                 ActivityLogService::logCreate($attendance, "Absensi Gerbang Manual: {$student->name} status {$status}");
             }
 
-            // Send notification to parents
             if (Setting::getVal('whatsapp_enabled', false)) {
                 SendWhatsAppNotificationJob::dispatch($attendance);
             }
@@ -219,71 +129,124 @@ class AttendanceGateService
         });
     }
 
-    /**
-     * Determine status by scan time.
-     */
-    public function getStatusByTime(string $timeIn): string
-    {
-        $startTime = Setting::getVal('school_start_time', '06:30');
-        $threshold = (int) Setting::getVal('late_threshold_minutes', 15);
+    // =========================================================================
+    // STATUS CALCULATION
+    // =========================================================================
 
-        $limitTime = Carbon::createFromFormat('H:i', $startTime)->addMinutes($threshold);
+    /**
+     * Determine attendance status by scan time and session config.
+     * Session may be null when multiple_sessions is disabled (use global settings).
+     */
+    public function getStatusByTime(string $timeIn, ?SchoolSession $session = null): string
+    {
+        if ($session) {
+            $startTime = $session->school_start_time;
+            $threshold = $session->late_threshold_minutes;
+        } else {
+            $startTime = Setting::getVal('school_start_time', '06:30');
+            $threshold = (int) Setting::getVal('late_threshold_minutes', 15);
+        }
+
+        $limitTime = Carbon::createFromFormat('H:i', substr($startTime, 0, 5))->addMinutes($threshold);
         $scanTime  = Carbon::createFromFormat('H:i:s', $timeIn);
 
         return $scanTime->greaterThan($limitTime) ? 'terlambat' : 'hadir';
     }
 
-    /**
-     * Check if student has already scanned today.
-     */
-    public function checkAlreadyScanned(int $studentId, string $date): bool
-    {
-        $start = Carbon::parse($date)->startOfDay();
-        $end   = Carbon::parse($date)->endOfDay();
-        return AttendanceGate::where('student_id', $studentId)
-            ->whereBetween('date', [$start, $end])
-            ->exists();
-    }
+    // =========================================================================
+    // GATE WINDOW CHECK
+    // =========================================================================
 
     /**
-     * Check if date is holiday — delegates to HolidayService (backward compat).
+     * Validate whether scanning is allowed at the current time for a session.
+     * Returns ['allowed' => bool, 'message' => string|null].
      */
-    public function checkHoliday(string $date): bool
+    public function validateGateWindow(?SchoolSession $session): array
     {
-        return $this->holidayService->isHolidayDate(Carbon::parse($date));
+        if (!$session || !$this->dateTimeService->isMultipleSessionsEnabled()) {
+            return ['allowed' => true, 'message' => null];
+        }
+
+        $now       = $this->dateTimeService->now();
+        $gateOpen  = Carbon::createFromFormat('H:i', substr($session->gate_open_time, 0, 5));
+        $schoolEnd = Carbon::createFromFormat('H:i', substr($session->school_end_time, 0, 5));
+
+        if ($now->lt($gateOpen)) {
+            return [
+                'allowed' => false,
+                'message' => "Gerbang sesi {$session->name} belum dibuka. Dibuka pukul " . substr($session->gate_open_time, 0, 5) . ".",
+            ];
+        }
+
+        if ($now->gt($schoolEnd)) {
+            return [
+                'allowed' => false,
+                'message' => "Sesi {$session->name} telah berakhir pukul " . substr($session->school_end_time, 0, 5) . ".",
+            ];
+        }
+
+        return ['allowed' => true, 'message' => null];
     }
 
+    // =========================================================================
+    // AUTO ALPHA (TIDAK HADIR)
+    // =========================================================================
+
     /**
-     * Mark active students who haven't scanned today as Tidak Hadir.
+     * Mark students without attendance today as tidak_hadir.
+     * When multi-session is enabled, only marks students whose session's
+     * auto_alpha_time has already passed.
      */
     public function markAbsentStudents(?string $date = null): int
     {
-        $targetDate = $date ?? Carbon::today()->format('Y-m-d');
+        $targetDate = $date ?? $this->dateTimeService->currentDate();
 
-        if ($this->holidayService->isHolidayDate(Carbon::parse($targetDate))) {
-            return 0; // Don't run on holidays
+        // Skip holidays
+        if ($this->holidayService->isHolidayDate($this->dateTimeService->today())) {
+            return 0;
         }
 
-        $academicYear = AcademicYear::active()->first();
-        $semester     = Semester::active()->first();
-
+        [$academicYear, $semester] = $this->getActiveContext();
         if (!$academicYear || !$semester) {
             return 0;
         }
 
         return DB::transaction(function () use ($targetDate, $academicYear, $semester) {
-            // Find all active students who don't have gate attendance for this date
+            $multiSession = $this->dateTimeService->isMultipleSessionsEnabled();
+            $now          = $this->dateTimeService->now();
+
             $studentsWithoutAttendance = Student::where('is_active', true)
+                ->with(['schoolClass.schoolSession'])
                 ->whereNotExists(function ($query) use ($targetDate) {
+                    $start = Carbon::parse($targetDate)->startOfDay();
+                    $end   = Carbon::parse($targetDate)->endOfDay();
                     $query->select(DB::raw(1))
                         ->from('attendance_gates')
                         ->whereColumn('attendance_gates.student_id', 'students.id')
-                        ->where('attendance_gates.date', $targetDate);
+                        ->whereBetween('attendance_gates.date', [$start, $end]);
                 })
                 ->get();
 
             $count = 0;
+
             foreach ($studentsWithoutAttendance as $student) {
+                // If multi-session: only mark alpha if session's auto_alpha_time has passed
+                if ($multiSession) {
+                    $session = $this->sessionResolver->resolve($student);
+                    if ($session) {
+                        $autoAlpha = Carbon::createFromFormat('H:i', substr($session->auto_alpha_time, 0, 5));
+                        if ($now->lt($autoAlpha)) {
+                            continue; // Session not yet past auto-alpha time
+                        }
+                    }
+                } else {
+                    $autoAlphaStr = Setting::getVal('auto_alpha_time', '23:00');
+                    $autoAlpha    = Carbon::createFromFormat('H:i', substr($autoAlphaStr, 0, 5));
+                    if ($now->lt($autoAlpha)) {
+                        continue;
+                    }
+                }
+
                 AttendanceGate::create([
                     'student_id'       => $student->id,
                     'academic_year_id' => $academicYear->id,
@@ -299,12 +262,107 @@ class AttendanceGateService
             if ($count > 0) {
                 ActivityLogService::log(
                     'system',
-                    "Auto-mark Tidak Hadir: {$count} siswa ditandai Tidak Hadir pada tanggal {$targetDate}",
+                    "Auto-mark Tidak Hadir: {$count} siswa ditandai pada tanggal {$targetDate}",
                     null
                 );
             }
 
             return $count;
         });
+    }
+
+    // =========================================================================
+    // HELPERS
+    // =========================================================================
+
+    public function checkAlreadyScanned(int $studentId, string $date): bool
+    {
+        $start = Carbon::parse($date)->startOfDay();
+        $end   = Carbon::parse($date)->endOfDay();
+        return AttendanceGate::where('student_id', $studentId)
+            ->whereBetween('date', [$start, $end])
+            ->exists();
+    }
+
+    public function checkHoliday(string $date): bool
+    {
+        return $this->holidayService->isHolidayDate(Carbon::parse($date));
+    }
+
+    // ── Private helpers ───────────────────────────────────────────────────────
+
+    protected function createAttendance(
+        Student $student,
+        string  $method,
+        ?int    $scannedBy,
+        ?int    $petugasPiketId
+    ): AttendanceGate {
+        if (!$student->is_active) {
+            throw new \Exception("Siswa {$student->name} berstatus tidak aktif.");
+        }
+
+        $today = $this->dateTimeService->currentDate();
+
+        if ($this->checkAlreadyScanned($student->id, $today)) {
+            throw new \Exception("Siswa {$student->name} sudah melakukan absensi hari ini.");
+        }
+
+        // Holiday check uses simulated date via HolidayService
+        $holidayCheck = $this->holidayService->isHoliday($this->dateTimeService->today());
+        if ($holidayCheck['is_holiday']) {
+            throw new \Exception("Hari ini adalah hari libur ({$holidayCheck['reason']}). Absensi tidak dapat dilakukan.");
+        }
+
+        [$academicYear, $semester] = $this->getActiveContext();
+
+        // Resolve session (multi-session mode aware)
+        $session = $this->dateTimeService->isMultipleSessionsEnabled()
+            ? $this->sessionResolver->resolve($student)
+            : null;
+
+        // Gate window validation
+        $gateCheck = $this->validateGateWindow($session);
+        if (!$gateCheck['allowed']) {
+            throw new \Exception($gateCheck['message']);
+        }
+
+        $timeIn = $this->dateTimeService->currentTime();
+        $status = $this->getStatusByTime($timeIn, $session);
+
+        $attendance = AttendanceGate::create([
+            'student_id'       => $student->id,
+            'academic_year_id' => $academicYear->id,
+            'semester_id'      => $semester->id,
+            'date'             => $today,
+            'time_in'          => $timeIn,
+            'status'           => $status,
+            'method'           => $method,
+            'scanned_by'       => $scannedBy,
+            'petugas_piket_id' => $petugasPiketId,
+        ]);
+
+        if (Setting::getVal('whatsapp_enabled', false)) {
+            SendWhatsAppNotificationJob::dispatch($attendance);
+        }
+
+        ActivityLogService::log(
+            'scan',
+            "Absensi Gerbang (" . strtoupper($method) . "): {$student->name} status {$status}",
+            $attendance
+        );
+
+        return $attendance;
+    }
+
+    protected function getActiveContext(): array
+    {
+        $academicYear = AcademicYear::active()->first();
+        $semester     = Semester::active()->first();
+
+        if (!$academicYear || !$semester) {
+            throw new \Exception("Tahun ajaran atau semester aktif tidak ditemukan.");
+        }
+
+        return [$academicYear, $semester];
     }
 }

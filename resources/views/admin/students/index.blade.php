@@ -112,6 +112,12 @@
                                 </td>
                                 <td data-label="Kelas">
                                     <span class="badge bg-light text-dark border px-2 py-1 fw-semibold fs-8">{{ $student->class->name ?? '-' }}</span>
+                                    @php
+                                        $sess = app(\App\Services\SchoolSessionResolverService::class)->resolve($student);
+                                    @endphp
+                                    @if($sess)
+                                        <span class="badge bg-primary-subtle text-primary border px-2 py-1 fw-bold fs-8 mt-1 d-block" style="width: fit-content;">{{ $sess->name }}</span>
+                                    @endif
                                 </td>
                                 <td data-label="Orang Tua">
                                     @if($student->parent)

@@ -13,11 +13,19 @@ use App\Exports\AttendanceSubjectExport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\ActivityLogService;
+use App\Services\DateTimeService;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
+    protected DateTimeService $dateTimeService;
+
+    public function __construct(\App\Services\DateTimeService $dateTimeService)
+    {
+        $this->dateTimeService = $dateTimeService;
+    }
+
     /**
      * Display reporting dashboard with preview list.
      */
@@ -27,8 +35,8 @@ class ReportController extends Controller
         $subjects = Subject::orderBy('name')->get();
 
         $reportType = $request->input('report_type', 'gate');
-        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
-        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
+        $startDate = $request->input('start_date', $this->dateTimeService->now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->input('end_date', $this->dateTimeService->now()->format('Y-m-d'));
 
         $previewData = collect();
 

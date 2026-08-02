@@ -40,6 +40,7 @@ class SchoolClassService
         return DB::transaction(function () use ($data) {
             $class = SchoolClass::create($data);
             ActivityLogService::logCreate($class, "Menambahkan Kelas: {$class->name}");
+            \App\Services\SchoolSessionResolverService::clearCache();
             return $class;
         });
     }
@@ -50,6 +51,7 @@ class SchoolClassService
             $original = $class->getAttributes();
             $class->update($data);
             ActivityLogService::logUpdate($class, $original, "Mengubah Kelas: {$class->name}");
+            \App\Services\SchoolSessionResolverService::clearCache();
             return $class;
         });
     }
@@ -65,6 +67,7 @@ class SchoolClassService
             }
             ActivityLogService::logDelete($class, "Menghapus Kelas: {$class->name}");
             $class->delete();
+            \App\Services\SchoolSessionResolverService::clearCache();
         });
     }
 }

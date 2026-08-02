@@ -75,7 +75,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 <button type="button" class="btn btn-primary" id="selectFromDetailBtn">
                     <i class="bi bi-check-lg me-1"></i> Pilih Ini
                 </button>

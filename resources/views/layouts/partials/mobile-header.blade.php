@@ -8,6 +8,15 @@
         <h1 class="mobile-header-title">{{ $title ?? 'Sistem Absensi' }}</h1>
     </div>
     <div class="mobile-header-right">
+        {{-- Simulation badge (admin only) --}}
+        @if(auth()->user()?->hasAnyRole(['super_admin', 'admin']) && app(\App\Services\DateTimeService::class)->isSimulationEnabled())
+            <a href="{{ route('admin.settings.index') }}"
+               class="badge bg-warning text-dark text-decoration-none fw-bold me-2"
+               style="font-size:.7rem; border-radius:999px; padding:4px 8px;">
+                ⚡ SIM
+            </a>
+        @endif
+
         {{-- Avatar with quick dropdown --}}
         <div class="mobile-avatar-wrapper dropdown">
             <button class="mobile-avatar-btn dropdown-toggle" type="button" id="mobileUserMenu" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu pengguna" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;">
