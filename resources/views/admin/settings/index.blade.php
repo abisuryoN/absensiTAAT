@@ -26,21 +26,69 @@
         .time-sequence-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .time-sequence-row .arrow { color: #6c757d; font-size: .8rem; }
 
+        /* ── Tab nav: card-style pill buttons ─────────────────── */
+        .tab-settings-nav {
+            flex-wrap: wrap;
+            gap: 8px !important;
+        }
+        .tab-settings-nav .nav-item {
+            flex: 0 0 auto;
+        }
         .tab-settings-nav .nav-link {
             border-radius: 10px;
-            padding: .6rem 1.1rem;
+            padding: .55rem 1.1rem;
             font-weight: 600;
-            color: #6c757d;
-            border: none;
-            transition: background .2s, color .2s;
+            font-size: .875rem;
+            color: #475569;
+            background: #fff;
+            border: 1.5px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,.07);
+            transition: background .2s, color .2s, border-color .2s, box-shadow .2s;
+            white-space: nowrap;
         }
         .tab-settings-nav .nav-link.active {
             background: var(--bs-primary);
             color: #fff;
+            border-color: var(--bs-primary);
+            box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb),.3);
         }
         .tab-settings-nav .nav-link:hover:not(.active) {
-            background: rgba(var(--bs-primary-rgb),.1);
+            background: rgba(var(--bs-primary-rgb),.07);
             color: var(--bs-primary);
+            border-color: rgba(var(--bs-primary-rgb),.3);
+            box-shadow: 0 2px 8px rgba(var(--bs-primary-rgb),.12);
+        }
+        /* Mobile: 2 per row */
+        @media (max-width: 575.98px) {
+            .tab-settings-nav {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px !important;
+            }
+            .tab-settings-nav .nav-item {
+                width: 100%;
+            }
+            .tab-settings-nav .nav-link {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+        /* Tablet: 3 per row */
+        @media (min-width: 576px) and (max-width: 767.98px) {
+            .tab-settings-nav {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px !important;
+            }
+            .tab-settings-nav .nav-item {
+                width: 100%;
+            }
+            .tab-settings-nav .nav-link {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
         }
 
         .grade-pill {
@@ -104,30 +152,30 @@
         <div class="col-lg-8">
 
             {{-- Tab navigation --}}
-            <ul class="nav tab-settings-nav mb-4 gap-1" id="settingsTabs">
+            <ul class="nav tab-settings-nav mb-4" id="settingsTabs">
                 <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-simulation" type="button">
-                        <i class="bi bi-clock-history me-1"></i> Simulasi
+                    <button class="nav-link d-flex align-items-center gap-1 active" data-bs-toggle="tab" data-bs-target="#tab-simulation" type="button">
+                        <i class="bi bi-clock-history"></i> Simulasi
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-sessions" type="button">
-                        <i class="bi bi-layers me-1"></i> Sesi Sekolah
+                    <button class="nav-link d-flex align-items-center gap-1" data-bs-toggle="tab" data-bs-target="#tab-sessions" type="button">
+                        <i class="bi bi-layers"></i> Sesi Sekolah
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-grade-mapping" type="button">
-                        <i class="bi bi-diagram-3 me-1"></i> Mapping Kelas
+                    <button class="nav-link d-flex align-items-center gap-1" data-bs-toggle="tab" data-bs-target="#tab-grade-mapping" type="button">
+                        <i class="bi bi-diagram-3"></i> Mapping Kelas
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-attendance" type="button">
-                        <i class="bi bi-clock me-1"></i> Absensi
+                    <button class="nav-link d-flex align-items-center gap-1" data-bs-toggle="tab" data-bs-target="#tab-attendance" type="button">
+                        <i class="bi bi-clock"></i> Absensi
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-qr" type="button">
-                        <i class="bi bi-qr-code me-1"></i> QR Code
+                    <button class="nav-link d-flex align-items-center gap-1" data-bs-toggle="tab" data-bs-target="#tab-qr" type="button">
+                        <i class="bi bi-qr-code"></i> QR Code
                     </button>
                 </li>
             </ul>
