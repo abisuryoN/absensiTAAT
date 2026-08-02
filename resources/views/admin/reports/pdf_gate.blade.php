@@ -5,78 +5,126 @@
     <title>Laporan Absensi Gerbang</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            font-size: 10pt;
-            color: #333;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 8.5pt;
+            color: #334155;
             line-height: 1.4;
+            background: #ffffff;
         }
         .header-table {
             width: 100%;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
+            border-bottom: 3px double #cbd5e1;
+            padding-bottom: 12px;
             margin-bottom: 20px;
         }
         .header-logo {
-            width: 80px;
+            width: 75px;
             text-align: left;
+            vertical-align: middle;
         }
         .header-text {
             text-align: center;
+            vertical-align: middle;
         }
         .header-text h2 {
             margin: 0;
-            font-size: 16pt;
+            font-size: 15pt;
+            font-weight: 800;
+            color: #1e293b;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .header-text p {
-            margin: 4px 0 0 0;
-            font-size: 9pt;
-            color: #666;
+            margin: 3px 0 0 0;
+            font-size: 8.5pt;
+            color: #64748b;
         }
         .report-title {
             text-align: center;
-            font-weight: bold;
-            font-size: 12pt;
+            font-weight: 800;
+            font-size: 11pt;
             text-transform: uppercase;
-            margin-bottom: 15px;
+            color: #0f172a;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
         }
         .meta-table {
             width: 100%;
-            margin-bottom: 15px;
-            font-size: 9pt;
+            margin-bottom: 18px;
+            font-size: 8.5pt;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
         }
         .meta-table td {
-            padding: 2px 0;
+            padding: 3px 0;
+            color: #475569;
         }
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 9pt;
-        }
-        .data-table th, .data-table td {
-            border: 1px solid #ddd;
-            padding: 8px 6px;
-            text-align: left;
+            margin-bottom: 25px;
+            font-size: 8.5pt;
         }
         .data-table th {
-            background-color: #f5f5f5;
-            font-weight: bold;
+            background-color: #1e293b;
+            color: #ffffff;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 7.5pt;
+            letter-spacing: 0.5px;
+            border: 1px solid #334155;
+            padding: 8px 6px;
+        }
+        .data-table td {
+            border: 1px solid #e2e8f0;
+            padding: 8px 6px;
+            color: #334155;
+        }
+        .data-table tr:nth-child(even) td {
+            background-color: #f8fafc;
         }
         .status-badge {
-            font-weight: bold;
+            display: inline-block;
+            font-weight: 700;
             text-transform: uppercase;
-            font-size: 8pt;
+            font-size: 7pt;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-align: center;
+            letter-spacing: 0.3px;
         }
-        .status-hadir { color: #155724; }
-        .status-terlambat { color: #856404; }
-        .status-izin { color: #0c5460; }
-        .status-sakit { color: #004085; }
-        .status-alpha { color: #721c24; }
+        .status-hadir {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .status-terlambat {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+        .status-izin {
+            background-color: #e0f2fe;
+            color: #075985;
+            border: 1px solid #bae6fd;
+        }
+        .status-sakit {
+            background-color: #eef2ff;
+            color: #3730a3;
+            border: 1px solid #c7d2fe;
+        }
+        .status-alpha {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
         .footer-table {
             width: 100%;
-            margin-top: 30px;
-            font-size: 9.5pt;
+            margin-top: 35px;
+            font-size: 9pt;
+            color: #334155;
         }
         .footer-sign {
             text-align: right;
@@ -159,7 +207,7 @@
                         {{ $row->time_in && $row->time_in !== '00:00:00' ? substr($row->time_in, 0, 5) : '-' }}
                     </td>
                     <td style="text-align: center;">
-                        <span class="status-badge status-{{ $row->status }}">{{ $row->status }}</span>
+                        <span class="status-badge status-{{ $row->status }}">{{ ucfirst(str_replace('_', ' ', $row->status)) }}</span>
                     </td>
                     <td>{{ ucfirst($row->method) }}</td>
                 </tr>

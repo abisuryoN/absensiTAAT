@@ -1,6 +1,56 @@
 <x-app-layout>
     @section('title', 'Laporan Absensi')
 
+    @push('head')
+    <style>
+        .btn-export-excel {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+            transition: all 0.25s ease !important;
+            font-weight: 600;
+        }
+        .btn-export-excel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35) !important;
+        }
+        .btn-export-excel:active {
+            transform: translateY(0);
+        }
+        .btn-export-pdf {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important;
+            transition: all 0.25s ease !important;
+            font-weight: 600;
+        }
+        .btn-export-pdf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35) !important;
+        }
+        .btn-export-pdf:active {
+            transform: translateY(0);
+        }
+
+        /* Uniform status badge styling for alignment */
+        .status-badge {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 105px;
+            padding: 6px 10px !important;
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            border-radius: 6px !important;
+            text-transform: capitalize;
+            text-align: center;
+        }
+    </style>
+    @endpush
+
     <div class="row g-4">
         <!-- Header -->
         <div class="col-12">
@@ -112,11 +162,11 @@
                         </h5>
                         <div class="d-flex align-items-center gap-2">
                             <!-- Excel Download -->
-                            <a href="{{ route('admin.reports.excel', request()->query()) }}" class="btn btn-sm btn-success rounded-3 px-3 fs-8">
+                            <a href="{{ route('admin.reports.excel', request()->query()) }}" class="btn btn-sm btn-export-excel rounded-3 px-3 fs-8">
                                 <i class="bi bi-file-earmark-excel me-1"></i>Ekspor Excel
                             </a>
                             <!-- PDF Download -->
-                            <a href="{{ route('admin.reports.pdf', request()->query()) }}" class="btn btn-sm btn-danger rounded-3 px-3 fs-8">
+                            <a href="{{ route('admin.reports.pdf', request()->query()) }}" class="btn btn-sm btn-export-pdf rounded-3 px-3 fs-8">
                                 <i class="bi bi-file-earmark-pdf me-1"></i>Ekspor PDF
                             </a>
                         </div>
@@ -195,8 +245,9 @@
                                                         @endif
                                                     </td>
                                                     <td data-label="Status">
-                                                        <span class="badge {{ $cfg['bg'] }} px-2 py-1 fs-9">
-                                                            <i class="bi {{ $cfg['icon'] }} me-1"></i>{{ ucfirst($row->status) }}
+                                                        <span class="badge {{ $cfg['bg'] }} status-badge">
+                                                            <i class="bi {{ $cfg['icon'] }}"></i>
+                                                            <span>{{ ucfirst(str_replace('_', ' ', $row->status)) }}</span>
                                                         </span>
                                                     </td>
                                                     <td data-label="Metode">
@@ -235,8 +286,9 @@
                                                         <span class="fs-7 text-dark">{{ $schedule->teacher->name ?? '-' }}</span>
                                                     </td>
                                                     <td data-label="Status">
-                                                        <span class="badge {{ $cfg['bg'] }} px-2 py-1 fs-9">
-                                                            <i class="bi {{ $cfg['icon'] }} me-1"></i>{{ ucfirst($row->status) }}
+                                                        <span class="badge {{ $cfg['bg'] }} status-badge">
+                                                            <i class="bi {{ $cfg['icon'] }}"></i>
+                                                            <span>{{ ucfirst(str_replace('_', ' ', $row->status)) }}</span>
                                                         </span>
                                                     </td>
                                                     <td data-label="Catatan">

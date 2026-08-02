@@ -104,13 +104,67 @@ class AttendanceGateExport implements FromCollection, WithHeadings, WithMapping,
 
     public function styles(Worksheet $sheet): array
     {
+        $lastRow = $sheet->getHighestRow();
+        $lastColumn = $sheet->getHighestColumn();
+        
+        // Set header row height
+        $sheet->getRowDimension(1)->setRowHeight(26);
+
+        // General cell alignment & borders
+        $range = 'A1:' . $lastColumn . $lastRow;
+        $sheet->getStyle($range)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)->getColor()->setARGB('FFE2E8F0');
+        $sheet->getStyle($range)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+        // Styling data rows
+        for ($row = 2; $row <= $lastRow; $row++) {
+            // Row height
+            $sheet->getRowDimension($row)->setRowHeight(20);
+
+            // Zebra striping
+            if ($row % 2 === 0) {
+                $sheet->getStyle("A{$row}:{$lastColumn}{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFF8FAFC');
+            }
+
+            // Alignment for specific columns
+            $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // No
+            $sheet->getStyle("B{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Tanggal
+            $sheet->getStyle("C{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Hari
+            $sheet->getStyle("D{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // NIS
+            $sheet->getStyle("F{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Kelas
+            $sheet->getStyle("H{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Jam Masuk
+            $sheet->getStyle("I{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Status
+            $sheet->getStyle("J{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Metode
+
+            // Color status cells
+            $statusVal = strtolower($sheet->getCell("I{$row}")->getValue() ?? '');
+            $statusStyle = $sheet->getStyle("I{$row}");
+            $statusStyle->getFont()->setBold(true);
+            
+            if (str_contains($statusVal, 'hadir') && !str_contains($statusVal, 'tidak')) {
+                $statusStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFD1FAE5');
+                $statusStyle->getFont()->getColor()->setARGB('FF065F46');
+            } elseif (str_contains($statusVal, 'terlambat')) {
+                $statusStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFEF3C7');
+                $statusStyle->getFont()->getColor()->setARGB('FF92400E');
+            } elseif (str_contains($statusVal, 'izin')) {
+                $statusStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFE0F2FE');
+                $statusStyle->getFont()->getColor()->setARGB('FF075985');
+            } elseif (str_contains($statusVal, 'sakit')) {
+                $statusStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFEEF2FF');
+                $statusStyle->getFont()->getColor()->setARGB('FF3730A3');
+            } elseif (str_contains($statusVal, 'alpha') || str_contains($statusVal, 'tidak hadir')) {
+                $statusStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFEE2E2');
+                $statusStyle->getFont()->getColor()->setARGB('FF991B1B');
+            }
+        }
+
         return [
             // Header row styling
             1 => [
-                'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+                'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF'], 'size' => 10],
                 'fill' => [
                     'fillType'   => Fill::FILL_SOLID,
-                    'startColor' => ['argb' => 'FF2563EB'],
+                    'startColor' => ['argb' => 'FF1E293B'], // Premium Dark Navy
                 ],
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER,
