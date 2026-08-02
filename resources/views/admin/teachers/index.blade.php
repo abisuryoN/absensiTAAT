@@ -390,6 +390,9 @@
             });
 
             window.openAvatarLightbox = function(src, name) {
+                // Clear previous image source immediately to prevent flashing the old image
+                img.removeAttribute('src');
+
                 let hdSrc = src;
                 if (hdSrc.includes('ui-avatars.com')) {
                     hdSrc = hdSrc.replace(/size=\d+/, 'size=512');
