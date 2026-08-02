@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Cache;
  *   3. Default session       (settings.default_school_session_id)
  *   4. First active session  (fallback)
  *
- * All DB reads are cached to avoid N+1 hits on every scan.
+ * Cache stores only IDs (integers), never Eloquent models, to prevent
+ * __PHP_Incomplete_Class deserialization errors after schema changes.
  */
 class SchoolSessionResolverService
 {
@@ -62,56 +63,63 @@ class SchoolSessionResolverService
 
     protected function getClassOverrideSession(int $classId): ?SchoolSession
     {
+        // Cache: map of class_id => school_session_id (integers only, no models)
         $overrides = Cache::remember('session.class_overrides', self::CACHE_TTL, function () {
-            // Load all classes that have an explicit session override
             return \App\Models\SchoolClass::whereNotNull('school_session_id')
-                ->with('schoolSession')
-                ->get()
-                ->keyBy('id')
-                ->map(fn ($c) => $c->schoolSession)
-                ->filter()
-                ->toArray();
+                ->pluck('school_session_id', 'id')
+                ->toArray(); // [class_id => session_id]
         });
 
-        return isset($overrides[$classId])
-            ? SchoolSession::find($overrides[$classId]['id'] ?? null)
+        $sessionId = $overrides[$classId] ?? null;
+
+        return $sessionId
+            ? SchoolSession::where('id', $sessionId)->where('is_active', true)->first()
             : null;
     }
 
     protected function getGradeMappingSession(int $gradeLevel): ?SchoolSession
     {
         $activeYearId = $this->getActiveAcademicYearId();
-        if (!$activeYearId) {
+        if (! $activeYearId) {
             return null;
         }
 
+        // Cache: map of grade_level => school_session_id (integers only, no models)
         $mappings = Cache::remember("session.grade_mappings.{$activeYearId}", self::CACHE_TTL, function () use ($activeYearId) {
             return GradeSessionSetting::where('academic_year_id', $activeYearId)
-                ->with('schoolSession')
-                ->get()
-                ->keyBy('grade_level')
-                ->map(fn ($g) => $g->schoolSession)
-                ->filter();
+                ->whereNotNull('school_session_id')
+                ->pluck('school_session_id', 'grade_level')
+                ->toArray(); // [grade_level => session_id]
         });
 
-        return $mappings->get($gradeLevel);
+        $sessionId = $mappings[$gradeLevel] ?? null;
+
+        return $sessionId
+            ? SchoolSession::where('id', $sessionId)->where('is_active', true)->first()
+            : null;
     }
 
     public function getDefaultSession(): ?SchoolSession
     {
-        return Cache::remember('session.default', self::CACHE_TTL, function () {
+        // Cache: only the session ID (integer), never the full model
+        $sessionId = Cache::remember('session.default_id', self::CACHE_TTL, function () {
             $defaultId = Setting::getVal('default_school_session_id');
             if ($defaultId) {
-                $session = SchoolSession::where('id', $defaultId)->where('is_active', true)->first();
-                if ($session) return $session;
+                $id = SchoolSession::where('id', $defaultId)
+                    ->where('is_active', true)
+                    ->value('id');
+                if ($id) return $id;
             }
-            // Fallback: first active session
-            return SchoolSession::where('is_active', true)->first();
+            // Fallback: first active session's ID
+            return SchoolSession::where('is_active', true)->value('id');
         });
+
+        return $sessionId ? SchoolSession::find($sessionId) : null;
     }
 
     protected function getActiveAcademicYearId(): ?int
     {
+        // Already caches an integer — safe from deserialization issues
         return Cache::remember('academic_year.active_id', self::CACHE_TTL, function () {
             return AcademicYear::active()->first()?->id;
         });
@@ -121,9 +129,19 @@ class SchoolSessionResolverService
 
     public function getAllActive(): \Illuminate\Support\Collection
     {
-        return Cache::remember('session.all_active', self::CACHE_TTL, function () {
-            return SchoolSession::where('is_active', true)->orderBy('gate_open_time')->get();
+        // Cache only IDs, fetch fresh models from DB
+        $ids = Cache::remember('session.all_active_ids', self::CACHE_TTL, function () {
+            return SchoolSession::where('is_active', true)
+                ->orderBy('gate_open_time')
+                ->pluck('id')
+                ->toArray();
         });
+
+        if (empty($ids)) {
+            return collect();
+        }
+
+        return SchoolSession::whereIn('id', $ids)->orderBy('gate_open_time')->get();
     }
 
     /**
@@ -132,16 +150,14 @@ class SchoolSessionResolverService
     public function getGradeMappings(): \Illuminate\Support\Collection
     {
         $activeYearId = $this->getActiveAcademicYearId();
-        if (!$activeYearId) {
+        if (! $activeYearId) {
             return collect();
         }
 
-        return Cache::remember("session.grade_mappings.{$activeYearId}", self::CACHE_TTL, function () use ($activeYearId) {
-            return GradeSessionSetting::where('academic_year_id', $activeYearId)
-                ->with('schoolSession')
-                ->get()
-                ->keyBy('grade_level');
-        });
+        return GradeSessionSetting::where('academic_year_id', $activeYearId)
+            ->with('schoolSession')
+            ->get()
+            ->keyBy('grade_level');
     }
 
     // ── Cache invalidation ────────────────────────────────────────────────────
@@ -149,11 +165,11 @@ class SchoolSessionResolverService
     public static function clearCache(): void
     {
         Cache::forget('session.class_overrides');
-        Cache::forget('session.default');
-        Cache::forget('session.all_active');
+        Cache::forget('session.default_id');
+        Cache::forget('session.all_active_ids');
         Cache::forget('academic_year.active_id');
 
-        // Clear grade mappings for all plausible academic year IDs
+        // Clear grade mappings for the active academic year
         $activeId = AcademicYear::active()->first()?->id;
         if ($activeId) {
             Cache::forget("session.grade_mappings.{$activeId}");
