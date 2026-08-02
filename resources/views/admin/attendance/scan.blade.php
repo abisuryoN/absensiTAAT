@@ -716,7 +716,7 @@
             var liveDateEl = document.getElementById('liveDate');
             var liveTimeEl = document.getElementById('liveTime');
             if (liveDateEl) liveDateEl.innerText = now.toLocaleDateString('id-ID', dateOpts);
-            if (liveTimeEl) liveTimeEl.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            if (liveTimeEl) liveTimeEl.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
         }
         updateClock();
         setInterval(updateClock, 1000);
@@ -854,7 +854,7 @@
             profileJurusan.innerText = data.jurusan || '-';
             profileStatus.innerText = data.status || '-';
             var now = new Date();
-            profileWaktu.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            profileWaktu.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
             profileBackdrop.classList.add('show');
         }
 
@@ -877,7 +877,7 @@
             item.innerHTML = '<div class="flex-shrink-0">' + statusIcon + '</div>' +
                 '<div class="flex-grow-1"><strong>' + (data.nama || 'Unknown') + '</strong><br><small class="text-muted">' +
                 (data.nis || '-') + ' &middot; ' + (data.kelas || '-') + '</small></div>' +
-                '<small class="text-nowrap text-muted">' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + '</small>';
+                '<small class="text-nowrap text-muted">' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) + '</small>';
 
             recentScansList.insertBefore(item, recentScansList.firstChild);
 

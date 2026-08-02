@@ -55,6 +55,37 @@
 
         /* Simulation toggle glow */
         #sim_enabled_switch:checked + .form-check-label { color: #f59e0b; }
+
+        /* Day override group styling */
+        #day-override-group label {
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+            color: #475569;
+            font-weight: 500;
+            padding: .35rem .85rem;
+            transition: all .2s ease;
+        }
+        #day-override-group label:hover {
+            background-color: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #1e293b;
+        }
+        #day-override-group input:checked + label {
+            background-color: var(--bs-primary) !important;
+            border-color: var(--bs-primary) !important;
+            color: #fff !important;
+        }
+        #day-override-group input:checked + label[for^="day_Sabtu"],
+        #day-override-group input:checked + label[for^="day_Minggu"] {
+            background-color: var(--bs-danger) !important;
+            border-color: var(--bs-danger) !important;
+            color: #fff !important;
+        }
+        #day-override-group input:checked + label[for="day_Automatic"] {
+            background-color: #64748b !important;
+            border-color: #64748b !important;
+            color: #fff !important;
+        }
     </style>
     @endpush
 
@@ -92,11 +123,6 @@
                 <li class="nav-item">
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-attendance" type="button">
                         <i class="bi bi-clock me-1"></i> Absensi
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-whatsapp" type="button">
-                        <i class="bi bi-whatsapp me-1"></i> WhatsApp
                     </button>
                 </li>
                 <li class="nav-item">
@@ -456,51 +482,7 @@
                     </div>
                 </div>
 
-                {{-- ══════════════════════════════════════════════════════════
-                     TAB 5 – WHATSAPP
-                ═══════════════════════════════════════════════════════════ --}}
-                <div class="tab-pane fade" id="tab-whatsapp">
-                    <div class="card glass-card border-0 mb-4">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold text-primary mb-3">
-                                <i class="bi bi-whatsapp me-1"></i> WhatsApp Gateway
-                            </h5>
-                            <form id="form-whatsapp">
-                                @csrf
-                                <div class="row g-3">
-                                    @foreach($settings->filter(fn($s) => $s->group === 'whatsapp') as $setting)
-                                        <div class="col-md-6">
-                                            <label for="wa_{{ $setting->key }}" class="form-label fw-semibold fs-7 mb-1">{{ Str::headline($setting->key) }}</label>
-                                            @if(in_array($setting->type, ['boolean','bool']))
-                                                <div class="form-check form-switch mt-2">
-                                                    <input type="hidden" name="{{ $setting->key }}" value="false">
-                                                    <input class="form-check-input" type="checkbox" name="{{ $setting->key }}" id="wa_{{ $setting->key }}" value="true" {{ filter_var($setting->value, FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
-                                                    <label class="form-check-label fs-8 text-muted" for="wa_{{ $setting->key }}">Aktifkan</label>
-                                                </div>
-                                            @elseif($setting->key === 'whatsapp_provider')
-                                                <div class="custom-select-wrapper" data-placeholder="Pilih Provider">
-                                                    <select name="{{ $setting->key }}" id="wa_{{ $setting->key }}" class="form-select">
-                                                        <option value="fonnte" {{ $setting->value === 'fonnte' ? 'selected' : '' }}>Fonnte</option>
-                                                        <option value="wablas" {{ $setting->value === 'wablas' ? 'selected' : '' }}>WABlas</option>
-                                                        <option value="woowa"  {{ $setting->value === 'woowa'  ? 'selected' : '' }}>Woowa</option>
-                                                    </select>
-                                                </div>
-                                            @else
-                                                <input type="text" name="{{ $setting->key }}" id="wa_{{ $setting->key }}" class="form-control" value="{{ $setting->value }}">
-                                            @endif
-                                            <div class="form-text fs-8 mt-1 text-muted">{{ $setting->description }}</div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                                <div class="d-flex justify-content-end mt-4">
-                                    <button type="submit" class="btn btn-success fw-semibold px-4">
-                                        <i class="bi bi-save me-1"></i> Simpan
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+
 
                 {{-- ══════════════════════════════════════════════════════════
                      TAB 6 – QR CODE
@@ -653,7 +635,7 @@
     });
 
     // ── GENERIC SETTINGS FORMS ────────────────────────────────────────────────
-    ['form-multi-session', 'form-attendance', 'form-whatsapp', 'form-qr'].forEach(id => {
+    ['form-multi-session', 'form-attendance', 'form-qr'].forEach(id => {
         const form = document.getElementById(id);
         if (!form) return;
         form.addEventListener('submit', function(e) {

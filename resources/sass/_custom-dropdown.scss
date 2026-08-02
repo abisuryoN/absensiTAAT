@@ -241,3 +241,19 @@
         }
     }
 }
+
+// ─── Force 24-hour format on all time inputs (no AM/PM) ──────────────────────
+// Hide the AM/PM segment rendered by Chromium when OS locale is 12-hour
+input[type="time"] {
+    // Remove spinner on webkit
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    // Hide the AM/PM field
+    &::-webkit-datetime-edit-ampm-field {
+        display: none !important;
+    }
+}
