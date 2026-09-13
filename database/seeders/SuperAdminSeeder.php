@@ -21,6 +21,10 @@ class SuperAdminSeeder extends Seeder
                 'name'  => 'Operator TU SMAN 1 Tajurhalang',
                 'email' => 'superadmin2@sman1tajurhalang.sch.id',
             ],
+            [
+                'name'  => 'Admin SMAN 1 Tajurhalang',
+                'email' => 'admin@sman1tajurhalang.sch.id',
+            ],
         ];
 
         foreach ($admins as $data) {

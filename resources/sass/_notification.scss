@@ -1,0 +1,265 @@
+// ─── Modern Notification Bar Styles ─────────────────────────────────────
+// Design: Solid vibrant colors with strong contrast, elevated shadows, clear borders
+
+.notification-bar {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    border-radius: 12px !important;
+    padding: 14px 16px !important;
+    margin-bottom: 20px !important;
+    border: 2px solid !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    z-index: 1050 !important;
+
+    @media (max-width: 767.98px) {
+        padding: 12px 14px !important;
+        border-radius: 10px !important;
+        margin-bottom: 16px !important;
+    }
+
+    // ── Icon Badge ──
+    .notification-icon-badge {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 10px !important;
+        flex-shrink: 0 !important;
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        margin-right: 14px !important;
+
+        @media (max-width: 767.98px) {
+            width: 36px !important;
+            height: 36px !important;
+            font-size: 1rem !important;
+            margin-right: 10px !important;
+            border-radius: 8px !important;
+        }
+    }
+
+    // ── Middle Scroll Region ──
+    .notification-content-region {
+        display: flex !important;
+        align-items: center !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        gap: 10px !important;
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+        -webkit-overflow-scrolling: touch !important;
+
+        &::-webkit-scrollbar {
+            display: none !important;
+        }
+
+        .notification-greeting {
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+            letter-spacing: -0.01em !important;
+
+            @media (max-width: 767.98px) {
+                font-size: 0.88rem !important;
+            }
+        }
+
+        .notification-role-badge {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding: 3px 10px !important;
+            border-radius: 6px !important;
+            font-size: 0.7rem !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.03em !important;
+            text-transform: uppercase !important;
+            border: 1px solid !important;
+        }
+
+        .notification-detail-item {
+            font-size: 0.85rem !important;
+            font-weight: 600 !important;
+
+            @media (max-width: 767.98px) {
+                font-size: 0.8rem !important;
+            }
+        }
+
+        .notification-dot {
+            opacity: 0.5 !important;
+            padding: 0 2px !important;
+        }
+    }
+
+    // ── Dismiss Button ──
+    .notification-dismiss-btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 32px !important;
+        height: 32px !important;
+        border-radius: 8px !important;
+        border: none !important;
+        outline: none !important;
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: inherit !important;
+        cursor: pointer !important;
+        flex-shrink: 0 !important;
+        margin-left: 12px !important;
+        padding: 0 !important;
+        transition: all 0.2s ease !important;
+        font-size: 0.85rem !important;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.35) !important;
+            transform: scale(1.1) !important;
+        }
+
+        &:active {
+            transform: scale(0.95) !important;
+        }
+
+        @media (max-width: 767.98px) {
+            width: 28px !important;
+            height: 28px !important;
+            font-size: 0.75rem !important;
+        }
+    }
+
+    // ── Variant: Welcome (Vibrant Indigo) ──
+    &.notification-welcome {
+        background: #4f46e5 !important;
+        border-color: #3730a3 !important;
+        color: #ffffff !important;
+
+        .notification-icon-badge {
+            background: #ffffff !important;
+            color: #4f46e5 !important;
+        }
+
+        .notification-greeting {
+            color: #ffffff !important;
+        }
+
+        .notification-role-badge {
+            background: #818cf8 !important;
+            color: #ffffff !important;
+            border-color: #a5b4fc !important;
+        }
+
+        .notification-detail-item {
+            color: #e0e7ff !important;
+        }
+
+        .notification-dot {
+            color: #c7d2fe !important;
+        }
+    }
+
+    // ── Variant: Success (Vibrant Emerald) ──
+    &.notification-success {
+        background: #059669 !important;
+        border-color: #047857 !important;
+        color: #ffffff !important;
+
+        .notification-icon-badge {
+            background: #ffffff !important;
+            color: #059669 !important;
+        }
+
+        .notification-greeting {
+            color: #ffffff !important;
+        }
+
+        .notification-detail-item {
+            color: #d1fae5 !important;
+        }
+
+        .notification-dot {
+            color: #a7f3d0 !important;
+        }
+    }
+
+    // ── Variant: Warning (Vibrant Amber) ──
+    &.notification-warning {
+        background: #d97706 !important;
+        border-color: #b45309 !important;
+        color: #ffffff !important;
+
+        .notification-icon-badge {
+            background: #ffffff !important;
+            color: #d97706 !important;
+        }
+
+        .notification-greeting {
+            color: #ffffff !important;
+        }
+
+        .notification-detail-item {
+            color: #fef3c7 !important;
+        }
+
+        .notification-dot {
+            color: #fde68a !important;
+        }
+    }
+
+    // ── Variant: Error (Vibrant Rose) ──
+    &.notification-error {
+        background: #dc2626 !important;
+        border-color: #b91c1c !important;
+        color: #ffffff !important;
+
+        .notification-icon-badge {
+            background: #ffffff !important;
+            color: #dc2626 !important;
+        }
+
+        .notification-greeting {
+            color: #ffffff !important;
+        }
+
+        .notification-detail-item {
+            color: #fecaca !important;
+        }
+
+        .notification-dot {
+            color: #fca5a5 !important;
+        }
+    }
+
+    // ── Variant: Info (Vibrant Sky Blue) ──
+    &.notification-info {
+        background: #0284c7 !important;
+        border-color: #0369a1 !important;
+        color: #ffffff !important;
+
+        .notification-icon-badge {
+            background: #ffffff !important;
+            color: #0284c7 !important;
+        }
+
+        .notification-greeting {
+            color: #ffffff !important;
+        }
+
+        .notification-detail-item {
+            color: #bae6fd !important;
+        }
+
+        .notification-dot {
+            color: #7dd3fc !important;
+        }
+    }
+}
