@@ -1,58 +1,277 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Absensi Sekolah
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi absensi sekolah berbasis web menggunakan Laravel dan MySQL.
 
-## About Laravel
+## 1. Teknologi yang Digunakan
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.3
+- Laravel 12 / Laravel 13
+- MySQL
+- Composer
+- Node.js dan npm
+- Git dan GitLab
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Persyaratan:** Gunakan PHP 8.3 agar kompatibel dengan Laravel 12 maupun Laravel 13. Pastikan ekstensi PHP yang dibutuhkan Laravel juga sudah aktif.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 2. Instalasi Proyek
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Langkah 1. Clone repository
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://gitlab.com/abisuryoN/absensi-sekolah.git
+cd absensi-sekolah
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Langkah 2. Install dependency PHP
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Langkah 3. Buat file environment
 
-## Code of Conduct
+Linux:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+cp .env.example .env
+```
 
-## Security Vulnerabilities
+Windows:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+copy .env.example .env
+```
 
-## License
+### Langkah 4. Generate application key
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan key:generate
+```
+
+### Langkah 5. Buat database MySQL
+
+Buka MySQL melalui phpMyAdmin, Laragon, atau MySQL client. Buat database baru, misalnya:
+
+```sql
+CREATE DATABASE absensi_sekolah;
+```
+
+### Langkah 6. Konfigurasi database
+
+Buka file `.env`, lalu sesuaikan konfigurasi berikut dengan MySQL lokal masing-masing.
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=absensi_sekolah
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Sesuaikan username dan password dengan konfigurasi MySQL di komputer masing-masing.
+
+### Langkah 7. Jalankan migration dan seeder
+
+**PERHATIAN:** Perintah berikut akan membuat tabel dan menjalankan data awal. Gunakan database development yang masih kosong.
+
+```bash
+php artisan migrate --seed
+```
+
+Jangan menggunakan `migrate:fresh` pada database yang berisi data penting karena perintah tersebut menghapus tabel sebelum membuatnya kembali.
+
+### Langkah 8. Install dependency frontend
+
+```bash
+npm install
+npm run build
+```
+
+### Langkah 9. Jalankan aplikasi
+
+```bash
+php artisan serve
+```
+
+Buka alamat berikut di browser:
+
+http://127.0.0.1:8000
+
+## 3. Akun Login Seeder
+
+Akun di bawah ini harus sesuai dengan akun yang benar-benar dibuat oleh seeder proyek.
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | Isi sesuai seeder | Isi sesuai seeder |
+| HRD | Isi sesuai seeder | Isi sesuai seeder |
+| Guru | Isi sesuai seeder | Isi sesuai seeder |
+| Karyawan | Isi sesuai seeder | Isi sesuai seeder |
+
+**Catatan:** Daftar role di atas merupakan template. Hapus role yang tidak digunakan dan tambahkan role lain sesuai implementasi aplikasi. Jangan menganggap semua akun tersebut sudah tersedia sebelum memeriksa seeder.
+
+## 4. Aturan Kolaborasi GitLab
+
+Repository utama:
+
+https://gitlab.com/abisuryoN/absensi-sekolah
+
+Branch `main` adalah branch utama yang harus dijaga tetap stabil.
+
+### Aturan utama
+
+1. Jangan mengerjakan fitur langsung di branch `main`.
+2. Setiap anggota mengerjakan fitur di branch masing-masing.
+3. Push hasil pekerjaan ke branch milik sendiri.
+4. Ajukan Merge Request (MR) ke `main`.
+5. Pemilik repository memeriksa dan menggabungkan MR setelah kode dinyatakan aman.
+6. Jangan menggunakan `git push --force` pada branch `main`.
+7. Jangan mengunggah file `.env`, password, token, atau kredensial rahasia ke GitLab.
+
+## 5. Alur Kerja Anggota Tim
+
+### A. Pertama kali mengunduh proyek
+
+Jika repository belum ada di komputer:
+
+```bash
+git clone https://gitlab.com/abisuryoN/absensi-sekolah.git
+cd absensi-sekolah
+```
+
+Lanjutkan instalasi sesuai bagian Instalasi Proyek.
+
+### B. Ambil kode terbaru dari main
+
+Sebelum mulai mengerjakan fitur:
+
+```bash
+git switch main
+git pull origin main
+```
+
+Jika hasil clone menggunakan remote `origin`, perintah tersebut mengambil pembaruan dari repository utama.
+
+### C. Buat branch sendiri
+
+Contoh jika mengerjakan fitur laporan:
+
+```bash
+git switch -c feature/laporan
+```
+
+Contoh nama branch lain:
+
+- `feature/absensi`
+- `feature/kelola-karyawan`
+- `fix/perbaikan-login`
+- `feature/laporan`
+
+Gunakan nama yang menjelaskan pekerjaan.
+
+### D. Kerjakan dan simpan perubahan
+
+Periksa file yang berubah:
+
+```bash
+git status
+```
+
+Tambahkan file yang relevan dan buat commit:
+
+```bash
+git add .
+git commit -m "Menambahkan fitur laporan"
+```
+
+### E. Push branch ke GitLab
+
+```bash
+git push -u origin feature/laporan
+```
+
+Ganti `feature/laporan` dengan nama branch milik sendiri.
+
+### F. Ajukan Merge Request
+
+1. Buka repository GitLab.
+2. Pilih **Code → Merge requests** atau menu Merge Requests.
+3. Klik **New merge request**.
+4. Source branch: `feature/laporan`.
+5. Target branch: `main`.
+6. Jelaskan perubahan yang dibuat.
+7. Ajukan Merge Request untuk diperiksa pemilik repository.
+
+**Pekerjaan anggota belum masuk ke `main` hanya karena sudah di-push.** Perubahan baru menjadi bagian dari branch utama setelah Merge Request diterima dan di-merge.
+
+## 6. Alur Pemilik Repository
+
+Pemilik repository bertugas memeriksa dan menggabungkan pekerjaan anggota.
+
+### A. Periksa Merge Request
+
+Pastikan perubahan:
+
+- Tidak merusak fitur yang sudah ada.
+- Tidak memasukkan kredensial rahasia.
+- Tidak mengandung konflik yang belum diselesaikan.
+- Sudah diuji sesuai fitur yang dikerjakan.
+
+### B. Merge pekerjaan anggota
+
+Jika perubahan sudah sesuai, pemilik dapat melakukan merge melalui GitLab.
+
+### C. Ambil hasil terbaru ke komputer lokal
+
+```bash
+git switch main
+git pull origin main
+```
+
+Jika pekerjaan selanjutnya dilakukan di branch lokal, buat branch baru dari `main` yang sudah diperbarui.
+
+### D. Jika perlu menguji pekerjaan anggota sebelum merge
+
+Ambil branch anggota:
+
+```bash
+git fetch origin
+git switch --track origin/feature/laporan
+```
+
+Sesuaikan nama branch dengan branch yang akan diperiksa.
+
+Setelah selesai menguji, kembali ke `main`:
+
+```bash
+git switch main
+git pull origin main
+```
+
+## 7. Catatan Penting
+
+- `pull` mengambil perubahan dari remote dan menggabungkannya ke branch lokal.
+- `push` mengirim commit lokal ke remote.
+- `commit` menyimpan snapshot perubahan di repository lokal.
+- `Merge Request` adalah permintaan agar perubahan dari branch anggota ditinjau dan digabungkan ke branch tujuan.
+- Jika terjadi konflik, selesaikan konflik sebelum melakukan merge.
+- Setiap anggota sebaiknya melakukan `pull` sebelum mulai bekerja dan sebelum membuat perubahan besar.
+- File `.env` harus dibuat sendiri berdasarkan `.env.example`.
+- Jangan menjalankan migration destruktif pada database yang berisi data penting.
+
+## 8. Pembagian Tugas Tim
+
+Catat pembagian fitur agar tidak mengerjakan file yang sama tanpa koordinasi.
+
+| Anggota | Fitur | Branch | Status |
+|---|---|---|---|
+| Pemilik repository | Integrasi dan review | `main` | Aktif |
+| Anggota 1 | Sesuaikan dengan tugas | `feature/nama-fitur` | Belum dimulai |
+| Anggota 2 | Sesuaikan dengan tugas | `feature/nama-fitur` | Belum dimulai |
+
+---
+
+**Repository:** https://gitlab.com/abisuryoN/absensi-sekolah
+
+**Aturan kerja:** Branch sendiri → commit → push → Merge Request → review → merge ke `main`.
