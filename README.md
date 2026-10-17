@@ -1,26 +1,68 @@
-# Absensi Sekolah
+# Absensi Sekolah SMAN 1 Tajurhalang
 
-Aplikasi absensi sekolah berbasis web menggunakan Laravel dan MySQL.
+Aplikasi absensi sekolah berbasis web untuk mendukung pengelolaan kehadiran dan administrasi sekolah SMAN 1 Tajurhalang.
+
+Repository ini digunakan sebagai tempat kolaborasi pengembangan aplikasi. Setiap anggota tim mengerjakan fitur pada branch masing-masing, kemudian mengajukan Merge Request untuk ditinjau sebelum digabungkan ke branch `main`.
+
+**Repository GitLab:**  
+https://gitlab.com/abisuryoN/absensi-sekolah
+
+---
+
+## Daftar Isi
+
+1. [Teknologi yang Digunakan](#1-teknologi-yang-digunakan)
+2. [Persyaratan Sistem](#2-persyaratan-sistem)
+3. [Instalasi Proyek](#3-instalasi-proyek)
+4. [Konfigurasi Database](#4-konfigurasi-database)
+5. [Migration dan Seeder](#5-migration-dan-seeder)
+6. [Akun Login Seeder](#6-akun-login-seeder)
+7. [Menjalankan Aplikasi](#7-menjalankan-aplikasi)
+8. [Alur Kolaborasi GitLab](#8-alur-kolaborasi-gitlab)
+9. [Panduan untuk Anggota Tim](#9-panduan-untuk-anggota-tim)
+10. [Panduan untuk Pemilik Repository](#10-panduan-untuk-pemilik-repository)
+11. [Mengatasi Masalah Umum](#11-mengatasi-masalah-umum)
+12. [Aturan Keamanan](#12-aturan-keamanan)
+
+---
 
 ## 1. Teknologi yang Digunakan
 
 - PHP 8.3
-- Laravel 12 / Laravel 13
+- Laravel 12 atau Laravel 13, mengikuti versi yang digunakan proyek
 - MySQL
 - Composer
 - Node.js dan npm
-- Git dan GitLab
+- Git
+- GitLab
 
-**Persyaratan:** Gunakan PHP 8.3 agar kompatibel dengan Laravel 12 maupun Laravel 13. Pastikan ekstensi PHP yang dibutuhkan Laravel juga sudah aktif.
+## 2. Persyaratan Sistem
 
-## 2. Instalasi Proyek
+Sebelum menjalankan aplikasi, pastikan perangkat sudah memiliki:
+
+- PHP 8.3 dengan ekstensi yang dibutuhkan Laravel dan aplikasi.
+- Composer.
+- MySQL atau MariaDB yang kompatibel.
+- Node.js dan npm.
+- Git.
+- Browser modern.
+
+Pengguna Windows dapat menggunakan Laragon untuk membantu menyiapkan PHP dan MySQL. Pengguna Linux dapat memasang PHP, Composer, Node.js, dan MySQL secara terpisah.
+
+**Penting:** Versi Laravel yang benar-benar digunakan mengikuti `composer.json` dan `composer.lock`. PHP 8.3 menjadi target lingkungan pengembangan yang disarankan untuk proyek ini, tetapi kecocokan akhirnya tetap harus mengikuti persyaratan versi Laravel dan dependensi yang terpasang.
+
+## 3. Instalasi Proyek
 
 ### Langkah 1. Clone repository
+
+Buka terminal dan jalankan:
 
 ```bash
 git clone https://gitlab.com/abisuryoN/absensi-sekolah.git
 cd absensi-sekolah
 ```
+
+Perintah tersebut mengunduh proyek ke komputer lokal.
 
 ### Langkah 2. Install dependency PHP
 
@@ -28,19 +70,25 @@ cd absensi-sekolah
 composer install
 ```
 
+Tunggu hingga Composer menyelesaikan pemasangan seluruh dependensi.
+
 ### Langkah 3. Buat file environment
 
-Linux:
+Untuk Linux:
 
 ```bash
 cp .env.example .env
 ```
 
-Windows:
+Untuk Windows:
 
-```bash
+```bat
 copy .env.example .env
 ```
+
+File `.env` menyimpan konfigurasi lokal, termasuk koneksi database.
+
+Jangan mengunggah file `.env` ke repository.
 
 ### Langkah 4. Generate application key
 
@@ -48,17 +96,27 @@ copy .env.example .env
 php artisan key:generate
 ```
 
-### Langkah 5. Buat database MySQL
+Perintah tersebut membuat application key untuk konfigurasi Laravel lokal.
 
-Buka MySQL melalui phpMyAdmin, Laragon, atau MySQL client. Buat database baru, misalnya:
+### Langkah 5. Siapkan database MySQL
+
+Buat database baru melalui phpMyAdmin, MySQL client, atau perangkat pengelola database yang tersedia.
+
+Contoh:
 
 ```sql
 CREATE DATABASE absensi_sekolah;
 ```
 
-### Langkah 6. Konfigurasi database
+Nama tersebut hanya contoh. Nama database yang digunakan aplikasi ditentukan melalui konfigurasi `DB_DATABASE` pada file `.env`.
 
-Buka file `.env`, lalu sesuaikan konfigurasi berikut dengan MySQL lokal masing-masing.
+Lanjutkan ke bagian konfigurasi database sebelum menjalankan migration.
+
+## 4. Konfigurasi Database
+
+Buka file `.env` pada folder utama proyek.
+
+Sesuaikan konfigurasi berikut dengan MySQL di komputer masing-masing:
 
 ```env
 DB_CONNECTION=mysql
@@ -69,108 +127,267 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-Sesuaikan username dan password dengan konfigurasi MySQL di komputer masing-masing.
+Keterangan:
 
-### Langkah 7. Jalankan migration dan seeder
+| Konfigurasi | Fungsi |
+|---|---|
+| `DB_CONNECTION` | Jenis database yang digunakan |
+| `DB_HOST` | Alamat server database |
+| `DB_PORT` | Port MySQL |
+| `DB_DATABASE` | Nama database aplikasi |
+| `DB_USERNAME` | Username MySQL |
+| `DB_PASSWORD` | Password MySQL |
 
-**PERHATIAN:** Perintah berikut akan membuat tabel dan menjalankan data awal. Gunakan database development yang masih kosong.
+Jika nama database lokal berbeda, ubah nilai `DB_DATABASE` sesuai database yang sudah dibuat.
+
+Jika MySQL menggunakan password, isi `DB_PASSWORD` dengan password lokal yang benar.
+
+Setelah menyimpan perubahan `.env`, jalankan:
+
+```bash
+php artisan config:clear
+```
+
+Perintah ini membersihkan cache konfigurasi agar Laravel membaca konfigurasi terbaru.
+
+## 5. Migration dan Seeder
+
+Migration membuat struktur tabel database. Seeder memasukkan data awal, termasuk akun pengujian yang didaftarkan oleh seeder proyek.
+
+### A. Menjalankan migration dan seeder sekaligus
+
+Untuk database development baru yang masih kosong, jalankan:
 
 ```bash
 php artisan migrate --seed
 ```
 
-Jangan menggunakan `migrate:fresh` pada database yang berisi data penting karena perintah tersebut menghapus tabel sebelum membuatnya kembali.
+Perintah tersebut menjalankan migration yang belum diterapkan, lalu menjalankan seeder utama yang terdaftar pada `DatabaseSeeder`.
 
-### Langkah 8. Install dependency frontend
+Akun login di bagian berikutnya hanya tersedia jika seeder yang membuat akun tersebut memang berhasil dijalankan.
+
+### B. Menjalankan seeder saja
+
+Jika struktur tabel sudah tersedia dan hanya ingin memasukkan data seeder:
+
+```bash
+php artisan db:seed
+```
+
+### C. Menjalankan seeder tertentu
+
+```bash
+php artisan db:seed --class=NamaSeeder
+```
+
+Ganti `NamaSeeder` dengan nama class seeder yang benar-benar tersedia di folder `database/seeders`.
+
+### D. Memeriksa konfigurasi database
+
+Untuk memastikan konfigurasi environment terbaca:
+
+```bash
+php artisan config:clear
+php artisan migrate:status
+```
+
+Perintah `migrate:status` menampilkan status migration yang sudah dan belum dijalankan.
+
+**Peringatan:** Jangan menjalankan `php artisan migrate:fresh --seed` pada database yang berisi data penting. Perintah tersebut menghapus seluruh tabel sebelum menjalankan migration kembali.
+
+## 6. Akun Login Seeder
+
+Akun berikut ditujukan untuk pengembangan dan pengujian lokal.
+
+**Password seluruh akun demo:**
+
+```text
+password123
+```
+
+### A. Super Admin (`super_admin`)
+
+| Email | Nama |
+|---|---|
+| `superadmin1@sman1tajurhalang.sch.id` | Kepala Sekolah SMAN 1 Tajurhalang |
+| `superadmin2@sman1tajurhalang.sch.id` | Operator TU SMAN 1 Tajurhalang |
+| `admin@sman1tajurhalang.sch.id` | Admin SMAN 1 Tajurhalang |
+
+Jumlah akun: 3.
+
+### B. Guru (`guru`)
+
+Seeder menyediakan 28 akun guru.
+
+Format email:
+
+```text
+guru.[nama.slug]@sman1tajurhalang.sch.id
+```
+
+Contoh akun:
+
+| Email | Nama |
+|---|---|
+| `guru.budi.santoso@sman1tajurhalang.sch.id` | Budi Santoso, S.Pd. |
+| `guru.siti.rahayu@sman1tajurhalang.sch.id` | Siti Rahayu, S.Pd. |
+| `guru.ahmad.fauzi@sman1tajurhalang.sch.id` | Ahmad Fauzi, M.Pd. |
+| `guru.dewi.kusuma@sman1tajurhalang.sch.id` | Dewi Kusuma, S.Pd. |
+
+Terdapat 24 akun guru lainnya dengan pola email yang sama.
+
+Jumlah akun: 28.
+
+### C. Guru Piket (`guru_piket`)
+
+| Email | Nama |
+|---|---|
+| `piket@sman1tajurhalang.sch.id` | Guru Piket SMAN 1 Tajurhalang |
+
+Akun ini digunakan bersama untuk keperluan pengujian guru piket.
+
+Jumlah akun: 1.
+
+### D. Orang Tua (`parent`)
+
+Seeder menyediakan 494 akun orang tua.
+
+Format email:
+
+```text
+ortu.[nama.slug]@gmail.com
+```
+
+Nama dan email dibuat secara otomatis menggunakan Faker. Nilai aktual mengikuti hasil seeder.
+
+Jumlah akun: 494.
+
+### E. Siswa (`siswa`)
+
+Seeder menyediakan 548 akun siswa.
+
+Format email:
+
+```text
+siswa.[NIS]@sman1tajurhalang.sch.id
+```
+
+NIS dibuat secara otomatis berdasarkan data kelas yang digunakan oleh seeder.
+
+Jumlah akun: 548.
+
+### Quick Login
+
+Untuk pengujian awal, gunakan akun berikut:
+
+| Keterangan | Nilai |
+|---|---|
+| Role | Super Admin |
+| Email | `superadmin1@sman1tajurhalang.sch.id` |
+| Password | `password123` |
+
+Jika login gagal, pastikan migration dan seeder sudah dijalankan, lalu periksa apakah akun tersebut benar-benar terdapat di database lokal.
+
+**Catatan keamanan:** Password di atas hanya untuk pengembangan dan pengujian lokal. Jangan menggunakan password tersebut untuk akun produksi atau akun yang dapat diakses publik.
+
+## 7. Menjalankan Aplikasi
+
+### Langkah 1. Build frontend
 
 ```bash
 npm install
 npm run build
 ```
 
-### Langkah 9. Jalankan aplikasi
+### Langkah 2. Jalankan server Laravel
 
 ```bash
 php artisan serve
 ```
 
-Buka alamat berikut di browser:
+### Langkah 3. Buka aplikasi
+
+Akses alamat berikut di browser:
 
 http://127.0.0.1:8000
 
-## 3. Akun Login Seeder
+Biarkan terminal server tetap berjalan selama aplikasi digunakan.
 
-Akun di bawah ini harus sesuai dengan akun yang benar-benar dibuat oleh seeder proyek.
-
-| Role | Email | Password |
-|---|---|---|
-| Admin | Isi sesuai seeder | Isi sesuai seeder |
-| HRD | Isi sesuai seeder | Isi sesuai seeder |
-| Guru | Isi sesuai seeder | Isi sesuai seeder |
-| Karyawan | Isi sesuai seeder | Isi sesuai seeder |
-
-**Catatan:** Daftar role di atas merupakan template. Hapus role yang tidak digunakan dan tambahkan role lain sesuai implementasi aplikasi. Jangan menganggap semua akun tersebut sudah tersedia sebelum memeriksa seeder.
-
-## 4. Aturan Kolaborasi GitLab
+## 8. Alur Kolaborasi GitLab
 
 Repository utama:
 
 https://gitlab.com/abisuryoN/absensi-sekolah
 
-Branch `main` adalah branch utama yang harus dijaga tetap stabil.
-
 ### Aturan utama
 
-1. Jangan mengerjakan fitur langsung di branch `main`.
-2. Setiap anggota mengerjakan fitur di branch masing-masing.
-3. Push hasil pekerjaan ke branch milik sendiri.
-4. Ajukan Merge Request (MR) ke `main`.
-5. Pemilik repository memeriksa dan menggabungkan MR setelah kode dinyatakan aman.
-6. Jangan menggunakan `git push --force` pada branch `main`.
-7. Jangan mengunggah file `.env`, password, token, atau kredensial rahasia ke GitLab.
+1. Branch `main` adalah branch utama.
+2. Jangan mengerjakan fitur secara langsung pada `main`.
+3. Setiap anggota membuat branch sendiri.
+4. Perubahan dikirim melalui `git push` ke branch masing-masing.
+5. Anggota mengajukan Merge Request menuju `main`.
+6. Pemilik repository meninjau dan menggabungkan perubahan setelah dinyatakan aman.
+7. Jangan melakukan force push ke `main`.
+8. Jangan mengunggah file `.env`, token, password, atau data rahasia.
 
-## 5. Alur Kerja Anggota Tim
+### Alur perubahan
 
-### A. Pertama kali mengunduh proyek
+```text
+main
+  |
+  +-- feature/absensi
+  |
+  +-- feature/laporan
+  |
+  +-- fix/perbaikan-login
+```
 
-Jika repository belum ada di komputer:
+Setiap branch fitur diajukan melalui Merge Request menuju `main`.
+
+**Push bukan berarti perubahan otomatis masuk ke `main`.** Perubahan baru masuk ke branch utama setelah Merge Request berhasil di-merge.
+
+## 9. Panduan untuk Anggota Tim
+
+### A. Clone repository
+
+Untuk anggota yang belum mengunduh proyek:
 
 ```bash
 git clone https://gitlab.com/abisuryoN/absensi-sekolah.git
 cd absensi-sekolah
 ```
 
-Lanjutkan instalasi sesuai bagian Instalasi Proyek.
+Selesaikan instalasi lokal sesuai bagian 3 sampai 7.
 
-### B. Ambil kode terbaru dari main
+### B. Perbarui branch utama
 
-Sebelum mulai mengerjakan fitur:
+Sebelum memulai tugas baru:
 
 ```bash
 git switch main
 git pull origin main
 ```
 
-Jika hasil clone menggunakan remote `origin`, perintah tersebut mengambil pembaruan dari repository utama.
+Pada repository hasil clone, `origin` biasanya menunjuk ke repository GitLab tersebut.
 
 ### C. Buat branch sendiri
 
-Contoh jika mengerjakan fitur laporan:
+Contoh untuk fitur laporan:
 
 ```bash
 git switch -c feature/laporan
 ```
 
-Contoh nama branch lain:
+Contoh nama branch:
 
 - `feature/absensi`
-- `feature/kelola-karyawan`
-- `fix/perbaikan-login`
+- `feature/kelola-siswa`
 - `feature/laporan`
+- `fix/perbaikan-login`
 
-Gunakan nama yang menjelaskan pekerjaan.
+Gunakan nama branch yang menjelaskan pekerjaan.
 
-### D. Kerjakan dan simpan perubahan
+### D. Kerjakan perubahan dan buat commit
 
 Periksa file yang berubah:
 
@@ -178,12 +395,14 @@ Periksa file yang berubah:
 git status
 ```
 
-Tambahkan file yang relevan dan buat commit:
+Tambahkan perubahan dan buat commit:
 
 ```bash
 git add .
 git commit -m "Menambahkan fitur laporan"
 ```
+
+Gunakan pesan commit yang menjelaskan perubahan sebenarnya.
 
 ### E. Push branch ke GitLab
 
@@ -191,87 +410,181 @@ git commit -m "Menambahkan fitur laporan"
 git push -u origin feature/laporan
 ```
 
-Ganti `feature/laporan` dengan nama branch milik sendiri.
+Ganti nama branch sesuai pekerjaan yang sedang dibuat.
 
 ### F. Ajukan Merge Request
 
 1. Buka repository GitLab.
-2. Pilih **Code → Merge requests** atau menu Merge Requests.
-3. Klik **New merge request**.
-4. Source branch: `feature/laporan`.
-5. Target branch: `main`.
-6. Jelaskan perubahan yang dibuat.
-7. Ajukan Merge Request untuk diperiksa pemilik repository.
+2. Masuk ke menu Merge Requests.
+3. Pilih New merge request.
+4. Pilih source branch milik sendiri, misalnya `feature/laporan`.
+5. Pilih target branch `main`.
+6. Jelaskan perubahan dan pengujian yang sudah dilakukan.
+7. Kirim Merge Request untuk ditinjau pemilik repository.
 
-**Pekerjaan anggota belum masuk ke `main` hanya karena sudah di-push.** Perubahan baru menjadi bagian dari branch utama setelah Merge Request diterima dan di-merge.
+Tunggu hingga perubahan diperiksa dan di-merge sebelum menganggap pekerjaan sudah masuk ke `main`.
 
-## 6. Alur Pemilik Repository
+### G. Jika ada perubahan baru pada `main`
 
-Pemilik repository bertugas memeriksa dan menggabungkan pekerjaan anggota.
-
-### A. Periksa Merge Request
-
-Pastikan perubahan:
-
-- Tidak merusak fitur yang sudah ada.
-- Tidak memasukkan kredensial rahasia.
-- Tidak mengandung konflik yang belum diselesaikan.
-- Sudah diuji sesuai fitur yang dikerjakan.
-
-### B. Merge pekerjaan anggota
-
-Jika perubahan sudah sesuai, pemilik dapat melakukan merge melalui GitLab.
-
-### C. Ambil hasil terbaru ke komputer lokal
+Sebelum memulai tugas baru, kembali ke `main` dan tarik perubahan terbaru:
 
 ```bash
 git switch main
 git pull origin main
 ```
 
-Jika pekerjaan selanjutnya dilakukan di branch lokal, buat branch baru dari `main` yang sudah diperbarui.
+Setelah itu, buat branch baru untuk pekerjaan berikutnya.
 
-### D. Jika perlu menguji pekerjaan anggota sebelum merge
+Jika sedang mengerjakan branch fitur yang sudah berjalan, koordinasikan cara mengambil perubahan terbaru agar tidak menimpa pekerjaan yang belum di-commit.
 
-Ambil branch anggota:
+## 10. Panduan untuk Pemilik Repository
+
+Pemilik repository bertanggung jawab memeriksa Merge Request dan menjaga branch `main` tetap stabil.
+
+### A. Tinjau Merge Request
+
+Periksa apakah:
+
+- Perubahan sesuai dengan tugas.
+- Fitur terkait sudah diuji.
+- Tidak ada kredensial rahasia yang ikut terkirim.
+- Tidak ada konflik yang belum diselesaikan.
+- Perubahan tidak merusak fitur yang sudah ada.
+
+### B. Gabungkan perubahan
+
+Jika perubahan sudah sesuai, lakukan merge melalui GitLab.
+
+### C. Ambil perubahan terbaru ke komputer pemilik
+
+```bash
+git switch main
+git pull origin main
+```
+
+Jika remote yang digunakan bernama `gitlab`, gunakan:
+
+```bash
+git switch main
+git pull gitlab main
+```
+
+Gunakan nama remote yang benar sesuai hasil `git remote -v`.
+
+### D. Menguji branch anggota sebelum merge
+
+Untuk mengambil branch anggota yang belum digabungkan:
 
 ```bash
 git fetch origin
 git switch --track origin/feature/laporan
 ```
 
-Sesuaikan nama branch dengan branch yang akan diperiksa.
+Sesuaikan nama branch dengan branch yang hendak diperiksa.
 
-Setelah selesai menguji, kembali ke `main`:
+Setelah selesai melakukan pengujian, kembali ke branch utama:
 
 ```bash
 git switch main
 git pull origin main
 ```
 
-## 7. Catatan Penting
+Pastikan pekerjaan yang belum di-commit sudah diamankan sebelum berpindah branch.
 
-- `pull` mengambil perubahan dari remote dan menggabungkannya ke branch lokal.
-- `push` mengirim commit lokal ke remote.
-- `commit` menyimpan snapshot perubahan di repository lokal.
-- `Merge Request` adalah permintaan agar perubahan dari branch anggota ditinjau dan digabungkan ke branch tujuan.
-- Jika terjadi konflik, selesaikan konflik sebelum melakukan merge.
-- Setiap anggota sebaiknya melakukan `pull` sebelum mulai bekerja dan sebelum membuat perubahan besar.
-- File `.env` harus dibuat sendiri berdasarkan `.env.example`.
-- Jangan menjalankan migration destruktif pada database yang berisi data penting.
+## 11. Mengatasi Masalah Umum
 
-## 8. Pembagian Tugas Tim
+### A. Composer gagal
 
-Catat pembagian fitur agar tidak mengerjakan file yang sama tanpa koordinasi.
+Jalankan:
 
-| Anggota | Fitur | Branch | Status |
-|---|---|---|---|
-| Pemilik repository | Integrasi dan review | `main` | Aktif |
-| Anggota 1 | Sesuaikan dengan tugas | `feature/nama-fitur` | Belum dimulai |
-| Anggota 2 | Sesuaikan dengan tugas | `feature/nama-fitur` | Belum dimulai |
+```bash
+composer install
+```
+
+Pastikan versi PHP dan ekstensi yang dibutuhkan tersedia:
+
+```bash
+php -v
+composer --version
+```
+
+### B. Database tidak dapat terhubung
+
+Periksa konfigurasi berikut di `.env`:
+
+```env
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=absensi_sekolah
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Pastikan MySQL aktif, database sudah dibuat, dan kredensial sesuai.
+
+Setelah perubahan konfigurasi:
+
+```bash
+php artisan config:clear
+```
+
+### C. Tabel belum tersedia
+
+Jalankan:
+
+```bash
+php artisan migrate --seed
+```
+
+Gunakan hanya pada database development yang sudah dikonfigurasi dengan benar.
+
+### D. Akun login tidak ditemukan
+
+Jalankan seeder:
+
+```bash
+php artisan db:seed
+```
+
+Jika masih gagal, periksa `DatabaseSeeder.php`, seeder akun, dan isi tabel pengguna.
+
+### E. Konflik saat pull atau merge
+
+Periksa status:
+
+```bash
+git status
+```
+
+Baca pesan konflik, selesaikan konflik pada file terkait, lalu tandai file yang sudah diselesaikan:
+
+```bash
+git add nama-file
+```
+
+Selesaikan merge sesuai kondisi repository. Jangan menggunakan `git reset --hard` atau `git push --force` secara sembarangan.
+
+## 12. Aturan Keamanan
+
+- Jangan mengunggah file `.env`.
+- Jangan membagikan Personal Access Token GitLab.
+- Gunakan akun GitLab masing-masing.
+- Gunakan password demo hanya pada lingkungan lokal.
+- Jangan memasukkan data pribadi siswa atau orang tua ke commit pengujian.
+- Jangan menjalankan migration destruktif pada database penting.
+- Gunakan Merge Request untuk pemeriksaan perubahan sebelum masuk ke `main`.
 
 ---
 
-**Repository:** https://gitlab.com/abisuryoN/absensi-sekolah
+## Ringkasan Alur Kerja
 
-**Aturan kerja:** Branch sendiri → commit → push → Merge Request → review → merge ke `main`.
+**Anggota tim:**
+
+Clone → instalasi → buat branch → coding → commit → push → Merge Request.
+
+**Pemilik repository:**
+
+Review → pengujian → merge ke `main` → pull perubahan terbaru ke komputer lokal.
+
+**Repository:**  
+https://gitlab.com/abisuryoN/absensi-sekolah
