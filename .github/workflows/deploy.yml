@@ -1,3 +1,4 @@
+
 name: Deploy Laravel to Insomnia247
 
 on:
@@ -22,6 +23,7 @@ jobs:
     name: Deploy to production server
     runs-on: ubuntu-latest
     environment: production
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,28 +41,57 @@ jobs:
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
-      - name: Verify server and repository state
+      - name: Verify production and deploy safely
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          TARGET_SHA: ${{ github.sha }}
         run: |
           set -eu
+
           ssh -i ~/.ssh/deploy_key \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" \
-            "cd '$DEPLOY_PATH' && \
-             printf '%s\n' '--- BRANCH ---' && \
-             git branch --show-current && \
-             printf '%s\n' '--- COMMIT ---' && \
-             git log -1 --oneline && \
-             printf '%s\n' '--- STATUS ---' && \
-             git status --short && \
-             printf '%s\n' '--- REMOTE ---' && \
-             git remote -v"
+            "DEPLOY_PATH='$DEPLOY_PATH' TARGET_SHA='$TARGET_SHA' sh -s" <<'REMOTE'
+          set -eu
 
-      - name: Stop before deployment
-        run: |
-          echo "SSH verification completed."
-          echo "Deployment is intentionally disabled until server changes are reviewed."
+          cd "$DEPLOY_PATH"
+
+          echo "--- Check branch ---"
+          test "$(git branch --show-current)" = "main"
+
+          echo "--- Check local changes ---"
+          if ! git diff --quiet; then
+            echo "ERROR: Tracked local changes exist. Deployment stopped."
+            exit 1
+          fi
+
+          if [ -n "$(git ls-files --others --exclude-standard)" ]; then
+            echo "ERROR: Untracked files exist. Deployment stopped."
+            git ls-files --others --exclude-standard
+            exit 1
+          fi
+
+          echo "--- Fetch target commit ---"
+          git fetch origin main
+
+          echo "--- Verify target commit ---"
+          git cat-file -e "$TARGET_SHA^{commit}"
+          git merge-base --is-ancestor HEAD "$TARGET_SHA"
+
+          echo "--- Verify dependencies ---"
+          test -f .env
+          test -f vendor/autoload.php
+          test -f public/build/manifest.json
+
+          echo "--- Update application code ---"
+          git merge --ff-only "$TARGET_SHA"
+
+          echo "--- Verify deployed commit ---"
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          php artisan --version
+
+          echo "Deployment code update completed."
+          REMOTE
