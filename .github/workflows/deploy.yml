@@ -1,0 +1,66 @@
+name: Deploy Laravel to Insomnia247
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "README.md"
+      - "README.md.save"
+      - ".gitlab-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to production server
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          set -eu
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Verify server and repository state
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          set -eu
+          ssh -i ~/.ssh/deploy_key \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cd '$DEPLOY_PATH' && \
+             printf '%s\n' '--- BRANCH ---' && \
+             git branch --show-current && \
+             printf '%s\n' '--- COMMIT ---' && \
+             git log -1 --oneline && \
+             printf '%s\n' '--- STATUS ---' && \
+             git status --short && \
+             printf '%s\n' '--- REMOTE ---' && \
+             git remote -v"
+
+      - name: Stop before deployment
+        run: |
+          echo "SSH verification completed."
+          echo "Deployment is intentionally disabled until server changes are reviewed."
