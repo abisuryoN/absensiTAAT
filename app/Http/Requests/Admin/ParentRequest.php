@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\StudentParent;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ParentRequest extends FormRequest
@@ -13,11 +14,14 @@ class ParentRequest extends FormRequest
 
     public function rules(): array
     {
-        // Resolve the parent record being edited (if any)
-        $parentId = $this->route('parent');
-        $parent   = $parentId ? \App\Models\StudentParent::find($parentId) : null;
+        // Resolve the parent record being edited.
+        $parent = $this->route('parent');
 
-        // Get the user_id linked to this parent so we can exclude it from the email unique check
+        if ($parent && !($parent instanceof StudentParent)) {
+            $parent = StudentParent::find($parent);
+        }
+
+        // Get the linked user ID for the email uniqueness rule.
         $userId = $parent?->user_id;
 
         return [
@@ -28,7 +32,7 @@ class ParentRequest extends FormRequest
             'relationship'    => 'nullable|in:ayah,ibu,wali',
             'address'         => 'nullable|string',
             'email'           => 'nullable|email|max:100|unique:users,email,' . ($userId ?? 'NULL'),
-            'password'        => 'nullable|min:6',
+            'password'        => 'nullable|string|min:6',
             'is_active'       => 'boolean',
         ];
     }
@@ -41,6 +45,7 @@ class ParentRequest extends FormRequest
             'nik.unique'     => 'NIK ini sudah terdaftar.',
             'email.unique'   => 'Email ini sudah digunakan oleh akun lain.',
             'email.email'    => 'Format email tidak valid.',
+            'password.min'   => 'Password minimal harus 6 karakter.',
         ];
     }
 
