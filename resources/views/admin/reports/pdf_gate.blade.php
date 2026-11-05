@@ -115,7 +115,7 @@
             color: #3730a3;
             border: 1px solid #c7d2fe;
         }
-        .status-alpha {
+        .status-tidak_hadir {
             background-color: #fee2e2;
             color: #991b1b;
             border: 1px solid #fecaca;
@@ -134,12 +134,30 @@
 </head>
 <body>
 
+    @php
+        $logoPath = null;
+
+        if ($schoolProfile?->logo) {
+            $profileLogoPath = public_path('storage/' . ltrim($schoolProfile->logo, '/\\'));
+            if (is_file($profileLogoPath)) {
+                $logoPath = $profileLogoPath;
+            }
+        }
+
+        if (!$logoPath) {
+            $fallbackLogoPath = public_path('images.png');
+            if (is_file($fallbackLogoPath)) {
+                $logoPath = $fallbackLogoPath;
+            }
+        }
+    @endphp
+
     <!-- Letterhead / Kop Surat -->
     <table class="header-table">
         <tr>
-            @if($schoolProfile && $schoolProfile->logo)
+            @if($logoPath && is_file($logoPath))
                 <td class="header-logo">
-                    <img src="{{ public_path('storage/' . $schoolProfile->logo) }}" alt="Logo" style="max-height: 70px;">
+                    <img src="{{ $logoPath }}" alt="Logo" style="max-height: 70px; max-width: 70px; width: auto; height: auto;">
                 </td>
             @endif
             <td class="header-text">
@@ -173,7 +191,7 @@
             <td style="text-align: right;">Status</td>
             <td style="text-align: right;">:</td>
             <td style="text-align: right; text-transform: uppercase;">
-                {{ request('status') ?: 'Semua Status' }}
+                {{ $statusFilter ? ucfirst(str_replace('_', ' ', $statusFilter)) : 'Semua Status' }}
             </td>
         </tr>
     </table>

@@ -35,14 +35,27 @@ class ReportController extends Controller
         $subjects = Subject::orderBy('name')->get();
 
         $reportType = $request->input('report_type', 'gate');
-        $startDate = $request->input('start_date', $this->dateTimeService->now()->startOfMonth()->format('Y-m-d'));
-        $endDate = $request->input('end_date', $this->dateTimeService->now()->format('Y-m-d'));
+        if ($reportType === 'gate') {
+            $gateFilters = $this->resolveGateFilters($request);
+            $startDate = $gateFilters['start_date'];
+            $endDate = $gateFilters['end_date'];
+            $selectedStatus = $gateFilters['status'];
+        } else {
+            $startDate = $request->input('start_date', $this->dateTimeService->now()->startOfMonth()->format('Y-m-d'));
+            $endDate = $request->input('end_date', $this->dateTimeService->now()->format('Y-m-d'));
+            $selectedStatus = $request->input('status');
+        }
 
         $previewData = collect();
 
         if ($request->has('filter')) {
             if ($reportType === 'gate') {
-                $previewData = $this->getGateQuery($request)->paginate(20)->appends($request->query());
+                $previewData = $this->getGateQuery(
+                    $request,
+                    $startDate,
+                    $endDate,
+                    $selectedStatus
+                )->paginate(20)->appends($request->query());
             } else {
                 $previewData = $this->getSubjectQuery($request)->paginate(20)->appends($request->query());
             }
@@ -54,6 +67,7 @@ class ReportController extends Controller
             'reportType',
             'startDate',
             'endDate',
+            'selectedStatus',
             'previewData'
         ));
     }
@@ -67,7 +81,13 @@ class ReportController extends Controller
         $fileName = 'Laporan_Absensi_' . ($reportType === 'gate' ? 'Gerbang' : 'Mapel') . '_' . date('Ymd_His') . '.xlsx';
 
         if ($reportType === 'gate') {
-            $data = $this->getGateQuery($request)->get();
+            $gateFilters = $this->resolveGateFilters($request);
+            $data = $this->getGateQuery(
+                $request,
+                $gateFilters['start_date'],
+                $gateFilters['end_date'],
+                $gateFilters['status']
+            )->get();
             ActivityLogService::logExport('Absensi Gerbang', $data->count(), 'Excel');
             return Excel::download(new AttendanceGateExport($data), $fileName);
         } else {
@@ -84,15 +104,28 @@ class ReportController extends Controller
     {
         $reportType = $request->input('report_type', 'gate');
         $schoolProfile = SchoolProfile::first();
-        $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date')) : null;
-        $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date')) : null;
+        if ($reportType === 'gate') {
+            $gateFilters = $this->resolveGateFilters($request);
+            $startDate = Carbon::parse($gateFilters['start_date']);
+            $endDate = Carbon::parse($gateFilters['end_date']);
+            $statusFilter = $gateFilters['status'];
+        } else {
+            $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date')) : null;
+            $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date')) : null;
+        }
 
         $fileName = 'Laporan_Absensi_' . ($reportType === 'gate' ? 'Gerbang' : 'Mapel') . '_' . date('Ymd_His') . '.pdf';
 
         if ($reportType === 'gate') {
-            $data = $this->getGateQuery($request)->get();
+            $data = $this->getGateQuery(
+                $request,
+                $startDate->format('Y-m-d'),
+                $endDate->format('Y-m-d'),
+                $statusFilter
+            )->get();
             ActivityLogService::logExport('Absensi Gerbang', $data->count(), 'PDF');
-            $pdf = Pdf::loadView('admin.reports.pdf_gate', compact('data', 'schoolProfile', 'startDate', 'endDate'));
+            $pdf = Pdf::loadView('admin.reports.pdf_gate', compact('data', 'schoolProfile', 'startDate', 'endDate', 'statusFilter'));
+            $pdf->setOption('chroot', public_path());
             return $pdf->setPaper('a4', 'portrait')->download($fileName);
         } else {
             $data = $this->getSubjectQuery($request)->get();
@@ -105,28 +138,51 @@ class ReportController extends Controller
     /**
      * Helper to query Attendance Gate data.
      */
-    protected function getGateQuery(Request $request)
+    protected function getGateQuery(Request $request, string $startDate, string $endDate, ?string $status)
     {
         $query = AttendanceGate::with(['student.class'])
             ->orderByDesc('date')
-            ->orderByDesc('time_in');
+            ->orderByDesc('time_in')
+            ->where('date', '>=', $startDate)
+            ->where('date', '<=', $endDate);
 
-        if ($request->filled('start_date')) {
-            $query->where('date', '>=', $request->start_date);
-        }
-        if ($request->filled('end_date')) {
-            $query->where('date', '<=', $request->end_date);
-        }
         if ($request->filled('class_id')) {
             $query->whereHas('student', function ($q) use ($request) {
                 $q->where('class_id', $request->class_id);
             });
         }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        if ($status !== null && $status !== '') {
+            $query->where('status', $status);
         }
 
         return $query;
+    }
+
+    /**
+     * Resolve gate report defaults without changing subject report behavior.
+     */
+    private function resolveGateFilters(Request $request): array
+    {
+        $latestAttendanceDate = AttendanceGate::max('date');
+        $defaultEndDate = $latestAttendanceDate
+            ? Carbon::parse($latestAttendanceDate)
+            : $this->dateTimeService->now();
+        $defaultStartDate = $defaultEndDate->copy()->startOfMonth();
+
+        $status = $request->input('status');
+        if ($status === 'alpha') {
+            $status = 'tidak_hadir';
+        }
+
+        return [
+            'start_date' => $request->filled('start_date')
+                ? $request->input('start_date')
+                : $defaultStartDate->format('Y-m-d'),
+            'end_date' => $request->filled('end_date')
+                ? $request->input('end_date')
+                : $defaultEndDate->format('Y-m-d'),
+            'status' => $status,
+        ];
     }
 
     /**
@@ -161,7 +217,7 @@ class ReportController extends Controller
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->where('attendance_subject_details.status', $request->status);
         }
 
         // Join to order by date desc
