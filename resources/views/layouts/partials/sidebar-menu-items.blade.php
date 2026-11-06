@@ -28,6 +28,15 @@ PARAMETER:
             return request()->routeIs($routeName);
         }
 
+        // Academic year routes need separate active states for the list and transition menu.
+        if ($routeName === 'admin.academic-years.index') {
+            return request()->routeIs('admin.academic-years.*')
+                && !request()->routeIs('admin.academic-years.transition.*');
+        }
+        if ($routeName === 'admin.academic-years.transition.index') {
+            return request()->routeIs('admin.academic-years.transition.*');
+        }
+
         // Route profile.* (exact prefix)
         if (str_contains($routeName, 'profile.')) {
             return request()->routeIs('profile.*');
