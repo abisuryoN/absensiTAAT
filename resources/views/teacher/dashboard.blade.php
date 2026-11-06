@@ -44,7 +44,7 @@
                 <h4 class="fw-bold mb-0" style="color:#1e293b;">Dashboard Guru</h4>
                 <p class="text-muted mb-0 fs-7">Selamat datang, {{ auth()->user()->name }}</p>
             </div>
-            <span class="badge bg-light text-secondary border fs-8">
+            <span class="badge fs-8" style="background:#1e293b;color:#fff;">
                 <i class="bi bi-clock me-1"></i>{{ now()->format('d M Y') }}
             </span>
         </div>
