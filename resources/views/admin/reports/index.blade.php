@@ -70,6 +70,17 @@
         .report-filter-card .custom-select-wrapper.is-open {
             z-index: 3;
         }
+
+        @media (max-width: 991.98px) {
+            .report-filter-card.has-open-dropdown {
+                z-index: 1031;
+            }
+
+            body.report-filter-dropdown-open .mobile-bottom-nav {
+                visibility: hidden !important;
+                pointer-events: none !important;
+            }
+        }
     </style>
     @endpush
 
@@ -404,6 +415,11 @@
 
             const dropdown = statusWrapper.querySelector('.custom-select__dropdown');
             const triggerLabel = statusWrapper.querySelector('.custom-select__trigger span');
+            dropdown.classList.remove('active');
+            statusWrapper.querySelector('.custom-select__trigger').classList.remove('active');
+            statusWrapper.classList.remove('is-open');
+            statusWrapper.closest('.report-filter-card')?.classList.remove('has-open-dropdown');
+            document.body.classList.remove('report-filter-dropdown-open');
             dropdown.replaceChildren();
             const allStatusesCustomOption = document.createElement('div');
             allStatusesCustomOption.className = 'custom-select__option';
@@ -419,6 +435,9 @@
                 triggerLabel.classList.add('custom-select__placeholder');
                 dropdown.classList.remove('active');
                 statusWrapper.querySelector('.custom-select__trigger').classList.remove('active');
+                statusWrapper.classList.remove('is-open');
+                statusWrapper.closest('.report-filter-card')?.classList.remove('has-open-dropdown');
+                document.body.classList.remove('report-filter-dropdown-open');
                 statusSelect.dispatchEvent(new Event('change', { bubbles: true }));
             });
             dropdown.appendChild(allStatusesCustomOption);
@@ -438,6 +457,9 @@
                     triggerLabel.classList.remove('custom-select__placeholder');
                     dropdown.classList.remove('active');
                     statusWrapper.querySelector('.custom-select__trigger').classList.remove('active');
+                    statusWrapper.classList.remove('is-open');
+                    statusWrapper.closest('.report-filter-card')?.classList.remove('has-open-dropdown');
+                    document.body.classList.remove('report-filter-dropdown-open');
                     statusSelect.dispatchEvent(new Event('change', { bubbles: true }));
                 });
                 dropdown.appendChild(customOption);
