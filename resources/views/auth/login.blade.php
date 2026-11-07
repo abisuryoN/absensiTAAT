@@ -1,4 +1,7 @@
 <x-guest-layout>
+    <div class="text-center mb-4">
+        <img src="{{ asset('images.png') }}" alt="Logo" width="80" height="80" class="rounded-circle object-fit-cover shadow-sm">
+    </div>
     <h4 class="fw-bold text-center mb-4">Masuk ke Sistem Absensi</h4>
 
     <!-- Session Status -->
