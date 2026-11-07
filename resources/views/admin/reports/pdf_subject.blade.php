@@ -5,7 +5,7 @@
     <title>Laporan Absensi Mata Pelajaran</title>
     <style>
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: Helvetica, Arial, sans-serif;
             font-size: 8.5pt;
             color: #334155;
             line-height: 1.4;
@@ -82,9 +82,6 @@
             padding: 8px 6px;
             color: #334155;
         }
-        .data-table tr:nth-child(even) td {
-            background-color: #f8fafc;
-        }
         .status-badge {
             display: inline-block;
             font-weight: 700;
@@ -139,12 +136,28 @@
 </head>
 <body>
 
+    @php
+        $logoPath = null;
+        if ($schoolProfile?->logo) {
+            $profileLogoPath = public_path('storage/' . ltrim($schoolProfile->logo, '/\\'));
+            if (is_file($profileLogoPath)) {
+                $logoPath = $profileLogoPath;
+            }
+        }
+        if (!$logoPath) {
+            $fallbackLogoPath = public_path('images.png');
+            if (is_file($fallbackLogoPath)) {
+                $logoPath = $fallbackLogoPath;
+            }
+        }
+    @endphp
+
     <!-- Letterhead / Kop Surat -->
     <table class="header-table">
         <tr>
-            @if($schoolProfile && $schoolProfile->logo)
+            @if($logoPath)
                 <td class="header-logo">
-                    <img src="{{ public_path('storage/' . $schoolProfile->logo) }}" alt="Logo" style="max-height: 60px;">
+                    <img src="{{ $logoPath }}" alt="Logo" style="max-height: 60px; max-width: 60px; width: auto; height: auto;">
                 </td>
             @endif
             <td class="header-text">
@@ -168,7 +181,7 @@
             <td style="width: 12%; text-align: right;">Kelas</td>
             <td style="width: 2%; text-align: right;">:</td>
             <td style="width: 15%; text-align: right; font-weight: bold;">
-                {{ request('class_id') ? (App\Models\SchoolClass::find(request('class_id'))->name ?? 'Semua') : 'Semua Kelas' }}
+                {{ $className }}
             </td>
         </tr>
         <tr>
@@ -178,7 +191,7 @@
             <td style="text-align: right;">Mapel</td>
             <td style="text-align: right;">:</td>
             <td style="text-align: right; font-weight: bold;">
-                {{ request('subject_id') ? (App\Models\Subject::find(request('subject_id'))->name ?? 'Semua') : 'Semua Mapel' }}
+                {{ $subjectName }}
             </td>
         </tr>
     </table>

@@ -60,6 +60,16 @@
             text-transform: capitalize;
             text-align: center;
         }
+
+        .report-filter-card {
+            position: relative;
+            z-index: 2;
+            overflow: visible;
+        }
+
+        .report-filter-card .custom-select-wrapper.is-open {
+            z-index: 3;
+        }
     </style>
     @endpush
 
@@ -78,7 +88,7 @@
 
         <!-- Filter Card -->
         <div class="col-12">
-            <div class="card glass-card border-0 shadow-sm p-4">
+            <div class="card glass-card border-0 shadow-sm p-4 report-filter-card">
                 <form method="GET" action="{{ route('admin.reports.index') }}" class="row g-3">
                     <input type="hidden" name="filter" value="1">
 

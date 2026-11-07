@@ -16,6 +16,7 @@ use App\Services\ActivityLogService;
 use App\Services\DateTimeService;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use setasign\Fpdi\Fpdi;
 
 class ReportController extends Controller
 {
@@ -102,6 +103,10 @@ class ReportController extends Controller
      */
     public function exportPdf(Request $request)
     {
+        // Keep the larger resource budget scoped to PDF exports instead of changing global PHP settings.
+        set_time_limit(300);
+        ini_set('memory_limit', '512M');
+
         $reportType = $request->input('report_type', 'gate');
         $schoolProfile = SchoolProfile::first();
         if ($reportType === 'gate') {
@@ -117,22 +122,128 @@ class ReportController extends Controller
         $fileName = 'Laporan_Absensi_' . ($reportType === 'gate' ? 'Gerbang' : 'Mapel') . '_' . date('Ymd_His') . '.pdf';
 
         if ($reportType === 'gate') {
-            $data = $this->getGateQuery(
+            $data = $this->getGatePdfQuery(
                 $request,
                 $startDate->format('Y-m-d'),
                 $endDate->format('Y-m-d'),
                 $statusFilter
             )->get();
+            $className = $request->filled('class_id')
+                ? (SchoolClass::whereKey($request->input('class_id'))->value('name') ?? 'Semua Kelas')
+                : 'Semua Kelas';
             ActivityLogService::logExport('Absensi Gerbang', $data->count(), 'PDF');
-            $pdf = Pdf::loadView('admin.reports.pdf_gate', compact('data', 'schoolProfile', 'startDate', 'endDate', 'statusFilter'));
-            $pdf->setOption('chroot', public_path());
-            return $pdf->setPaper('a4', 'portrait')->download($fileName);
+
+            $dataChunks = $data->isEmpty() ? collect([collect()]) : $data->chunk(300)->values();
+            $temporaryFiles = [];
+
+            try {
+                foreach ($dataChunks as $chunkIndex => $chunkData) {
+                    $chunkPath = tempnam(sys_get_temp_dir(), 'absensi-gate-pdf-');
+                    if ($chunkPath === false) {
+                        throw new \RuntimeException('Tidak dapat membuat file sementara untuk PDF absensi.');
+                    }
+                    $temporaryFiles[] = $chunkPath;
+
+                    $pdf = app('dompdf.wrapper')->loadView('admin.reports.pdf_gate', [
+                        'data' => $chunkData,
+                        'schoolProfile' => $schoolProfile,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate,
+                        'statusFilter' => $statusFilter,
+                        'className' => $className,
+                        'includeReportHeader' => $chunkIndex === 0,
+                        'includeSignature' => $chunkIndex === $dataChunks->count() - 1,
+                        'rowNumberOffset' => $chunkIndex * 300,
+                    ]);
+                    $pdf->setOptions([
+                        'chroot' => public_path(),
+                        'isRemoteEnabled' => false,
+                        'isPhpEnabled' => false,
+                        'defaultFont' => 'Helvetica',
+                    ])->setPaper('a4', 'portrait')->save($chunkPath);
+
+                    unset($pdf);
+                    gc_collect_cycles();
+                }
+
+                $mergedPdf = new Fpdi('P', 'mm', 'A4');
+                foreach ($temporaryFiles as $temporaryFile) {
+                    $pageCount = $mergedPdf->setSourceFile($temporaryFile);
+                    for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++) {
+                        $templateId = $mergedPdf->importPage($pageNumber);
+                        $pageSize = $mergedPdf->getTemplateSize($templateId);
+                        $mergedPdf->AddPage($pageSize['orientation'], [$pageSize['width'], $pageSize['height']]);
+                        $mergedPdf->useTemplate($templateId);
+                    }
+                }
+
+                $content = $mergedPdf->Output('S');
+                return response($content, 200, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+                    'Content-Length' => (string) strlen($content),
+                ]);
+            } finally {
+                foreach ($temporaryFiles as $temporaryFile) {
+                    if (is_file($temporaryFile)) {
+                        @unlink($temporaryFile);
+                    }
+                }
+            }
         } else {
             $data = $this->getSubjectQuery($request)->get();
+            $className = $request->filled('class_id')
+                ? (SchoolClass::whereKey($request->input('class_id'))->value('name') ?? 'Semua Kelas')
+                : 'Semua Kelas';
+            $subjectName = $request->filled('subject_id')
+                ? (Subject::whereKey($request->input('subject_id'))->value('name') ?? 'Semua Mapel')
+                : 'Semua Mapel';
             ActivityLogService::logExport('Absensi Mapel', $data->count(), 'PDF');
-            $pdf = Pdf::loadView('admin.reports.pdf_subject', compact('data', 'schoolProfile', 'startDate', 'endDate'));
+            $pdf = Pdf::loadView('admin.reports.pdf_subject', compact(
+                'data',
+                'schoolProfile',
+                'startDate',
+                'endDate',
+                'className',
+                'subjectName'
+            ));
+            $pdf->setOptions([
+                'chroot' => public_path(),
+                'isRemoteEnabled' => false,
+                'isPhpEnabled' => false,
+                'defaultFont' => 'Helvetica',
+            ]);
             return $pdf->setPaper('a4', 'landscape')->download($fileName);
         }
+    }
+
+    /**
+     * Query only the fields displayed in the gate PDF and eager load its relations.
+     */
+    private function getGatePdfQuery(Request $request, string $startDate, string $endDate, ?string $status)
+    {
+        $query = AttendanceGate::query()
+            ->select(['id', 'student_id', 'date', 'time_in', 'status', 'method'])
+            ->with([
+                'student:id,class_id,nis,name',
+                'student.class:id,name',
+            ])
+            ->orderByDesc('date')
+            ->orderByDesc('time_in')
+            ->where('date', '>=', $startDate)
+            ->where('date', '<=', $endDate);
+
+        if ($request->filled('class_id')) {
+            $query->whereHas('student', function ($studentQuery) use ($request) {
+                $studentQuery->where('class_id', $request->input('class_id'));
+            });
+        }
+
+        if ($status !== null && $status !== '') {
+            $query->where('status', $status);
+        }
+
+        return $query;
     }
 
     /**
@@ -140,7 +251,11 @@ class ReportController extends Controller
      */
     protected function getGateQuery(Request $request, string $startDate, string $endDate, ?string $status)
     {
-        $query = AttendanceGate::with(['student.class'])
+        $query = AttendanceGate::with([
+            'student.user',
+            'student.class.major',
+            'scanner',
+        ])
             ->orderByDesc('date')
             ->orderByDesc('time_in')
             ->where('date', '>=', $startDate)
@@ -193,6 +308,8 @@ class ReportController extends Controller
         $query = AttendanceSubjectDetail::with([
             'attendanceSubject.schedule.subject',
             'attendanceSubject.schedule.teacher',
+            'attendanceSubject.schedule.class',
+            'student.user',
             'student.class'
         ]);
 

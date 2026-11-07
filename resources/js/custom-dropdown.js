@@ -161,10 +161,12 @@ class CustomDropdown {
         document.querySelectorAll('.custom-select__dropdown.active').forEach(dropdown => {
             dropdown.classList.remove('active');
             dropdown.previousElementSibling.classList.remove('active');
+            dropdown.closest('.custom-select-wrapper')?.classList.remove('is-open');
         });
         
         this.dropdown.classList.add('active');
         this.trigger.classList.add('active');
+        this.wrapper.classList.add('is-open');
         
         // Focus search if searchable
         if (this.options.searchable) {
@@ -177,6 +179,7 @@ class CustomDropdown {
     close() {
         this.dropdown.classList.remove('active');
         this.trigger.classList.remove('active');
+        this.wrapper.classList.remove('is-open');
         
         // Clear search
         if (this.options.searchable) {
@@ -233,6 +236,7 @@ class CustomDropdown {
     }
     
     destroy() {
+        this.wrapper.classList.remove('is-open');
         this.customSelect.remove();
         this.select.style.display = '';
     }
