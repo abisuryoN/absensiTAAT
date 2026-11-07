@@ -11,8 +11,8 @@ $mobile-header-bg: #ffffff;
 $mobile-radius-sm: 8px;
 $mobile-radius-lg: 12px;
 
-// ─── MOBILE LAYOUT (<768px) ─────────────────────────────────────
-@media (max-width: 767.98px) {
+// ─── MOBILE & TABLET LAYOUT (<992px) ────────────────────────────
+@media (max-width: 991.98px) {
     // ─── LAYOUT ───────────────────────────────────────────────
     .mobile-layout {
         min-height: 100vh;
