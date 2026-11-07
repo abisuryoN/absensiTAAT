@@ -161,7 +161,7 @@
         </div>
 
         {{-- Mobile Body --}}
-        <div class="d-block d-md-none mobile-card-body">
+        <div class="d-block d-md-none mobile-card-body parents-mobile">
             <div class="mobile-search-card">
                 <form method="GET" action="{{ route('admin.parents.index') }}" class="mobile-search-form">
                     <div class="mobile-search-row">
