@@ -60,6 +60,27 @@
             text-transform: capitalize;
             text-align: center;
         }
+
+        .report-filter-card {
+            position: relative;
+            z-index: 2;
+            overflow: visible;
+        }
+
+        .report-filter-card .custom-select-wrapper.is-open {
+            z-index: 3;
+        }
+
+        @media (max-width: 991.98px) {
+            .report-filter-card.has-open-dropdown {
+                z-index: 1031;
+            }
+
+            body.report-filter-dropdown-open .mobile-bottom-nav {
+                visibility: hidden !important;
+                pointer-events: none !important;
+            }
+        }
     </style>
     @endpush
 
@@ -78,7 +99,7 @@
 
         <!-- Filter Card -->
         <div class="col-12">
-            <div class="card glass-card border-0 shadow-sm p-4">
+            <div class="card glass-card border-0 shadow-sm p-4 report-filter-card">
                 <form method="GET" action="{{ route('admin.reports.index') }}" class="row g-3">
                     <input type="hidden" name="filter" value="1">
 
@@ -136,11 +157,11 @@
                         <select name="status" class="form-select form-select-sm">
                             <option value="">Semua Status</option>
                             @if($reportType === 'gate')
-                                <option value="hadir" {{ request('status') === 'hadir' ? 'selected' : '' }}>Hadir</option>
-                                <option value="terlambat" {{ request('status') === 'terlambat' ? 'selected' : '' }}>Terlambat</option>
-                                <option value="izin" {{ request('status') === 'izin' ? 'selected' : '' }}>Izin</option>
-                                <option value="sakit" {{ request('status') === 'sakit' ? 'selected' : '' }}>Sakit</option>
-                                <option value="alpha" {{ request('status') === 'alpha' ? 'selected' : '' }}>Alpha</option>
+                                <option value="hadir" {{ $selectedStatus === 'hadir' ? 'selected' : '' }}>Hadir</option>
+                                <option value="terlambat" {{ $selectedStatus === 'terlambat' ? 'selected' : '' }}>Terlambat</option>
+                                <option value="izin" {{ $selectedStatus === 'izin' ? 'selected' : '' }}>Izin</option>
+                                <option value="sakit" {{ $selectedStatus === 'sakit' ? 'selected' : '' }}>Sakit</option>
+                                <option value="tidak_hadir" {{ $selectedStatus === 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir</option>
                             @else
                                 <option value="hadir" {{ request('status') === 'hadir' ? 'selected' : '' }}>Hadir</option>
                                 <option value="izin" {{ request('status') === 'izin' ? 'selected' : '' }}>Izin</option>
@@ -166,6 +187,21 @@
 
         <!-- Preview Card -->
         @if(request()->has('filter'))
+            @php
+                $reportQuery = request()->query();
+                if ($reportType === 'gate') {
+                    $reportQuery['report_type'] = 'gate';
+                    $reportQuery['start_date'] = $startDate;
+                    $reportQuery['end_date'] = $endDate;
+                    if ($selectedStatus) {
+                        $reportQuery['status'] = $selectedStatus;
+                    } else {
+                        unset($reportQuery['status']);
+                    }
+                    unset($reportQuery['page']);
+                    $previewData->appends($reportQuery);
+                }
+            @endphp
             <div class="col-12">
                 <div class="card glass-card border-0 shadow-sm">
                     <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -174,11 +210,11 @@
                         </h5>
                         <div class="d-flex align-items-center gap-2">
                             <!-- Excel Download -->
-                            <a href="{{ route('admin.reports.excel', request()->query()) }}" class="btn btn-sm btn-export-excel rounded-3 px-3 fs-8">
+                            <a href="{{ route('admin.reports.excel', $reportQuery) }}" class="btn btn-sm btn-export-excel rounded-3 px-3 fs-8">
                                 <i class="bi bi-file-earmark-excel me-1"></i>Ekspor Excel
                             </a>
                             <!-- PDF Download -->
-                            <a href="{{ route('admin.reports.pdf', request()->query()) }}" class="btn btn-sm btn-export-pdf rounded-3 px-3 fs-8">
+                            <a href="{{ route('admin.reports.pdf', $reportQuery) }}" class="btn btn-sm btn-export-pdf rounded-3 px-3 fs-8">
                                 <i class="bi bi-file-earmark-pdf me-1"></i>Ekspor PDF
                             </a>
                         </div>
@@ -228,6 +264,7 @@
                                                 'izin' => ['bg' => 'bg-info', 'icon' => 'bi-envelope-fill'],
                                                 'sakit' => ['bg' => 'bg-primary', 'icon' => 'bi-heart-pulse-fill'],
                                                 'alpha' => ['bg' => 'bg-danger', 'icon' => 'bi-x-circle-fill'],
+                                                'tidak_hadir' => ['bg' => 'bg-danger', 'icon' => 'bi-x-circle-fill'],
                                                 'dispensasi' => ['bg' => 'bg-warning text-dark', 'icon' => 'bi-award-fill'],
                                             ];
                                         @endphp
@@ -346,6 +383,93 @@
         function toggleSubjectFilter() {
             const reportType = document.getElementById('report_type').value;
             const subjectFilter = document.getElementById('subject_filter_wrapper');
+            const statusSelect = document.querySelector('select[name="status"]');
+            const statusWrapper = statusSelect.closest('.custom-select-wrapper');
+            const currentStatus = statusSelect.value;
+            const statusOptions = reportType === 'gate'
+                ? [
+                    { value: 'hadir', label: 'Hadir' },
+                    { value: 'terlambat', label: 'Terlambat' },
+                    { value: 'izin', label: 'Izin' },
+                    { value: 'sakit', label: 'Sakit' },
+                    { value: 'tidak_hadir', label: 'Tidak Hadir' },
+                ]
+                : [
+                    { value: 'hadir', label: 'Hadir' },
+                    { value: 'izin', label: 'Izin' },
+                    { value: 'sakit', label: 'Sakit' },
+                    { value: 'alpha', label: 'Alpha' },
+                    { value: 'dispensasi', label: 'Dispensasi' },
+                ];
+            const selectedStatus = statusOptions.some(option => option.value === currentStatus)
+                ? currentStatus
+                : '';
+
+            statusSelect.replaceChildren();
+            const allStatusesOption = new Option('Semua Status', '');
+            statusSelect.add(allStatusesOption);
+            statusOptions.forEach(option => {
+                statusSelect.add(new Option(option.label, option.value));
+            });
+            statusSelect.value = selectedStatus;
+
+            const dropdown = statusWrapper.querySelector('.custom-select__dropdown');
+            const triggerLabel = statusWrapper.querySelector('.custom-select__trigger span');
+            dropdown.classList.remove('active');
+            statusWrapper.querySelector('.custom-select__trigger').classList.remove('active');
+            statusWrapper.classList.remove('is-open');
+            statusWrapper.closest('.report-filter-card')?.classList.remove('has-open-dropdown');
+            document.body.classList.remove('report-filter-dropdown-open');
+            dropdown.replaceChildren();
+            const allStatusesCustomOption = document.createElement('div');
+            allStatusesCustomOption.className = 'custom-select__option';
+            allStatusesCustomOption.dataset.value = '';
+            allStatusesCustomOption.textContent = 'Semua Status';
+            if (!selectedStatus) allStatusesCustomOption.classList.add('selected');
+            allStatusesCustomOption.addEventListener('click', () => {
+                statusSelect.value = '';
+                dropdown.querySelectorAll('.custom-select__option').forEach(item => {
+                    item.classList.toggle('selected', item.dataset.value === '');
+                });
+                triggerLabel.textContent = 'Semua Status';
+                triggerLabel.classList.add('custom-select__placeholder');
+                dropdown.classList.remove('active');
+                statusWrapper.querySelector('.custom-select__trigger').classList.remove('active');
+                statusWrapper.classList.remove('is-open');
+                statusWrapper.closest('.report-filter-card')?.classList.remove('has-open-dropdown');
+                document.body.classList.remove('report-filter-dropdown-open');
+                statusSelect.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+            dropdown.appendChild(allStatusesCustomOption);
+
+            statusOptions.forEach(option => {
+                const customOption = document.createElement('div');
+                customOption.className = 'custom-select__option';
+                customOption.dataset.value = option.value;
+                customOption.textContent = option.label;
+                if (option.value === selectedStatus) customOption.classList.add('selected');
+                customOption.addEventListener('click', () => {
+                    statusSelect.value = option.value;
+                    dropdown.querySelectorAll('.custom-select__option').forEach(item => {
+                        item.classList.toggle('selected', item.dataset.value === option.value);
+                    });
+                    triggerLabel.textContent = option.label;
+                    triggerLabel.classList.remove('custom-select__placeholder');
+                    dropdown.classList.remove('active');
+                    statusWrapper.querySelector('.custom-select__trigger').classList.remove('active');
+                    statusWrapper.classList.remove('is-open');
+                    statusWrapper.closest('.report-filter-card')?.classList.remove('has-open-dropdown');
+                    document.body.classList.remove('report-filter-dropdown-open');
+                    statusSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+                dropdown.appendChild(customOption);
+            });
+
+            triggerLabel.textContent = selectedStatus
+                ? statusOptions.find(option => option.value === selectedStatus).label
+                : 'Semua Status';
+            triggerLabel.classList.toggle('custom-select__placeholder', !selectedStatus);
+
             if (reportType === 'subject') {
                 subjectFilter.style.display = 'block';
             } else {

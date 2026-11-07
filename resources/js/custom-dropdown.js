@@ -161,10 +161,22 @@ class CustomDropdown {
         document.querySelectorAll('.custom-select__dropdown.active').forEach(dropdown => {
             dropdown.classList.remove('active');
             dropdown.previousElementSibling.classList.remove('active');
+            const wrapper = dropdown.closest('.custom-select-wrapper');
+            wrapper?.classList.remove('is-open');
+            wrapper?.closest('.report-filter-card')?.classList.remove('has-open-dropdown');
+            if (wrapper?.closest('.report-filter-card')) {
+                document.body.classList.remove('report-filter-dropdown-open');
+            }
         });
         
         this.dropdown.classList.add('active');
         this.trigger.classList.add('active');
+        this.wrapper.classList.add('is-open');
+        const reportFilterCard = this.wrapper.closest('.report-filter-card');
+        reportFilterCard?.classList.add('has-open-dropdown');
+        if (reportFilterCard) {
+            document.body.classList.add('report-filter-dropdown-open');
+        }
         
         // Focus search if searchable
         if (this.options.searchable) {
@@ -177,6 +189,12 @@ class CustomDropdown {
     close() {
         this.dropdown.classList.remove('active');
         this.trigger.classList.remove('active');
+        this.wrapper.classList.remove('is-open');
+        const reportFilterCard = this.wrapper.closest('.report-filter-card');
+        reportFilterCard?.classList.remove('has-open-dropdown');
+        if (reportFilterCard) {
+            document.body.classList.remove('report-filter-dropdown-open');
+        }
         
         // Clear search
         if (this.options.searchable) {
@@ -233,6 +251,12 @@ class CustomDropdown {
     }
     
     destroy() {
+        this.wrapper.classList.remove('is-open');
+        const reportFilterCard = this.wrapper.closest('.report-filter-card');
+        reportFilterCard?.classList.remove('has-open-dropdown');
+        if (reportFilterCard) {
+            document.body.classList.remove('report-filter-dropdown-open');
+        }
         this.customSelect.remove();
         this.select.style.display = '';
     }
