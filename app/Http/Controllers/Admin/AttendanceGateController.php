@@ -65,9 +65,10 @@ class AttendanceGateController extends Controller
                     'name' => $student->name,
                     'nis' => $student->nis,
                     'class' => $student->class->name ?? '-',
+                    'jurusan' => $student->class->major->name ?? '-',
                     'time' => substr($attendance->time_in, 0, 5),
                     'status' => ucfirst($attendance->status),
-                    'photo' => $student->photo ? asset('storage/' . $student->photo) : null,
+                    'photo' => $student->photo_url,
                 ]
             ]);
         } catch (\Exception $e) {

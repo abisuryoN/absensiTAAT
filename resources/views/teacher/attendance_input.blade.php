@@ -83,13 +83,12 @@
                                             <td data-label="No" class="px-4 text-muted fs-7">{{ $no++ }}</td>
                                             <td data-label="Siswa">
                                                 <div class="d-flex align-items-center gap-3">
-                                                    @if($student->photo)
-                                                        <img src="{{ asset('storage/' . $student->photo) }}" alt="" width="36" height="36" class="rounded-circle object-fit-cover border">
-                                                    @else
-                                                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; font-weight: 600; font-size: 0.8rem;">
-                                                            {{ substr($student->name, 0, 2) }}
-                                                        </div>
-                                                    @endif
+                                                    <img src="{{ $student->photo_url }}"
+                                                         alt="{{ $student->name }}"
+                                                         width="36"
+                                                         height="36"
+                                                         class="rounded-circle object-fit-cover border"
+                                                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&background=6366f1&color=fff&size=72&bold=true'">
                                                     <div>
                                                         <span class="fw-semibold text-dark d-block fs-7">{{ $student->name }}</span>
                                                         <span class="text-muted fs-8">NIS: {{ $student->nis ?? '-' }}</span>
@@ -162,7 +161,7 @@
                             </table>
                         </div>
                     </div>
-                    
+
                     <!-- Footer Form Actions -->
                     <div class="card-footer bg-transparent border-0 p-4 d-flex justify-content-between flex-wrap gap-2">
                         <div class="flex-grow-1" style="max-width: 400px;">

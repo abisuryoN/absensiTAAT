@@ -64,7 +64,7 @@
                 padding-left: 1rem !important;
                 padding-right: 1rem !important;
             }
-            
+
             .stat-card .card-body {
                 padding: 0.85rem 0.7rem !important;
             }
@@ -79,7 +79,7 @@
                 height: 38px;
                 font-size: 1rem;
             }
-            
+
             /* Ensure cards don't touch each other or edges */
             .row.g-4 {
                 --bs-gutter-x: 0.75rem;
@@ -87,12 +87,12 @@
                 margin-left: 0 !important;
                 margin-right: 0 !important;
             }
-            
+
             .row.g-4 > [class*='col-'] {
                 padding-left: 0.375rem !important;
                 padding-right: 0.375rem !important;
             }
-            
+
             /* Jadwal card header mobile spacing */
             .card-header .d-flex.flex-wrap {
                 gap: 0.5rem !important;
@@ -130,16 +130,11 @@
                 <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center gap-3 mb-3">
-                            @if(auth()->user()->profile_photo)
-                                <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" 
-                                     alt="Profile Photo" 
-                                     class="rounded-circle user-avatar-element"
-                                     style="width:52px;height:52px;object-fit:cover;flex-shrink:0;">
-                            @else
-                                <div style="width:52px;height:52px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700;flex-shrink:0;">
-                                    {{ strtoupper(substr($student->name ?? auth()->user()->name, 0, 1)) }}
-                                </div>
-                            @endif
+                            <img src="{{ auth()->user()->profile_photo_url }}"
+                                 alt="Profile Photo"
+                                 class="rounded-circle user-avatar-element"
+                                 style="width:52px;height:52px;object-fit:cover;flex-shrink:0;"
+                                 onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($student->name ?? auth()->user()->name) }}&background=3b82f6&color=fff&size=104&bold=true'">
                             <div>
                                 <div class="fw-bold" style="color:#1e293b;font-size:1rem;">{{ $student->name }}</div>
                                 <div class="text-muted fs-8">NIS: {{ $student->student_id_number ?? $student->nis ?? '-' }}</div>

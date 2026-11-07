@@ -207,11 +207,11 @@
                  aria-label="Pilih {{ $child->name }}">
                 <div class="selector-check"><i class="bi bi-check2"></i></div>
                 <div class="selector-avatar">
-                    @if($child->photo)
-                        <img src="{{ Storage::url($child->photo) }}" alt="" class="w-100 h-100 object-fit-cover" style="border-radius:10px;">
-                    @else
-                        {{ strtoupper(substr($child->name, 0, 1)) }}
-                    @endif
+                    <img src="{{ $child->photo_url }}"
+                         alt="{{ $child->name }}"
+                         class="w-100 h-100 object-fit-cover"
+                         style="border-radius:10px;"
+                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($child->name) }}&background=6366f1&color=fff&size=80&bold=true'">
                 </div>
                 <div class="selector-name">{{ $child->name }}</div>
                 <div class="selector-meta">

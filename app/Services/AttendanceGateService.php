@@ -234,14 +234,14 @@ class AttendanceGateService
                 if ($multiSession) {
                     $session = $this->sessionResolver->resolve($student);
                     if ($session) {
-                        $autoAlpha = Carbon::createFromFormat('H:i', substr($session->auto_alpha_time, 0, 5));
+                        $autoAlpha = Carbon::createFromFormat('Y-m-d H:i', $targetDate . ' ' . substr($session->auto_alpha_time, 0, 5));
                         if ($now->lt($autoAlpha)) {
                             continue; // Session not yet past auto-alpha time
                         }
                     }
                 } else {
                     $autoAlphaStr = Setting::getVal('auto_alpha_time', '23:00');
-                    $autoAlpha    = Carbon::createFromFormat('H:i', substr($autoAlphaStr, 0, 5));
+                    $autoAlpha    = Carbon::createFromFormat('Y-m-d H:i', $targetDate . ' ' . substr($autoAlphaStr, 0, 5));
                     if ($now->lt($autoAlpha)) {
                         continue;
                     }

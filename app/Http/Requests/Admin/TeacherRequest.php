@@ -13,9 +13,9 @@ class TeacherRequest extends FormRequest
 
     public function rules(): array
     {
-        $teacherId = $this->route('teacher');
-        $teacher = $teacherId ? \App\Models\Teacher::find($teacherId) : null;
-        $userId = $teacher ? $teacher->user_id : null;
+        $teacher = $this->route('teacher');
+        $teacherId = $teacher instanceof \App\Models\Teacher ? $teacher->id : null;
+        $userId = $teacher instanceof \App\Models\Teacher ? $teacher->user_id : null;
 
         return [
             'nip' => 'nullable|string|max:30|unique:teachers,nip,' . $teacherId,
@@ -25,7 +25,7 @@ class TeacherRequest extends FormRequest
             'phone' => 'nullable|string|max:20',
             'gender' => 'required|in:L,P',
             'address' => 'nullable|string',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'password' => $teacherId ? 'nullable|min:6' : 'nullable|min:6',
             'is_active' => 'nullable|boolean',
             'subjects' => 'nullable|array',

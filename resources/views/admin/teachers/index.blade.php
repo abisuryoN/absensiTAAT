@@ -59,7 +59,7 @@
                         @forelse($teachers as $teacher)
                             <tr>
                                 <td data-label="Foto">
-                                    <img src="{{ $teacher->user?->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($teacher->name).'&background=4f46e5&color=fff&size=80&bold=true' }}"
+                                    <img src="{{ $teacher->photo_url }}"
                                          alt="{{ $teacher->name }}"
                                          class="rounded-circle object-fit-cover clickable-avatar"
                                          style="width:40px;height:40px;border:2px solid #e2e8f0;cursor:pointer;"

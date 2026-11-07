@@ -148,7 +148,7 @@ class GuruPiketController extends Controller
                     'time'    => substr($attendance->time_in, 0, 5),
                     'status'  => ucfirst($attendance->status),
                     'petugas' => $namaLengkap,
-                    'photo'   => $student->photo ? asset('storage/' . $student->photo) : null,
+                    'photo'   => $student->photo_url,
                 ]
             ]);
         } catch (\Exception $e) {

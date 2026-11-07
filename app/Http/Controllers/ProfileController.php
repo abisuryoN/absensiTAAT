@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Buglinjo\LaravelWebp\Facades\WebP;
+use Buglinjo\LaravelWebp\Facades\Webp;
 
 class ProfileController extends Controller
 {
@@ -71,13 +71,23 @@ class ProfileController extends Controller
             Storage::disk('public')->makeDirectory('profile-photos');
 
             // Konversi ke WebP menggunakan php-gd
-            $webpImage = WebP::make($request->file('photo'))
+            $webpImage = Webp::make($request->file('photo'))
                 ->quality(80);
             $webpImage->save($fullPath);
 
             // Update database
             $user->profile_photo = $destPath;
             $user->save();
+
+            // If user is a teacher, sync photo to teacher record
+            if ($user->teacher) {
+                $user->teacher->update(['photo' => $destPath]);
+            }
+
+            // If user is a student, sync photo to student record
+            if ($user->student) {
+                $user->student->update(['photo' => $destPath]);
+            }
 
             DB::commit();
 
@@ -119,6 +129,16 @@ class ProfileController extends Controller
 
             $user->profile_photo = null;
             $user->save();
+
+            // If user is a teacher, clear photo from teacher record
+            if ($user->teacher) {
+                $user->teacher->update(['photo' => null]);
+            }
+
+            // If user is a student, clear photo from student record
+            if ($user->student) {
+                $user->student->update(['photo' => null]);
+            }
 
             DB::commit();
 
