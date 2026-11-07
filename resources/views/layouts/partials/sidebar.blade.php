@@ -22,7 +22,7 @@
             Official
         </span>
     </div>
-    
+
     {{-- Tahun Ajaran selector (dropdown for super_admin, static badge for other roles) --}}
     @include('layouts.partials.sidebar-academic-year')
 
@@ -31,22 +31,18 @@
             @include('layouts.partials.sidebar-menu-items', ['variant' => 'desktop'])
         </ul>
     </div>
-    
+
     <!-- User Profile Section -->
     <div class="sidebar-profile-container dropdown mt-auto">
         <button class="w-100 btn btn-link text-decoration-none dropdown-toggle p-0 d-flex align-items-center justify-content-between text-dark" type="button" id="sidebarUserMenu" data-bs-toggle="dropdown" aria-expanded="false">
             <div class="d-flex align-items-center gap-2 text-start">
                 <div class="position-relative">
-                    @if(auth()->user()->avatar)
-                        <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="" width="36" height="36" class="rounded-circle border border-2 border-white shadow-sm">
-                    @else
-                        <img src="{{ auth()->user()->profile_photo_url }}"
-                             alt="Avatar"
-                             width="36" height="36"
-                             class="rounded-circle border border-2 border-white shadow-sm object-fit-cover user-avatar-element"
-                             onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&size=128&bold=true'"
-                        >
-                    @endif
+                    <img src="{{ auth()->user()->profile_photo_url }}"
+                         alt="Avatar"
+                         width="36" height="36"
+                         class="rounded-circle border border-2 border-white shadow-sm object-fit-cover user-avatar-element"
+                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&size=72&bold=true'"
+                    >
                     <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-white rounded-circle animate-pulse" style="width: 10px; height: 10px;"></span>
                 </div>
                 <div class="overflow-hidden profile-text-container">
@@ -87,9 +83,9 @@
     function toggleSidebar() {
         const sidebar = document.querySelector('.sidebar');
         const toggleIcon = document.getElementById('toggle-icon');
-        
+
         sidebar.classList.toggle('collapsed');
-        
+
         if (sidebar.classList.contains('collapsed')) {
             toggleIcon.className = 'bi bi-chevron-right';
             localStorage.setItem('sidebar-collapsed', 'true');

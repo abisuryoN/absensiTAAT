@@ -21,7 +21,7 @@
                     <!-- Column 1: Akun Details -->
                     <div class="col-md-6 border-end pe-md-4">
                         <h5 class="fw-bold text-primary mb-3">Informasi Akun</h5>
-                        
+
                         <div class="mb-3">
                             <label for="email" class="form-label fw-semibold">Alamat Email <span class="text-danger">*</span></label>
                             <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" placeholder="guru@sman1tajurhalang.sch.id" value="{{ old('email', $teacher->user->email) }}" required>
@@ -63,15 +63,13 @@
                         <div class="mb-3">
                             <label for="photo" class="form-label fw-semibold">Foto Profil</label>
                             <div class="d-flex align-items-center gap-3 mb-2">
-                                @if($teacher->photo)
-                                    <img src="{{ Storage::url($teacher->photo) }}" alt="" class="rounded-circle object-fit-cover" style="width: 50px; height: 50px;">
-                                @endif
-                                <input type="file" name="photo" id="photo" class="form-control @error('photo') is-invalid @enderror" accept="image/*">
+                                <img id="photoPreview" src="{{ $teacher->photo_url }}" alt="Preview" class="rounded-circle object-fit-cover border" style="width: 50px; height: 50px;">
+                                <input type="file" name="photo" id="photo" class="form-control @error('photo') is-invalid @enderror" accept="image/jpeg,image/png,image/webp">
                             </div>
                             @error('photo')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
-                            <div class="form-text fs-8">Format JPG/PNG, Maksimal 2MB.</div>
+                            <div class="form-text fs-8">Format JPG/PNG/WEBP, Maksimal 2MB.</div>
                         </div>
                     </div>
 
@@ -167,4 +165,16 @@
             </form>
         </div>
     </div>
+
+<script>
+document.getElementById('photo').addEventListener('change', function () {
+    const file = this.files[0];
+    const preview = document.getElementById('photoPreview');
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = e => { preview.src = e.target.result; };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
 </x-app-layout>

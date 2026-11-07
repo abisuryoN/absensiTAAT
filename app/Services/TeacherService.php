@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class TeacherService
 {
@@ -85,58 +86,78 @@ class TeacherService
 
     public function update(Teacher $teacher, array $data): Teacher
     {
-        return DB::transaction(function () use ($teacher, $data) {
-            $original = $teacher->getAttributes();
-            $user = $teacher->user;
+        $oldPhoto = $teacher->photo;
+        $newPhoto = null;
 
-            // Handle photo upload
-            if (!empty($data['photo'])) {
-                if ($teacher->photo) {
-                    Storage::disk('public')->delete($teacher->photo);
+        if (!empty($data['photo'])) {
+            $newPhoto = $data['photo']->store('teachers/photos', 'public');
+        }
+
+        try {
+            $updated = DB::transaction(function () use ($teacher, $data, $newPhoto) {
+                $original = $teacher->getAttributes();
+                $user = $teacher->user;
+
+                // Update user details
+                $userData = [
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                ];
+                if (isset($data['is_active'])) $userData['is_active'] = $data['is_active'];
+                if (!empty($data['password'])) $userData['password'] = Hash::make($data['password']);
+                $user->update($userData);
+
+                // Update teacher details (exclude photo, handle separately)
+                $teacherData = array_intersect_key($data, array_flip([
+                    'nip', 'nuptk', 'name', 'phone', 'gender', 'address', 'is_active', 'tahun_masuk_kerja'
+                ]));
+
+                // Only update photo if new file was uploaded
+                if ($newPhoto) {
+                    $teacherData['photo'] = $newPhoto;
                 }
-                $data['photo'] = $data['photo']->store('teachers/photos', 'public');
+
+                $teacher->update($teacherData);
+
+                if (isset($data['tahun_masuk_kerja'])) {
+                    $teacher->tahun_masuk_kerja = $data['tahun_masuk_kerja'] !== '' ? (int) $data['tahun_masuk_kerja'] : null;
+                    $teacher->save();
+                }
+
+                // Sync subjects if provided
+                if (isset($data['subjects'])) {
+                    $teacher->subjects()->syncWithPivotValues($data['subjects'], [
+                        'academic_year_id' => $data['academic_year_id'] ?? \App\Models\AcademicYear::active()->first()?->id
+                    ]);
+                }
+
+                ActivityLogService::logUpdate($teacher, $original, "Mengubah Guru: {$teacher->name}");
+
+                return $teacher;
+            });
+        } catch (\Throwable $e) {
+            if ($newPhoto) {
+                Storage::disk('public')->delete($newPhoto);
             }
+            throw $e;
+        }
 
-            // Update user details
-            $userData = [
-                'name' => $data['name'],
-                'email' => $data['email'],
-            ];
-
-            if (isset($data['is_active'])) {
-                $userData['is_active'] = $data['is_active'];
+        // Delete old photo after successful transaction
+        if ($newPhoto && $oldPhoto) {
+            try {
+                Storage::disk('public')->delete($oldPhoto);
+            } catch (\Exception $e) {
+                Log::warning("Failed to delete old teacher photo: {$oldPhoto}", ['error' => $e->getMessage()]);
             }
+        }
 
-            if (!empty($data['password'])) {
-                $userData['password'] = Hash::make($data['password']);
-            }
-
-            $user->update($userData);
-
-            // Update teacher details
-            $teacher->update(array_intersect_key($data, array_flip([
-                'nip', 'nuptk', 'name', 'phone', 'gender', 'address', 'photo', 'is_active', 'tahun_masuk_kerja'
-            ])));
-            if (isset($data['tahun_masuk_kerja'])) {
-                $teacher->tahun_masuk_kerja = $data['tahun_masuk_kerja'] !== '' ? (int) $data['tahun_masuk_kerja'] : null;
-                $teacher->save();
-            }
-
-            // Sync subjects if provided
-            if (isset($data['subjects'])) {
-                $teacher->subjects()->syncWithPivotValues($data['subjects'], [
-                    'academic_year_id' => $data['academic_year_id'] ?? \App\Models\AcademicYear::active()->first()?->id
-                ]);
-            }
-
-            ActivityLogService::logUpdate($teacher, $original, "Mengubah Guru: {$teacher->name}");
-
-            return $teacher;
-        });
+        return $updated;
     }
 
     public function delete(Teacher $teacher): void
     {
+        $oldPhoto = $teacher->photo;
+
         DB::transaction(function () use ($teacher) {
             // Check relationships
             if ($teacher->classes()->count() > 0) {
@@ -149,11 +170,17 @@ class TeacherService
             $user = $teacher->user;
 
             ActivityLogService::logDelete($teacher, "Menghapus Guru: {$teacher->name}");
-            
+
             $teacher->delete();
+
             if ($user) {
                 $user->delete();
             }
         });
+
+        // Delete photo after successful transaction
+        if ($oldPhoto) {
+            Storage::disk('public')->delete($oldPhoto);
+        }
     }
 }

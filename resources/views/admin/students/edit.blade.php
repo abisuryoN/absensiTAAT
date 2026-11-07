@@ -82,16 +82,18 @@
                         <div class="mb-3">
                             <label for="photo" class="form-label fw-semibold">Foto Profil</label>
                             <div class="d-flex align-items-start gap-3">
-                                <div id="photoPreviewWrapper" class="{{ $student->photo ? '' : 'd-none' }}">
+                                <div id="photoPreviewWrapper">
                                     <img id="photoPreview"
-                                         src="{{ $student->photo ? Storage::url($student->photo) : '#' }}"
+                                         src="{{ $student->photo_url }}"
                                          alt="Preview" class="rounded-circle object-fit-cover border"
-                                         style="width:80px;height:80px;">
+                                         style="width:80px;height:80px;"
+                                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&background=6366f1&color=fff&size=128&bold=true'"
+                                    >
                                 </div>
                                 <div class="flex-grow-1">
-                                    <input type="file" name="photo" id="photo" class="form-control @error('photo') is-invalid @enderror" accept="image/*">
+                                    <input type="file" name="photo" id="photo" class="form-control @error('photo') is-invalid @enderror" accept="image/jpeg,image/png,image/webp">
                                     @error('photo') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                                    <div class="form-text fs-8">Format JPG/PNG, Maks 2MB. Kosongkan jika tidak ingin mengubah foto.</div>
+                                    <div class="form-text fs-8">Format JPG/PNG/WEBP, Maks 2MB. Kosongkan jika tidak ingin mengubah foto.</div>
                                 </div>
                             </div>
                         </div>

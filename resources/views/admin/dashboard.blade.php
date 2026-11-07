@@ -16,7 +16,7 @@
         </div>
     </div>
 
-   
+
     <div class="row g-0 mb-4 stats-row">
         <!-- Total Siswa -->
         <div class="col-6 col-md-3 stats-col">
@@ -115,18 +115,18 @@
                                     $cfg = $badgeConfig[$log->action] ?? ['bg' => 'bg-secondary', 'icon' => 'bi-info-circle'];
                                 @endphp
                                 <div class="position-relative flex-shrink-0">
-                                    @if($log->user && $log->user->profile_picture)
-                                        <img src="{{ asset('storage/' . $log->user->profile_picture) }}" 
-                                             alt="{{ $log->user->name }}" 
+                                    @if($log->user)
+                                        <img src="{{ $log->user->profile_photo_url }}"
+                                             alt="{{ $log->user->name }}"
                                              class="rounded-circle"
                                              style="width: 30px; height: 30px; object-fit: cover;">
                                     @else
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-semibold" 
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-semibold"
                                              style="width: 30px; height: 30px; font-size: 0.7rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                            {{ strtoupper(substr($log->user->name ?? 'S', 0, 2)) }}
+                                            S
                                         </div>
                                     @endif
-                                    <span class="badge {{ $cfg['bg'] }} position-absolute bottom-0 end-0 p-1 rounded-circle d-flex align-items-center justify-content-center" 
+                                    <span class="badge {{ $cfg['bg'] }} position-absolute bottom-0 end-0 p-1 rounded-circle d-flex align-items-center justify-content-center"
                                           style="width: 16px; height: 16px; border: 2px solid white;">
                                         <i class="bi {{ $cfg['icon'] }}" style="font-size: 0.5rem;"></i>
                                     </span>
@@ -160,7 +160,7 @@
             }
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            
+
             const labels = JSON.parse(canvas.dataset.labels);
             const dataHadir = JSON.parse(canvas.dataset.hadir);
             const dataTerlambat = JSON.parse(canvas.dataset.terlambat);
@@ -169,7 +169,7 @@
             const dataAlpha = JSON.parse(canvas.dataset.alpha);
 
             // Compute totals per day for tooltip
-            const totals = labels.map((_, i) => 
+            const totals = labels.map((_, i) =>
                 dataHadir[i] + dataTerlambat[i] + dataSakit[i] + dataIzin[i] + dataAlpha[i]
             );
 
@@ -301,9 +301,9 @@
     @endpush
 
     <style>
-        .bg-light-blue { 
-            background-color: #eef4ff !important; 
-            color: #334155 !important; 
+        .bg-light-blue {
+            background-color: #eef4ff !important;
+            color: #334155 !important;
         }
 
         /* Card Statistik - Grid rapi dengan rounded corner & floating effect */

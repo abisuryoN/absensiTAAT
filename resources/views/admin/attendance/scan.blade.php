@@ -847,15 +847,20 @@
         function showStudentProfile(data) {
             if (!data) return;
             studentProfileContainer.style.display = 'block';
-            profileAvatar.innerText = (data.nama || '?').charAt(0).toUpperCase();
-            profileName.innerText = data.nama || '-';
+            profileAvatar.innerText = (data.name || '?').charAt(0).toUpperCase();
+            profileName.innerText = data.name || '-';
             profileNis.innerText = data.nis || '-';
-            profileKelas.innerText = data.kelas || '-';
+            profileKelas.innerText = data.class || '-';
             profileJurusan.innerText = data.jurusan || '-';
             profileStatus.innerText = data.status || '-';
             var now = new Date();
             profileWaktu.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
             profileBackdrop.classList.add('show');
+            if (data.photo) {
+                // Assuming we have an ID for the photo element
+                const img = getEl('profilePhoto');
+                if (img) img.src = data.photo;
+            }
         }
 
         function hideStudentProfile() {
@@ -875,8 +880,9 @@
             var item = document.createElement('div');
             item.className = 'list-group-item d-flex align-items-center gap-2';
             item.innerHTML = '<div class="flex-shrink-0">' + statusIcon + '</div>' +
-                '<div class="flex-grow-1"><strong>' + (data.nama || 'Unknown') + '</strong><br><small class="text-muted">' +
-                (data.nis || '-') + ' &middot; ' + (data.kelas || '-') + '</small></div>' +
+                '<img src="' + (data.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.name || 'User')) + '" class="rounded-circle" width="40" height="40" onerror="this.src=\'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.name || 'User') + '\';">' +
+                '<div class="flex-grow-1"><strong>' + (data.name || 'Unknown') + '</strong><br><small class="text-muted">' +
+                (data.nis || '-') + ' &middot; ' + (data.class || '-') + ' &middot; ' + (data.jurusan || '-') + '</small></div>' +
                 '<small class="text-nowrap text-muted">' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) + '</small>';
 
             recentScansList.insertBefore(item, recentScansList.firstChild);

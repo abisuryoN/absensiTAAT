@@ -35,6 +35,20 @@ class Student extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * Accessor: URL foto siswa atau fallback ke avatar inisial.
+     */
+    public function getPhotoUrlAttribute(): string
+    {
+        if ($this->photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->photo)) {
+            return \Illuminate\Support\Facades\Storage::url($this->photo);
+        }
+
+        // Fallback: UI Avatars API dengan inisial nama
+        $name = urlencode($this->name ?? 'S');
+        return "https://ui-avatars.com/api/?name={$name}&background=6366f1&color=fff&size=128&bold=true";
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

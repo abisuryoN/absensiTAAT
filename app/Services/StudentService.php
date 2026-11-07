@@ -116,83 +116,103 @@ class StudentService
 
     public function update(Student $student, array $data): Student
     {
-        return DB::transaction(function () use ($student, $data) {
-            $original = $student->getAttributes();
-            $user = $student->user;
-            $oldClassId = $student->class_id;
+        $oldPhoto = $student->photo;
+        $newPhoto = null;
 
-            // Handle photo upload
-            if (!empty($data['photo'])) {
-                if ($student->photo) {
-                    Storage::disk('public')->delete($student->photo);
+        if (!empty($data['photo'])) {
+            $newPhoto = $data['photo']->store('students/photos', 'public');
+        }
+
+        try {
+            $updated = DB::transaction(function () use ($student, $data, $newPhoto) {
+                $original = $student->getAttributes();
+                $user = $student->user;
+                $oldClassId = $student->class_id;
+
+                // Update user details
+                $userData = [
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                ];
+                if (isset($data['is_active'])) $userData['is_active'] = $data['is_active'];
+                if (!empty($data['password'])) $userData['password'] = Hash::make($data['password']);
+                $user->update($userData);
+
+                $studentData = [
+                    'parent_id'   => $data['parent_id'] ?? $student->parent_id,
+                    'class_id'    => $data['class_id'],
+                    'nis'         => $data['nis'],
+                    'nisn'        => $data['nisn'] ?? $student->nisn,
+                    'name'        => $data['name'],
+                    'gender'      => $data['gender'],
+                    'phone'       => $data['phone'] ?? $student->phone,
+                    'birth_date'  => $data['birth_date'] ?? $student->birth_date,
+                    'birth_place' => $data['birth_place'] ?? $student->birth_place,
+                    'address'     => $data['address'] ?? $student->address,
+                    'barcode_id'  => $data['barcode_id'] ?? $data['nis'],
+                    'is_active'   => $data['is_active'] ?? $student->is_active,
+                    'tahun_masuk' => isset($data['tahun_masuk']) && $data['tahun_masuk'] !== ''
+                        ? (int) $data['tahun_masuk']
+                        : $student->tahun_masuk,
+                ];
+
+                if ($newPhoto) {
+                    $studentData['photo'] = $newPhoto;
                 }
-                $data['photo'] = $data['photo']->store('students/photos', 'public');
+
+                $student->update($studentData);
+
+                // Save history of student class if changed
+                if ($oldClassId != $student->class_id) {
+                    ClassStudentHistory::create([
+                        'student_id' => $student->id,
+                        'class_id' => $student->class_id,
+                        'academic_year_id' => \App\Models\AcademicYear::active()->first()?->id ?? 1,
+                    ]);
+                }
+
+                ActivityLogService::logUpdate($student, $original, "Mengubah Siswa: {$student->name}");
+
+                return $student;
+            });
+        } catch (\Throwable $e) {
+            if ($newPhoto) {
+                Storage::disk('public')->delete($newPhoto);
             }
+            throw $e;
+        }
 
-            // Update user details
-            $userData = [
-                'name' => $data['name'],
-                'email' => $data['email'],
-            ];
-
-            if (isset($data['is_active'])) {
-                $userData['is_active'] = $data['is_active'];
+        // Delete old photo after successful transaction
+        if ($newPhoto && $oldPhoto) {
+            try {
+                Storage::disk('public')->delete($oldPhoto);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning("Failed to delete old student photo: {$oldPhoto}", ['error' => $e->getMessage()]);
             }
+        }
 
-            if (!empty($data['password'])) {
-                $userData['password'] = Hash::make($data['password']);
-            }
-
-            $user->update($userData);
-
-            // Generate unique barcode_id
-            $barcodeId = $data['barcode_id'] ?? $data['nis'];
-
-            $student->update([
-                'parent_id'   => $data['parent_id'] ?? $student->parent_id,
-                'class_id'    => $data['class_id'],
-                'nis'         => $data['nis'],
-                'nisn'        => $data['nisn'] ?? $student->nisn,
-                'name'        => $data['name'],
-                'gender'      => $data['gender'],
-                'phone'       => $data['phone'] ?? $student->phone,
-                'birth_date'  => $data['birth_date'] ?? $student->birth_date,
-                'birth_place' => $data['birth_place'] ?? $student->birth_place,
-                'address'     => $data['address'] ?? $student->address,
-                'photo'       => $data['photo'] ?? $student->photo,
-                'barcode_id'  => $barcodeId,
-                'is_active'   => $data['is_active'] ?? $student->is_active,
-                'tahun_masuk' => isset($data['tahun_masuk']) && $data['tahun_masuk'] !== ''
-                    ? (int) $data['tahun_masuk']
-                    : $student->tahun_masuk,
-            ]);
-
-            // Save history of student class if changed
-            if ($oldClassId != $student->class_id) {
-                ClassStudentHistory::create([
-                    'student_id' => $student->id,
-                    'class_id' => $student->class_id,
-                    'academic_year_id' => \App\Models\AcademicYear::active()->first()?->id ?? 1,
-                ]);
-            }
-
-            ActivityLogService::logUpdate($student, $original, "Mengubah Siswa: {$student->name}");
-
-            return $student;
-        });
+        return $updated;
     }
 
     public function delete(Student $student): void
     {
+        $oldPhoto = $student->photo;
+
         DB::transaction(function () use ($student) {
             $user = $student->user;
 
             ActivityLogService::logDelete($student, "Menghapus Siswa: {$student->name}");
+
             $student->delete();
 
             if ($user) {
                 $user->delete();
             }
         });
+
+        // Delete photo after successful transaction
+        if ($oldPhoto) {
+            Storage::disk('public')->delete($oldPhoto);
+        }
     }
 }

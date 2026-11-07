@@ -43,7 +43,7 @@ class StudentRequest extends FormRequest
             'address' => 'nullable|string',
             'class_id' => 'required|exists:classes,id',
             'parent_id' => 'nullable|exists:parents,id',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'password' => $studentId ? 'nullable|min:6' : 'nullable|min:6',
             'barcode_id' => 'nullable|string|max:50|unique:students,barcode_id,' . $studentId,
             'is_active' => 'nullable|boolean',

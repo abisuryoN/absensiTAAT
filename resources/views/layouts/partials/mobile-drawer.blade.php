@@ -70,15 +70,11 @@
         {{-- User Profile --}}
         <div class="drawer-profile">
             <div class="drawer-avatar-wrap">
-                @if($user->avatar)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::url($user->avatar) }}" alt="" class="drawer-avatar-img">
-                @else
-                    <img src="{{ $user->profile_photo_url }}"
-                         alt="Avatar"
-                         class="drawer-avatar-img user-avatar-element"
-                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=4f46e5&color=fff&size=128&bold=true'"
-                    >
-                @endif
+                <img src="{{ $user->profile_photo_url }}"
+                     alt="Avatar"
+                     class="drawer-avatar-img user-avatar-element"
+                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=4f46e5&color=fff&size=128&bold=true'"
+                >
                 <span class="drawer-online-dot"></span>
             </div>
             <div class="drawer-profile-text">

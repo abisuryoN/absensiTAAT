@@ -14,11 +14,11 @@
     <div class="card-body p-3 p-md-4">
         <div class="d-flex align-items-center gap-3">
             <div class="student-avatar">
-                @if($activeStudent->photo)
-                    <img src="{{ Storage::url($activeStudent->photo) }}" alt="" class="w-100 h-100 object-fit-cover" style="border-radius:14px;">
-                @else
-                    {{ strtoupper(substr($activeStudent->name, 0, 1)) }}
-                @endif
+                <img src="{{ $activeStudent->photo_url }}"
+                     alt="{{ $activeStudent->name }}"
+                     class="w-100 h-100 object-fit-cover"
+                     style="border-radius:14px;"
+                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($activeStudent->name) }}&background=6366f1&color=fff&size=96&bold=true'">
             </div>
             <div class="flex-grow-1 min-width-0">
                 <div class="fw-bold fs-5 mb-1" style="color:#fff;">{{ $activeStudent->name }}</div>
