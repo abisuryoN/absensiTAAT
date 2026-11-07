@@ -52,13 +52,16 @@
             <h4 class="fw-bold mb-0" style="color:#1e293b;">Rekap Bulanan</h4>
             <p class="text-muted mb-0 fs-7">
                 @if($activeStudent)
-                    {{ $activeStudent->name }} &bull; {{ $activeStudent->schoolClass->name ?? '-' }}
+                    {{ $activeStudent->name }} &bull; {{ $activeStudent->displayClass()?->name ?? 'Kelas tidak tercatat' }}
+                    @unless($activeStudent->is_active) &bull; <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Nonaktif</span> @endunless
                 @endif
             </p>
         </div>
     </div>
 
     @if($activeStudent)
+
+    @include('parent._inactive_notice', ['student' => $activeStudent])
 
     {{-- Year Filter --}}
     <div class="card filter-card mb-4">
@@ -101,7 +104,7 @@
                             <th class="text-center">Terlambat</th>
                             <th class="text-center">Izin</th>
                             <th class="text-center">Sakit</th>
-                            <th class="text-center">Alpa</th>
+                            <th class="text-center">Tidak Hadir</th>
                             <th class="text-center">Total</th>
                             <th class="text-center">% Hadir</th>
                         </tr>
@@ -128,7 +131,7 @@
                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle">{{ $row['sakit'] }}</span>
                             </td>
                             <td class="text-center">
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ $row['alpa'] }}</span>
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ $row['tidak_hadir'] }}</span>
                             </td>
                             <td class="text-center text-muted fw-semibold">{{ $row['total'] }}</td>
                             <td class="text-center">

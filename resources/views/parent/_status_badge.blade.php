@@ -1,4 +1,4 @@
-@switch($status ?? 'alpa')
+@switch($status ?? 'tidak_hadir')
     @case('hadir')
         <span class="badge bg-success-subtle text-success border border-success-subtle">Hadir</span>
         @break
@@ -12,5 +12,5 @@
         <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Sakit</span>
         @break
     @default
-        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Alpa</span>
+        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Tidak Hadir</span>
 @endswitch

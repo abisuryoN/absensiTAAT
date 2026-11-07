@@ -54,13 +54,16 @@
             <h4 class="fw-bold mb-0" style="color:#1e293b;">Rekap Harian</h4>
             <p class="text-muted mb-0 fs-7">
                 @if($activeStudent)
-                    {{ $activeStudent->name }} &bull; {{ $activeStudent->schoolClass->name ?? '-' }}
+                    {{ $activeStudent->name }} &bull; {{ $activeStudent->displayClass()?->name ?? 'Kelas tidak tercatat' }}
+                    @unless($activeStudent->is_active) &bull; <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Nonaktif</span> @endunless
                 @endif
             </p>
         </div>
     </div>
 
     @if($activeStudent)
+
+    @include('parent._inactive_notice', ['student' => $activeStudent])
 
     {{-- Filter Card --}}
     <div class="card filter-card mb-4">
@@ -80,9 +83,9 @@
                         <label class="form-label small fw-semibold mb-1">Status</label>
                         <select name="status" class="form-select form-select-sm">
                             <option value="">Semua</option>
-                            @foreach(['hadir','terlambat','izin','sakit','alpa'] as $s)
+                            @foreach(['hadir' => 'Hadir', 'terlambat' => 'Terlambat', 'izin' => 'Izin', 'sakit' => 'Sakit', 'tidak_hadir' => 'Tidak Hadir'] as $s => $label)
                                 <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>
-                                    {{ ucfirst($s) }}
+                                    {{ $label }}
                                 </option>
                             @endforeach
                         </select>
@@ -128,8 +131,8 @@
                             <td class="fw-semibold">{{ \Carbon\Carbon::parse($att->date)->format('d/m/Y') }}</td>
                             <td class="text-muted">{{ \Carbon\Carbon::parse($att->date)->isoFormat('dddd') }}</td>
                             <td>@include('parent._status_badge', ['status' => $att->status])</td>
-                            <td>{{ $att->scan_time ? \Carbon\Carbon::parse($att->scan_time)->format('H:i') : '-' }}</td>
-                            <td class="text-muted small">{{ $att->note ?? '-' }}</td>
+                            <td>{{ ($att->time_in && $att->status !== 'tidak_hadir') ? \Carbon\Carbon::parse($att->time_in)->format('H:i') : '-' }}</td>
+                            <td class="small">@include('parent._keterangan', ['att' => $att])</td>
                         </tr>
                         @empty
                         <tr>

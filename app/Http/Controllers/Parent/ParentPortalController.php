@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Carbon\Carbon;
+use App\Models\Setting;
+use App\Services\DateTimeService;
+use App\Services\SchoolSessionResolverService;
 
 class ParentPortalController extends Controller
 {
@@ -32,9 +35,7 @@ class ParentPortalController extends Controller
 
         // Eager-load class & major to avoid N+1
         // Note: show ALL children (active or not) so parents can always see their child's data
-        $children = $parent->students()
-            ->with(['schoolClass.major'])
-            ->get();
+        $children = $parent->students()->get();
 
         if ($children->isEmpty()) {
             return view('parent.dashboard', [
@@ -100,7 +101,7 @@ class ParentPortalController extends Controller
                 ->with('error', 'Data orang tua tidak ditemukan untuk akun ini.');
         }
 
-        $children = $parent->students()->with('schoolClass')->get();
+        $children = $parent->students()->get();
 
         $studentId     = $request->get('student_id', $children->first()?->id);
         $activeStudent = $children->firstWhere('id', $studentId) ?? $children->first();
@@ -119,6 +120,7 @@ class ParentPortalController extends Controller
             }
 
             $attendances = $query->orderBy('date', 'desc')->paginate(15);
+            $attendances->getCollection()->transform(fn ($a) => $this->withLateInfo($a, $activeStudent));
         }
 
         return view('parent.rekap_harian', compact('children', 'activeStudent', 'attendances', 'from', 'to'));
@@ -140,7 +142,7 @@ class ParentPortalController extends Controller
                 ->with('error', 'Data orang tua tidak ditemukan untuk akun ini.');
         }
 
-        $children = $parent->students()->with('schoolClass')->get();
+        $children = $parent->students()->get();
 
         $studentId     = $request->get('student_id', $children->first()?->id);
         $activeStudent = $children->firstWhere('id', $studentId) ?? $children->first();
@@ -207,7 +209,12 @@ class ParentPortalController extends Controller
             ->whereBetween('date', [$monthStart, $today])
             ->orderBy('date', 'desc')
             ->limit(10)
-            ->get();
+            ->get()
+            ->map(fn ($a) => $this->withLateInfo($a, $student));
+
+        if ($todayRecord) {
+            $this->withLateInfo($todayRecord, $student);
+        }
 
         return compact('todayRecord', 'summary', 'recentAttendances');
     }
@@ -231,6 +238,41 @@ class ParentPortalController extends Controller
             'tidak_hadir' => $records->where('status', 'tidak_hadir')->count(),
             'total'     => $records->count(),
         ];
+    }
+
+    /**
+     * Tambahkan atribut bantu ke baris absensi:
+     *  - late_minutes : lama terlambat (menit) dihitung dari jam masuk sekolah, hanya untuk status terlambat.
+     */
+    private function withLateInfo(AttendanceGate $att, Student $student): AttendanceGate
+    {
+        $att->late_minutes = null;
+
+        if ($att->status === 'terlambat' && $att->time_in) {
+            try {
+                $start = $this->schoolStartTime($student);
+                $in    = Carbon::createFromFormat('H:i:s', substr($att->time_in, 0, 8));
+                $att->late_minutes = max(0, (int) $start->diffInMinutes($in, false));
+            } catch (\Throwable $e) {
+                $att->late_minutes = null;
+            }
+        }
+
+        return $att;
+    }
+
+    private function schoolStartTime(Student $student): Carbon
+    {
+        $start = null;
+
+        if (app(DateTimeService::class)->isMultipleSessionsEnabled()) {
+            $session = app(SchoolSessionResolverService::class)->resolve($student);
+            $start   = $session?->school_start_time;
+        }
+
+        $start ??= Setting::getVal('school_start_time', '06:30');
+
+        return Carbon::createFromFormat('H:i', substr($start, 0, 5));
     }
 
     private function emptyMonthStats(): array

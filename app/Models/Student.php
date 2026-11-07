@@ -70,6 +70,26 @@ class Student extends Model
         return $this->belongsTo(SchoolClass::class, 'class_id');
     }
 
+    /**
+     * Nama kelas untuk ditampilkan ke orang tua.
+     * Urutan: kelas saat ini (termasuk yang sudah di-soft-delete) -> kelas terakhir di riwayat -> null.
+     */
+    public function displayClass(): ?SchoolClass
+    {
+        if ($this->class_id) {
+            $class = SchoolClass::withTrashed()->with('major')->find($this->class_id);
+            if ($class) {
+                return $class;
+            }
+        }
+
+        $history = $this->classStudentHistories()->latest('id')->first();
+
+        return $history
+            ? SchoolClass::withTrashed()->with('major')->find($history->class_id)
+            : null;
+    }
+
     public function attendanceGates(): HasMany
     {
         return $this->hasMany(AttendanceGate::class);

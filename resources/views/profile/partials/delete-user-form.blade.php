@@ -1,3 +1,7 @@
+@php
+    $__parent = auth()->user()?->parent;
+    $__hasChildren = $__parent && $__parent->students()->exists();
+@endphp
 <section>
     <header>
         <h2 class="fw-semibold fs-5 text-dark mb-2">
@@ -9,9 +13,19 @@
         </p>
     </header>
 
+    @if($__hasChildren)
+        <div class="alert alert-warning mb-0" role="alert">
+            <i class="bi bi-lock-fill me-1"></i>
+            Akun ini tidak dapat dihapus karena masih terhubung dengan data anak.
+            Hubungi admin sekolah jika Anda memang perlu menghapus akun.
+        </div>
+    @else
     <button type="button" class="btn-delete" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
         {{ __('Delete Account') }}
     </button>
+    @endif
+
+    @unless($__hasChildren)
 
     <!-- Delete Account Modal -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
@@ -63,4 +77,5 @@
             });
         </script>
     @endif
+    @endunless
 </section>

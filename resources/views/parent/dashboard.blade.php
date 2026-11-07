@@ -216,7 +216,7 @@
                 <div class="selector-name">{{ $child->name }}</div>
                 <div class="selector-meta">
                     NIS {{ $child->nis ?? '-' }}<br>
-                    {{ $child->schoolClass->name ?? '-' }}
+                    {{ $child->displayClass()?->name ?? 'Kelas tidak tercatat' }}
                     <div class="mt-1">
                         @if($child->is_active)
                             <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Aktif</span>

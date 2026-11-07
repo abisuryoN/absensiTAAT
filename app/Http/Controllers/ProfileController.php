@@ -184,6 +184,14 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        // Akun orang tua yang masih terhubung dengan data anak tidak boleh dihapus sendiri.
+        // Penghapusan harus lewat admin sekolah setelah data anak dipindahkan/dilepas.
+        if ($this->hasLinkedChildren($user)) {
+            return back()->withErrors([
+                'password' => 'Akun tidak dapat dihapus karena masih terhubung dengan data anak. Hubungi admin sekolah.',
+            ], 'userDeletion');
+        }
+
         Auth::logout();
 
         $user->delete();
@@ -192,5 +200,16 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    /**
+     * Apakah user adalah orang tua yang masih punya data anak terhubung.
+     * Anak nonaktif tetap dihitung (hanya yang sudah di-soft-delete yang tidak).
+     */
+    private function hasLinkedChildren($user): bool
+    {
+        $parent = $user->parent;
+
+        return $parent !== null && $parent->students()->exists();
     }
 }

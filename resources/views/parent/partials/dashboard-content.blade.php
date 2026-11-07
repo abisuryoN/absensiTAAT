@@ -4,10 +4,13 @@
     Partial yang di-render ulang via AJAX saat orang tua memilih anak lain.
     Variabel yang dibutuhkan:
       $activeStudent  – instance Student (with schoolClass.major)
-      $summary        – array [hadir, terlambat, izin, sakit, alpa, total]
+      $summary        – array [hadir, terlambat, izin, sakit, tidak_hadir, total]
       $todayRecord    – AttendanceGate|null
       $recentAttendances – Collection AttendanceGate (max 10)
 --}}
+
+{{-- ── Penjelasan siswa nonaktif ─────────────────────────────────── --}}
+@include('parent._inactive_notice', ['student' => $activeStudent])
 
 {{-- ── Student Profile Card ──────────────────────────────────────── --}}
 <div class="card student-profile-card shadow-sm mb-4">
@@ -24,19 +27,23 @@
                 <div class="fw-bold fs-5 mb-1" style="color:#fff;">{{ $activeStudent->name }}</div>
                 <div style="color:rgba(255,255,255,.82); font-size:.85rem;">
                     NIS: {{ $activeStudent->nis ?? '-' }}
-                    &bull; {{ $activeStudent->schoolClass->name ?? 'Kelas tidak diketahui' }}
-                    @if($activeStudent->schoolClass?->major)
-                        &bull; {{ $activeStudent->schoolClass->major->name }}
+                    &bull; @php $studentClass = $activeStudent->displayClass(); @endphp
+                    {{ $studentClass?->name ?? 'Kelas tidak tercatat' }}
+                    @if($studentClass?->major)
+                        &bull; {{ $studentClass->major->name }}
                     @endif
+                    @unless($activeStudent->is_active)
+                        &bull; Nonaktif
+                    @endunless
                 </div>
             </div>
             <div class="d-none d-md-flex align-items-center gap-2">
                 @if($todayRecord)
                     <span class="badge" style="background:rgba(255,255,255,.2); color:#fff; font-size:.78rem; padding:.45rem .85rem; border-radius:8px;">
                         <i class="bi bi-door-open me-1"></i>
-                        Hari ini: {{ ucfirst($todayRecord->status) }}
-                        @if($todayRecord->scan_time)
-                            · {{ \Carbon\Carbon::parse($todayRecord->scan_time)->format('H:i') }}
+                        Hari ini: {{ ucfirst(str_replace('_', ' ', $todayRecord->status)) }}
+                        @if($todayRecord->time_in && $todayRecord->status !== 'tidak_hadir')
+                            · {{ \Carbon\Carbon::parse($todayRecord->time_in)->format('H:i') }}
                         @endif
                     </span>
                 @else
@@ -50,9 +57,9 @@
         @if($todayRecord)
         <div class="d-md-none mt-2">
             <span class="badge" style="background:rgba(255,255,255,.2); color:#fff; font-size:.8rem; padding:.4rem .75rem; border-radius:8px;">
-                <i class="bi bi-door-open me-1"></i>Hari ini: {{ ucfirst($todayRecord->status) }}
-                @if($todayRecord->scan_time)
-                    · {{ \Carbon\Carbon::parse($todayRecord->scan_time)->format('H:i') }}
+                <i class="bi bi-door-open me-1"></i>Hari ini: {{ ucfirst(str_replace('_', ' ', $todayRecord->status)) }}
+                @if($todayRecord->time_in && $todayRecord->status !== 'tidak_hadir')
+                    · {{ \Carbon\Carbon::parse($todayRecord->time_in)->format('H:i') }}
                 @endif
             </span>
         </div>
@@ -101,8 +108,8 @@
                 <div class="stat-icon mb-2">
                     <i class="bi bi-x-circle-fill text-white"></i>
                 </div>
-                <div class="stat-value">{{ $summary['alpa'] ?? 0 }}</div>
-                <div class="stat-label">Alpa</div>
+                <div class="stat-value">{{ $summary['tidak_hadir'] ?? 0 }}</div>
+                <div class="stat-label">Tidak Hadir</div>
             </div>
         </div>
     </div>
@@ -121,7 +128,7 @@
                     <i class="bi bi-list-ul me-1"></i>Rekap Harian
                 </a>
                 <a href="{{ route('parent.rekap_bulanan', ['student_id' => $activeStudent->id]) }}"
-                   class="btn btn-sm btn-outline-secondary">
+                   class="btn btn-sm btn-primary">
                     <i class="bi bi-bar-chart me-1"></i>Rekap Bulanan
                 </a>
             </div>
@@ -134,6 +141,7 @@
                     <tr>
                         <th>Tanggal</th>
                         <th>Status</th>
+                        <th>Jam Masuk</th>
                         <th>Keterangan</th>
                     </tr>
                 </thead>
@@ -142,11 +150,12 @@
                     <tr>
                         <td class="fw-semibold">{{ \Carbon\Carbon::parse($att->date)->isoFormat('ddd, D MMM Y') }}</td>
                         <td>@include('parent._status_badge', ['status' => $att->status])</td>
-                        <td class="text-muted small">{{ $att->note ?? '-' }}</td>
+                        <td>{{ ($att->time_in && $att->status !== 'tidak_hadir') ? \Carbon\Carbon::parse($att->time_in)->format('H:i') : '-' }}</td>
+                        <td class="small">@include('parent._keterangan', ['att' => $att])</td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="3" class="text-center text-muted py-5">
+                        <td colspan="4" class="text-center text-muted py-5">
                             <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                             Belum ada data absensi bulan ini.
                         </td>
