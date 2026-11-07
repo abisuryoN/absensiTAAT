@@ -237,7 +237,7 @@
                                     @elseif($att->status === 'izin')
                                         <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 fs-8">Izin</span>
                                     @elseif($att->status === 'sakit')
-                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 fs-8">Sakit</span>
+                                        <span class="badge badge-sakit px-3 py-2 fs-8">Sakit</span>
                                     @else
                                         <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 fs-8">Alpha</span>
                                     @endif
@@ -353,6 +353,8 @@
                                     <span class="badge bg-warning">Terlambat</span>
                                 @elseif($att->status === 'izin')
                                     <span class="badge bg-info">Izin</span>
+                                @elseif($att->status === 'sakit')
+                                    <span class="badge badge-sakit">Sakit</span>
                                 @else
                                     <span class="badge bg-secondary">{{ ucfirst($att->status) }}</span>
                                 @endif
@@ -577,6 +579,12 @@
     ═══════════════════════════════════════ --}}
     @push('styles')
     <style>
+        .badge-sakit {
+            color: #5b21b6;
+            background-color: #ede9fe;
+            border: 1px solid #c4b5fd;
+        }
+
         /* Card Statistik - matching dashboard design */
         .card-stat {
             position: relative;
@@ -732,7 +740,7 @@
             border-left: 3px solid #ef4444;
         }
         @media (max-width: 576px) {
-            .floating-action-bar { bottom: 72px; }
+            .floating-action-bar { bottom: 72px; min-width: 0; width: calc(100vw - 32px); }
             .fab-inner { flex-direction: column; align-items: flex-start; border-radius: 16px; padding: 12px 16px; }
             .fab-actions { flex-wrap: wrap; }
         }
@@ -817,15 +825,10 @@
         // ── Floating action bar ──────────────────────────────────
         function updateFab() {
             const count = getSelectedArray().length;
-            const bar   = document.getElementById('floatingActionBar');
-            const label = document.getElementById('fabCount');
-            if (!bar) return;
-            if (count > 0) {
-                bar.classList.remove('d-none');
-                label.textContent = count;
-            } else {
-                bar.classList.add('d-none');
-            }
+            const bars   = document.querySelectorAll('#floatingActionBar');
+            const labels = document.querySelectorAll('#fabCount');
+            bars.forEach(bar => bar.classList.toggle('d-none', count === 0));
+            labels.forEach(label => { label.textContent = count; });
         }
 
         // ── Cancel selection ─────────────────────────────────────

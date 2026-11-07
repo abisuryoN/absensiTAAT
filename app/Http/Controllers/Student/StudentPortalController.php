@@ -50,8 +50,8 @@ class StudentPortalController extends Controller
         $terlambatCount = $monthlyAttendance->where('status', 'terlambat')->count();
         $izinCount = $monthlyAttendance->where('status', 'izin')->count();
         $sakitCount = $monthlyAttendance->where('status', 'sakit')->count();
-        $alphaCount = $monthlyAttendance->where('status', 'tidak_hadir')->count();
-        $tidakHadirCount = $alphaCount;
+        $tidakHadirCount = $monthlyAttendance->where('status', 'tidak_hadir')->count();
+        $alphaCount = $tidakHadirCount;
 
         $attendancePercent = $totalDays > 0
             ? round((($hadirCount + $terlambatCount) / $totalDays) * 100, 1)
