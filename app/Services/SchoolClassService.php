@@ -32,7 +32,7 @@ class SchoolClassService
             $query->where('is_active', $filters['is_active']);
         }
 
-        return $query->orderBy('grade_level')->orderBy('name')->paginate(15);
+        return $query->orderBy('grade_level')->orderBy('name')->paginate(15)->withQueryString();
     }
 
     public function store(array $data): SchoolClass

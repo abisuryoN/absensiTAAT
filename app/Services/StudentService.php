@@ -43,7 +43,7 @@ class StudentService
             $query->where('is_active', $filters['is_active']);
         }
 
-        return $query->orderBy('name')->paginate(15);
+        return $query->orderBy('name')->paginate(15)->withQueryString();
     }
 
     public function store(array $data): Student
