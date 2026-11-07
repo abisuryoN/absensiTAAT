@@ -126,8 +126,11 @@
                                 </td>
                                 <td data-label="Aksi" class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
-                                        <a href="{{ route('admin.classes.edit', $class) }}" class="btn btn-light btn-sm border" title="Edit">
-                                            <i class="bi bi-pencil-square text-primary"></i>
+                                        <a href="{{ route('admin.classes.show', $class) }}" class="btn btn-light btn-sm border text-info" title="Detail Kelas">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ route('admin.classes.edit', $class) }}" class="btn btn-light btn-sm border text-primary" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
                                         </a>
                                         <form action="{{ route('admin.classes.destroy', $class) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kelas ini?')">
                                             @csrf

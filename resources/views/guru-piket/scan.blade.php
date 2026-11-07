@@ -519,6 +519,8 @@
 
     let usbBuffer = '';
     let usbTimer  = null;
+    let lastScanTime = 0;
+    const SCAN_COOLDOWN_MS = 200; // Prevent duplicate scans within 200ms
 
     const resultCard    = document.getElementById('result-card');
     const errorCard     = document.getElementById('error-card');
@@ -666,9 +668,14 @@
 
         const useFacingMode = facingModeOverride || currentFacingMode;
 
+        // Determine optimal qrbox size for device
+        const containerWidth = document.getElementById('camera-wrap').offsetWidth || 320;
+        const isMobile = isMobileDevice();
+        const qrboxSize = Math.min(isMobile ? 250 : 300, Math.floor(containerWidth * 0.7));
+
         // Build constraints — on mobile prefer facingMode, on desktop use camera ID
         let cameraConstraint;
-        if (isMobileDevice()) {
+        if (isMobile) {
             cameraConstraint = { facingMode: useFacingMode };
         } else {
             // Desktop: enumerate cameras first
@@ -676,7 +683,7 @@
             if (cameras.length === 0) {
                 overlay.classList.remove('show');
                 btnStart.style.display = '';
-                showError('Tidak ada kamera yang ditemukan.');
+                showError('Tidak ada kamera yang ditemukan di perangkat ini.');
                 return;
             }
             cameraConstraint = cameras[currentCamIdx].id;
@@ -687,12 +694,22 @@
             await html5QrCode.start(
                 cameraConstraint,
                 { 
-                    fps: 10, 
-                    qrbox: { width: 320, height: 320 },
-                    aspectRatio: 1.333,
+                    fps: 15,
+                    qrbox: { width: qrboxSize, height: qrboxSize },
+                    videoConstraints: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: isMobile ? useFacingMode : undefined
+                    }
                 },
                 function(decodedText) {
                     if (processingQr) return;
+                    
+                    // Debounce: prevent duplicate scans within cooldown period
+                    const now = Date.now();
+                    if (now - lastScanTime < SCAN_COOLDOWN_MS) return;
+                    lastScanTime = now;
+                    
                     processingQr = true;
                     processScanValue(decodedText);
                 },
@@ -710,7 +727,22 @@
             overlay.classList.remove('show');
             btnStart.style.display = '';
             btnSwitch.style.display = 'none';
-            showError('Gagal memulai kamera: ' + (e.message || e));
+            
+            // Better error messages in Indonesian
+            let errorMsg = 'Gagal memulai kamera.';
+            if (e.name === 'NotAllowedError' || (e.message && e.message.includes('Permission'))) {
+                errorMsg = 'Izin kamera ditolak. Silakan aktifkan izin kamera di pengaturan browser Anda.';
+            } else if (e.name === 'NotFoundError') {
+                errorMsg = 'Kamera tidak ditemukan. Pastikan perangkat Anda memiliki kamera.';
+            } else if (e.name === 'NotReadableError') {
+                errorMsg = 'Kamera sedang digunakan aplikasi lain. Tutup aplikasi lain dan coba lagi.';
+            } else if (e.name === 'OverconstrainedError') {
+                errorMsg = 'Kamera tidak mendukung pengaturan yang diminta. Coba kamera lain.';
+            } else if (e.message) {
+                errorMsg += ' ' + e.message;
+            }
+            
+            showError(errorMsg);
             scanning = false;
             setCamStatus(false);
         }
@@ -718,9 +750,21 @@
 
     async function stopCamera() {
         if (html5QrCode && scanning) {
-            try { await html5QrCode.stop(); } catch (_e) {}
+            try {
+                await html5QrCode.stop();
+                // Ensure all media tracks are stopped
+                const videoEl = document.querySelector('#camera-container video');
+                if (videoEl && videoEl.srcObject) {
+                    const tracks = videoEl.srcObject.getTracks();
+                    tracks.forEach(track => track.stop());
+                    videoEl.srcObject = null;
+                }
+            } catch (_e) {
+                console.warn('Stop camera error:', _e);
+            }
         }
         scanning = false;
+        processingQr = false;
         btnStop.style.display   = 'none';
         btnStart.style.display  = '';
         btnSwitch.style.display = 'none';

@@ -28,6 +28,29 @@ class SchoolClassController extends Controller
         return view('admin.classes.index', compact('classes', 'academicYears', 'majors'));
     }
 
+    public function show(SchoolClass $class, Request $request)
+    {
+        // Eager load relasi yang diperlukan
+        $class->load(['academicYear', 'major', 'homeroomTeacher', 'schoolSession']);
+
+        // Query siswa dengan pencarian dan pagination
+        $studentsQuery = $class->students()->with('user');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $studentsQuery->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%")
+                  ->orWhere('nisn', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $studentsQuery->orderBy('name')->paginate(20)->withQueryString();
+        $totalStudents = $class->students()->count();
+
+        return view('admin.classes.show', compact('class', 'students', 'totalStudents'));
+    }
+
     public function create()
     {
         $academicYears = AcademicYear::orderByDesc('start_date')->get();

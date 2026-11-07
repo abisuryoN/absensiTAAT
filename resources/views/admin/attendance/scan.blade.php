@@ -652,6 +652,8 @@
         let soundEnabled = true;
         let recentScanCount = 0;
         let audioCtx = null;
+        let lastScanTime = 0;
+        const SCAN_COOLDOWN_MS = 200; // Prevent duplicate scans within 200ms
 
         // ============================================================
         // DOM HELPERS
@@ -974,43 +976,6 @@
                 }
                 cameraSelector.appendChild(opt);
             });
-        }
-
-        function applyMirrorFix() {
-            var videoEl = qrReaderContainer.querySelector('video');
-            if (!videoEl) return;
-
-            function forceNonMirror() {
-                var el = qrReaderContainer.querySelector('video');
-                if (!el) return;
-                var t = el.style.transform || '';
-                var wt = el.style.webkitTransform || '';
-                if (t.indexOf('scaleX(-') !== -1 || t.indexOf('scale(-1') !== -1 ||
-                    wt.indexOf('scaleX(-') !== -1 || wt.indexOf('scale(-1') !== -1) {
-                    el.style.setProperty('transform', 'scaleX(1)', 'important');
-                    el.style.setProperty('-webkit-transform', 'scaleX(1)', 'important');
-                    el.style.setProperty('-moz-transform', 'scaleX(1)', 'important');
-                }
-            }
-
-            forceNonMirror();
-
-            var mirrorObserver = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                        forceNonMirror();
-                    }
-                });
-            });
-            mirrorObserver.observe(videoEl, { attributes: true, attributeFilter: ['style'] });
-
-            if (window._nonmirrorInterval) clearInterval(window._nonmirrorInterval);
-            window._nonmirrorInterval = setInterval(function() {
-                if (!isCameraActive) {
-                    clearInterval(window._nonmirrorInterval);
-                    return;
-                }
-                forceNonMirror();
             }, 1000);
         }
 
@@ -1034,7 +999,10 @@
 
             var containerW = cameraContainer.offsetWidth;
             if (containerW < 200) containerW = 280;
-            var qrSize = Math.round(containerW * 0.65);
+            // Optimal qrbox: cap at 250px for mobile, 300px for desktop
+            var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+            var maxQrSize = isMobile ? 250 : 300;
+            var qrSize = Math.min(maxQrSize, Math.round(containerW * 0.65));
 
             // getCameras() triggers the permission prompt on mobile and returns real device IDs.
             // Starting with a device ID string is more reliable than facingMode constraints
@@ -1063,11 +1031,24 @@
 
                 return html5QrCode.start(
                     cameraId,
-                    { fps: 10, qrbox: { width: qrSize, height: qrSize } },
-                    function(decodedText) {
-                        if (!isProcessing) {
-                            processScanValue(decodedText);
+                    { 
+                        fps: 15, 
+                        qrbox: { width: qrSize, height: qrSize },
+                        videoConstraints: {
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
                         }
+                    },
+                    function(decodedText) {
+                        if (isProcessing) return;
+                        
+                        // Debounce: prevent duplicate scans within cooldown period
+                        var now = Date.now();
+                        if (now - lastScanTime < SCAN_COOLDOWN_MS) return;
+                        lastScanTime = now;
+                        
+                        isProcessing = true;
+                        processScanValue(decodedText);
                     },
                     function(err) { /* ignore scan errors */ }
                 );
@@ -1076,12 +1057,27 @@
                 cameraOverlayLoading.classList.remove('show');
                 scanFrameOverlay.style.display = '';
                 scanHint.style.display = '';
-                applyMirrorFix();
+                // Mirror fix removed - no longer needed with optimized video constraints
             }).catch(function(err) {
                 console.error('Camera start error:', err);
                 stopCameraScanner(true);
-                var msg = (err && err.message) ? err.message
-                        : (typeof err === 'string' ? err : 'Periksa izin kamera di browser Anda');
+                
+                // Better error messages in Indonesian
+                var msg = 'Gagal membuka kamera.';
+                if (err && err.name === 'NotAllowedError' || (err.message && err.message.includes('Permission'))) {
+                    msg = 'Izin kamera ditolak. Silakan aktifkan izin kamera di pengaturan browser Anda.';
+                } else if (err && err.name === 'NotFoundError') {
+                    msg = 'Kamera tidak ditemukan. Pastikan perangkat Anda memiliki kamera.';
+                } else if (err && err.name === 'NotReadableError') {
+                    msg = 'Kamera sedang digunakan aplikasi lain. Tutup aplikasi lain dan coba lagi.';
+                } else if (err && err.name === 'OverconstrainedError') {
+                    msg = 'Kamera tidak mendukung pengaturan yang diminta. Coba kamera lain.';
+                } else if (err && err.message) {
+                    msg = err.message;
+                } else if (typeof err === 'string') {
+                    msg = err;
+                }
+                
                 cameraActiveControls.classList.remove('d-none');
                 updateScannerUI(false, 'Gagal Membuka Kamera', msg);
             });
@@ -1095,10 +1091,19 @@
                     html5QrCode.stop().then(function() {
                         html5QrCode.clear();
                         html5QrCode = null;
+                        
+                        // Ensure all media tracks are stopped
+                        const videoEl = document.querySelector('#camera-container video');
+                        if (videoEl && videoEl.srcObject) {
+                            const tracks = videoEl.srcObject.getTracks();
+                            tracks.forEach(track => track.stop());
+                            videoEl.srcObject = null;
+                        }
                     }).catch(function(e) {});
                 } catch(e) {}
             }
             isCameraActive = false;
+            isProcessing = false;
             cameraOverlayLoading.classList.remove('show');
             scanFrameOverlay.style.display = 'none';
             scanHint.style.display = 'none';
