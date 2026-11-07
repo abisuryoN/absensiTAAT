@@ -187,7 +187,7 @@
                                     @if($student->gender == 'L')
                                         <span class="badge bg-info-subtle text-info border px-2 py-1">Laki-laki</span>
                                     @else
-                                        <span class="badge bg-pink-subtle text-pink border px-2 py-1">Perempuan</span>
+                                        <span class="badge px-2 py-1" style="background-color: #fce7f3; color: #ec4899; border: 1px solid #f9a8d4;">Perempuan</span>
                                     @endif
                                 </td>
                                 <td>
