@@ -55,7 +55,7 @@
             <p class="text-muted mb-0 fs-7">
                 @if($activeStudent)
                     {{ $activeStudent->name }} &bull; {{ $activeStudent->displayClass()?->name ?? 'Kelas tidak tercatat' }}
-                    @unless($activeStudent->is_active) &bull; <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Nonaktif</span> @endunless
+                    @unless($activeStudent->is_active) &bull; <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">Nonaktif</span> @endunless
                 @endif
             </p>
         </div>

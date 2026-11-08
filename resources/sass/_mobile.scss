@@ -223,7 +223,8 @@ $mobile-radius-lg: 12px;
                 font-size: 0.55rem;
                 font-weight: 600;
                 background: rgba(251, 191, 36, 0.15);
-                color: #b8860b;
+                // #b8860b hanya 2.75 di latar drawer #eef4ff. #7a5500 = 5.68.
+                color: #7a5500;
                 border: 1px solid rgba(251, 191, 36, 0.3);
                 border-radius: 12px;
                 padding: 2px 8px;
@@ -428,7 +429,9 @@ $mobile-radius-lg: 12px;
                 padding: 10px 14px;
                 border: none;
                 background: transparent;
-                color: #ef4444;
+                // Latar drawer #eef4ff (bukan putih): #ef4444 = 3.76 (gagal),
+                // #dc2626 = 4.37 (masih gagal), #b91c1c = 5.86 (lulus AA).
+                color: #b91c1c;
                 font-size: 0.85rem;
                 font-weight: 500;
                 cursor: pointer;

@@ -53,7 +53,7 @@
             <p class="text-muted mb-0 fs-7">
                 @if($activeStudent)
                     {{ $activeStudent->name }} &bull; {{ $activeStudent->displayClass()?->name ?? 'Kelas tidak tercatat' }}
-                    @unless($activeStudent->is_active) &bull; <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Nonaktif</span> @endunless
+                    @unless($activeStudent->is_active) &bull; <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">Nonaktif</span> @endunless
                 @endif
             </p>
         </div>
@@ -119,19 +119,19 @@
                         <tr>
                             <td class="fw-semibold">{{ $row['month_label'] }}</td>
                             <td class="text-center">
-                                <span class="badge bg-success-subtle text-success border border-success-subtle">{{ $row['hadir'] }}</span>
+                                <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">{{ $row['hadir'] }}</span>
                             </td>
                             <td class="text-center">
-                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle">{{ $row['terlambat'] }}</span>
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">{{ $row['terlambat'] }}</span>
                             </td>
                             <td class="text-center">
-                                <span class="badge bg-info-subtle text-info border border-info-subtle">{{ $row['izin'] }}</span>
+                                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">{{ $row['izin'] }}</span>
                             </td>
                             <td class="text-center">
-                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">{{ $row['sakit'] }}</span>
+                                <span class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle">{{ $row['sakit'] }}</span>
                             </td>
                             <td class="text-center">
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ $row['tidak_hadir'] }}</span>
+                                <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">{{ $row['tidak_hadir'] }}</span>
                             </td>
                             <td class="text-center text-muted fw-semibold">{{ $row['total'] }}</td>
                             <td class="text-center">

@@ -81,7 +81,7 @@
 {{-- ── Stat Cards ────────────────────────────────────────────────── --}}
 <div class="stat-cards-grid">
     <div class="stat-card-col">
-        <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
+        <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#166534,#14532d);">
             <div class="card-body">
                 <div class="stat-icon mb-2">
                     <i class="bi bi-check-circle-fill text-white"></i>
@@ -92,7 +92,7 @@
         </div>
     </div>
     <div class="stat-card-col">
-        <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+        <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#92400e,#78350f);">
             <div class="card-body">
                 <div class="stat-icon mb-2">
                     <i class="bi bi-clock-history text-white"></i>
@@ -103,7 +103,7 @@
         </div>
     </div>
     <div class="stat-card-col">
-        <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">
+        <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#1d4ed8,#1e40af);">
             <div class="card-body">
                 <div class="stat-icon mb-2">
                     <i class="bi bi-bandaid-fill text-white"></i>
@@ -114,7 +114,7 @@
         </div>
     </div>
     <div class="stat-card-col">
-        <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#ef4444,#b91c1c);">
+        <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#b91c1c,#991b1b);">
             <div class="card-body">
                 <div class="stat-icon mb-2">
                     <i class="bi bi-x-circle-fill text-white"></i>
@@ -125,7 +125,7 @@
         </div>
     </div>
     <div class="stat-card-col">
-        <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);">
+        <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#6d28d9,#5b21b6);">
             <div class="card-body">
                 <div class="stat-icon mb-2">
                     <i class="bi bi-percent text-white"></i>
@@ -158,7 +158,9 @@
             <div class="col-md-6">
                 <div class="p-3 rounded" style="background:#f8fafc;">
                     <div class="small text-muted mb-1">{{ $monthlyComparison['previous_label'] }}</div>
-                    <div class="fs-3 fw-bold text-secondary">{{ $monthlyComparison['previous']['percentage'] }}%</div>
+                    {{-- text-secondary di tema ini = #c7dcff (kontras 1.3, tak terbaca).
+                         Pakai slate #475569 agar terbaca jelas di latar #f8fafc. --}}
+                    <div class="fs-3 fw-bold" style="color:#475569;">{{ $monthlyComparison['previous']['percentage'] }}%</div>
                     <div class="small text-muted">
                         {{ $monthlyComparison['previous']['total'] }} hari tercatat
                     </div>
@@ -168,27 +170,33 @@
         @if($monthlyComparison['can_compare'])
             @if($monthlyComparison['change'] != 0)
             <div class="mt-3 text-center">
-                <span class="badge {{ $monthlyComparison['is_improvement'] ? 'bg-success' : 'bg-warning' }} px-3 py-2">
+                {{-- bg-success (#10b981) → kontras teks 2.54 (gagal). text-bg-* juga
+                     memilih teks HITAM otomatis, jadi warna teks dipaksa #fff. --}}
+                <span class="badge px-3 py-2" style="{{ $monthlyComparison['is_improvement'] ? 'background-color:#047857;color:#fff;' : 'background-color:#b45309;color:#fff;' }}">
                     <i class="bi bi-{{ $monthlyComparison['is_improvement'] ? 'arrow-up' : 'arrow-down' }} me-1"></i>
                     {{ $monthlyComparison['is_improvement'] ? 'Meningkat' : 'Menurun' }} {{ number_format($monthlyComparison['change_abs'], 1) }}% dari bulan lalu
                 </span>
             </div>
             @else
             <div class="mt-3 text-center">
-                <span class="badge bg-secondary px-3 py-2">
+                {{-- bg-secondary di tema ini = #c7dcff → teks putih tak terbaca.
+                     Pakai slate gelap dengan teks putih. --}}
+                <span class="badge text-bg-secondary px-3 py-2" style="background-color:#475569 !important;">
                     <i class="bi bi-dash-lg me-1"></i>Tidak ada perubahan dari bulan lalu
                 </span>
             </div>
             @endif
         @elseif(!$monthlyComparison['has_previous_data'] && $monthlyComparison['has_current_data'])
         <div class="mt-3 text-center">
-            <span class="badge bg-info px-3 py-2">
+            {{-- bg-info (#0dcaf0) + teks hitam = kontras rendah. Pakai #0e7490. --}}
+            <span class="badge px-3 py-2" style="background-color:#0e7490;color:#fff;">
                 <i class="bi bi-info-circle me-1"></i>Data bulan sebelumnya belum tersedia
             </span>
         </div>
         @elseif(!$monthlyComparison['has_current_data'] && $monthlyComparison['has_previous_data'])
         <div class="mt-3 text-center">
-            <span class="badge bg-info px-3 py-2">
+            {{-- bg-info (#0dcaf0) + teks hitam = kontras rendah. Pakai #0e7490. --}}
+            <span class="badge px-3 py-2" style="background-color:#0e7490;color:#fff;">
                 <i class="bi bi-info-circle me-1"></i>Data bulan ini belum tersedia
             </span>
         </div>

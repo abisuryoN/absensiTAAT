@@ -30,7 +30,8 @@
         .stat-card .stat-label {
             font-size: .75rem; font-weight: 600;
             text-transform: uppercase; letter-spacing: .5px;
-            color: rgba(255,255,255,.8);
+            /* .8 terlalu pudar di gradient gelap (3.5–3.9). .92 → >= 5.6. */
+            color: rgba(255,255,255,.92);
             margin-top: 3px;
         }
 
@@ -298,9 +299,9 @@
                             {{ $child->displayClass()?->name ?? 'Kelas tidak tercatat' }}
                             <div class="mt-1">
                                 @if($child->is_active)
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Aktif</span>
+                                    <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Aktif</span>
                                 @else
-                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Nonaktif</span>
+                                    <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Nonaktif</span>
                                 @endif
                             </div>
                         </div>
@@ -329,9 +330,9 @@
                         {{ $child->displayClass()?->name ?? 'Kelas tidak tercatat' }}
                         <div class="mt-1">
                             @if($child->is_active)
-                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Aktif</span>
+                                <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Aktif</span>
                             @else
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Nonaktif</span>
+                                <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Nonaktif</span>
                             @endif
                         </div>
                     </div>

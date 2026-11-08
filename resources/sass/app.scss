@@ -201,12 +201,14 @@ body {
     }
 
     // Official badge styling
+    // Latar drawer #eef4ff + overlay emas rgba(255,193,7,.18) → bg efektif
+    // (241,235,210). #7a5500 = 5.61 di latar itu; sebelumnya #b8860b 3.25 (gagal).
     .badge-official {
         font-size: 0.65rem;
         font-weight: 600;
-        background: rgba(255, 193, 7, 0.12);
-        color: #b8860b;
-        border: 1px solid rgba(255, 193, 7, 0.3);
+        background: rgba(255, 193, 7, 0.18);
+        color: #7a5500;
+        border: 1px solid rgba(184, 134, 11, 0.45);
         border-radius: 20px;
         padding: 3px 12px;
         flex-shrink: 0;
