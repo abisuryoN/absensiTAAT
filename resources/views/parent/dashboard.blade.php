@@ -118,23 +118,37 @@
         .carousel-arrow:active { transform: scale(.94); }
         .carousel-arrow:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
 
+        /* CENTER-PEEK: card aktif selalu di TENGAH, tetangga kiri/kanan
+           terlihat SETENGAH.
+           Rumus (gap = g): card = 50% - g  →  sisi kosong = (W-card)/2 = 25% + g/2
+           padding track = 25% - g/2  →  tetangga terlihat = 25% + g/2 - g = card/2 */
+        .selector-carousel {
+            --sel-gap: .75rem;
+        }
         .selector-scroll {
             flex: 1 1 auto;
             min-width: 0;
             display: flex;
-            gap: .75rem;
+            gap: var(--sel-gap, .75rem);
             overflow-x: auto;
             padding-bottom: .5rem;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            scroll-snap-type: x proximity;
-            scroll-padding-left: 2px;
+            scroll-snap-type: x mandatory;
+            /* padding sisi dihitung JS (applyCenterPeek) supaya card tengah
+               benar-benar exact; scroll-padding harus 0 agar snapport tidak
+               menyempit dan menggeser titik snap. */
+            scroll-padding: 0;
         }
         .selector-scroll::-webkit-scrollbar { display: none; }
 
         .student-selector-card {
-            flex: 0 0 auto;
-            width: 170px;
+            /* Lebar dihitung eksak oleh JS via --card-w (center-peek presisi);
+               fallback 170px = tampilan semula */
+            flex: 0 0 var(--card-w, 170px);
+            width: var(--card-w, 170px);
+            box-sizing: border-box;
+            scroll-snap-align: center;
             border: 2px solid #e2e8f0;
             border-radius: 14px;
             background: #fff;
@@ -212,12 +226,24 @@
             .stat-card .card-body  { padding: 1rem !important; }
             .stat-card .stat-icon  { width: 42px; height: 42px; font-size: 1.15rem; margin-bottom: .5rem !important; }
             .student-avatar        { width: 48px; height: 48px; font-size: 1.2rem; }
-            .student-selector-card { width: 150px; }
             .carousel-arrow        { width: 30px; height: 30px; font-size: .85rem; }
         }
-        /* Desktop (≥992px = layout desktop): tombol < > DIHAPUS, semua card tampil */
+        /* Desktop (≥992px = layout desktop): tombol < > DIHAPUS, semua card tampil
+           seperti semula. Salinan cadangan (kiri/kanan) disembunyikan agar tidak
+           muncul 3x. */
         @media (min-width: 992px) {
             .carousel-arrow { display: none !important; }
+            .student-selector-card:not(.is-center-copy) { display: none !important; }
+            .selector-scroll {
+                padding-left: 0;
+                padding-right: 0;
+                scroll-snap-type: none;
+                flex-wrap: wrap;
+            }
+            .student-selector-card {
+                flex: 0 0 auto;
+                width: 170px;
+            }
         }
         /* Mobile: larang browser memakan gesture swipe carousel */
         .selector-scroll {
@@ -244,35 +270,74 @@
                 <i class="bi bi-chevron-left"></i>
             </button>
             <div class="selector-scroll" id="student-selector">
-            @foreach($children as $child)
-            <div class="student-selector-card {{ $activeStudent && $activeStudent->id === $child->id ? 'active' : '' }}"
-                 data-student-id="{{ $child->id }}"
-                 data-url="{{ route('parent.student.data', $child->id) }}"
-                 role="button"
-                 tabindex="0"
-                 aria-label="Pilih {{ $child->name }}">
-                <div class="selector-check"><i class="bi bi-check2"></i></div>
-                <div class="selector-avatar">
-                    <img src="{{ $child->photo_url }}"
-                         alt="{{ $child->name }}"
-                         class="w-100 h-100 object-fit-cover"
-                         style="border-radius:10px;"
-                         onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($child->name) }}&background=6366f1&color=fff&size=80&bold=true'">
-                </div>
-                <div class="selector-name">{{ $child->name }}</div>
-                <div class="selector-meta">
-                    NIS {{ $child->nis ?? '-' }}<br>
-                    {{ $child->displayClass()?->name ?? 'Kelas tidak tercatat' }}
-                    <div class="mt-1">
-                        @if($child->is_active)
-                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Aktif</span>
-                        @else
-                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Nonaktif</span>
-                        @endif
+            @php $childCount = $children->count(); @endphp
+            @if($childCount > 1)
+                {{-- INFINITE CAROUSEL: track di-triplicate (copy kiri, tengah, kanan).
+                     Card aktif awal ada di copy TENGAH. Copy kiri/kanan membuat wrap
+                     3→1 tetap bergeser ke KANAN dan 1→3 tetap ke KIRI (tanpa lompat
+                     balik), karena JS memusatkan card aktif yang paling dekat tengah. --}}
+                @for($copy = 0; $copy < 3; $copy++)
+                    @foreach($children as $child)
+                    <div class="student-selector-card {{ $copy === 1 && $activeStudent && $activeStudent->id === $child->id ? 'active' : '' }} {{ $copy === 1 ? 'is-center-copy' : '' }}"
+                         data-student-id="{{ $child->id }}"
+                         data-url="{{ route('parent.student.data', $child->id) }}"
+                         role="button"
+                         tabindex="{{ $copy === 1 ? '0' : '-1' }}"
+                         aria-label="Pilih {{ $child->name }}">
+                        <div class="selector-check"><i class="bi bi-check2"></i></div>
+                        <div class="selector-avatar">
+                            <img src="{{ $child->photo_url }}"
+                                 alt="{{ $child->name }}"
+                                 class="w-100 h-100 object-fit-cover"
+                                 style="border-radius:10px;"
+                                 onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($child->name) }}&background=6366f1&color=fff&size=80&bold=true'">
+                        </div>
+                        <div class="selector-name">{{ $child->name }}</div>
+                        <div class="selector-meta">
+                            NIS {{ $child->nis ?? '-' }}<br>
+                            {{ $child->displayClass()?->name ?? 'Kelas tidak tercatat' }}
+                            <div class="mt-1">
+                                @if($child->is_active)
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Aktif</span>
+                                @else
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Nonaktif</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                @endfor
+            @else
+                @foreach($children as $child)
+                <div class="student-selector-card {{ $activeStudent && $activeStudent->id === $child->id ? 'active' : '' }} is-center-copy"
+                     data-student-id="{{ $child->id }}"
+                     data-url="{{ route('parent.student.data', $child->id) }}"
+                     role="button"
+                     tabindex="0"
+                     aria-label="Pilih {{ $child->name }}">
+                    <div class="selector-check"><i class="bi bi-check2"></i></div>
+                    <div class="selector-avatar">
+                        <img src="{{ $child->photo_url }}"
+                             alt="{{ $child->name }}"
+                             class="w-100 h-100 object-fit-cover"
+                             style="border-radius:10px;"
+                             onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($child->name) }}&background=6366f1&color=fff&size=80&bold=true'">
+                    </div>
+                    <div class="selector-name">{{ $child->name }}</div>
+                    <div class="selector-meta">
+                        NIS {{ $child->nis ?? '-' }}<br>
+                        {{ $child->displayClass()?->name ?? 'Kelas tidak tercatat' }}
+                        <div class="mt-1">
+                            @if($child->is_active)
+                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Aktif</span>
+                            @else
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 0.68rem; padding: 2px 6px;">Nonaktif</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
-            @endforeach
+                @endforeach
+            @endif
             </div>
             <button type="button" class="carousel-arrow carousel-next" aria-label="Anak selanjutnya">
                 <i class="bi bi-chevron-right"></i>
@@ -504,12 +569,25 @@
             });
         }
 
+        // Anak yang datanya SEDANG ditampilkan (bukan sekadar class .active),
+        // supaya navigasi carousel yang sudah men-set .active tetap memicu fetch.
+        let displayedStudentId = (function() {
+            if (!hasSelector) return null;
+            const a = allSelectors[0].querySelector('.student-selector-card.is-center-copy.active')
+                   || allSelectors[0].querySelector('.student-selector-card.active');
+            return a ? String(a.dataset.studentId) : null;
+        })();
+
         // ── Fetch and swap dashboard content ─────────────────────────────
         async function loadStudent(card) {
             const studentId = card.dataset.studentId;
             const url       = card.dataset.url;
 
-            if (card.classList.contains('active')) return; // already selected
+            // Konten untuk anak ini sudah tampil → tidak perlu fetch ulang
+            if (String(studentId) === String(displayedStudentId)) {
+                setActiveCard(studentId);
+                return;
+            }
 
             // Simpan card aktif sebelumnya dari SEMUA selector (desktop + mobile)
             let previousActive = null;
@@ -538,8 +616,12 @@
                 // Layout me-render $slot dua kali (desktop + mobile): swap SEMUA copy
                 allContentBox.forEach(function(el) { el.innerHTML = html; });
 
+                displayedStudentId = String(studentId);
+
                 // Pastikan card aktif terlihat di carousel mobile
-                allSelectors.forEach(scrollToActiveCardIn);
+                allSelectors.forEach(function(sel) {
+                    if (isMobileCarousel()) scrollToActiveCardIn(sel);
+                });
 
                 console.log('[AJAX] Content swapped (x' + allContentBox.length + '), re-initializing chart...');
 
@@ -602,20 +684,149 @@
             });
         }
 
-        // ── Carousel Navigation: < > memindahkan anak terpilih (infinite) ─
+        // ── Carousel Navigation: < > memindahkan anak terpilih (infinite) ──
+        // Track punya 3 salinan card (kiri/tengah/kanan). Kita selalu memusatkan
+        // salinan yang paling dekat dengan tengah viewport, lalu menggeser track
+        // ke KANAN untuk 'next' dan ke KIRI untuk 'prev'. Dengan salinan cadangan
+        // di kedua sisi, wrap 3→1 tetap menggeser ke kanan (tidak lompat balik),
+        // dan 1→3 tetap menggeser ke kiri.
         function getCards() {
             if (!hasSelector) return [];
             return Array.from(allSelectors[0].querySelectorAll('.student-selector-card'));
         }
 
+        // Anak unik (urutan asli, tanpa duplikat salinan)
+        function getUniqueIds() {
+            const ids = [];
+            getCards().forEach(function(c) {
+                const id = String(c.dataset.studentId);
+                if (!ids.includes(id)) ids.push(id);
+            });
+            return ids;
+        }
+
+        function currentActiveId() {
+            const ids = getUniqueIds();
+            if (ids.length === 0) return null;
+            if (!hasSelector) return ids[0];
+            const active = allSelectors[0].querySelector('.student-selector-card.active');
+            return active ? String(active.dataset.studentId) : ids[0];
+        }
+
+        // Card aktif berikutnya secara logis (loop)
+        function stepStudentId(currentId, direction) {
+            const ids = getUniqueIds();
+            if (ids.length === 0) return null;
+            const cur = ids.indexOf(currentId);
+            const idx = (cur < 0 ? 0 : cur + direction + ids.length) % ids.length;
+            return ids[idx];
+        }
+
+        // ── Normalisasi track ────────────────────────────────────────────
+        // Track berisi 3 salinan. Supaya bisa terus geser ke arah yang SAMA,
+        // kartu aktif harus selalu berada di salinan TENGAH (index n..2n-1).
+        // Setelah animasi geser selesai / setelah swipe, jika kartu aktif
+        // sudah masuk ke salinan kiri atau kanan, kita pindahkan posisi
+        // scroll satu "siklus" secara INSTAN (tanpa animasi) sehingga kartu
+        // yang tampak tetap sama persis, tapi cadangan di kedua sisi kembali ada.
+        function normalizeTrack(sel, animate) {
+            const cards = Array.from(sel.querySelectorAll('.student-selector-card'));
+            const n = getUniqueIds().length;
+            if (n < 2 || cards.length < n * 3) return;
+
+            // PENTING: pakai card aktif PERTAMA di salinan tengah (bukan sembarang
+            // card .active — dengan triplicate ada 3 card .active ber-id sama).
+            const activeId = currentActiveId();
+            const A = cards.find(function(c, i) {
+                return i >= n && i < 2 * n && String(c.dataset.studentId) === String(activeId);
+            });
+            if (!A) return;
+
+            const padLeft = parseFloat(getComputedStyle(sel).paddingLeft) || 0;
+            const gap = parseFloat(getComputedStyle(sel).columnGap) || 12;
+            const step = A.offsetWidth + gap;          // jarak antar card (eksak)
+            const center = sel.clientWidth / 2;
+            const idx = cards.indexOf(A);
+            if (idx < 0) return;
+
+            // Kartu aktif harus di salinan tengah: index n-1 .. 2n-1 (0-based n..2n-1)
+            let shift = 0;
+            if (idx < n) {
+                shift = n;                 // di salinan kiri → geser +1 siklus
+            } else if (idx >= 2 * n) {
+                shift = -n;                // di salinan kanan → geser -1 siklus
+            }
+
+            const targetScroll = A.offsetLeft - padLeft + A.offsetWidth / 2 - center + (shift * step);
+
+            if (animate) {
+                sel.scrollTo({ left: targetScroll, behavior: 'smooth' });
+            } else {
+                sel.scrollTo({ left: targetScroll, behavior: 'auto' });
+            }
+        }
+
+        // Geser track satu card ke arah yang diminta, tanpa animasi ganda:
+        // gunakan CSS scroll-behavior (smooth) milik track.
         function navigateCarousel(direction) {
+            const sel = allSelectors.find(function(s) { return s.clientWidth > 0; }) || allSelectors[0];
             const cards = getCards();
-            if (cards.length === 0) return;
-            const activeIdx = cards.findIndex(function(c) { return c.classList.contains('active'); });
-            // Infinite loop dua arah: 1→2→3→1 / 3→2→1→3
-            const nextIdx = (activeIdx < 0 ? 0 : activeIdx + direction + cards.length) % cards.length;
-            const target = cards[nextIdx];
-            if (target) loadStudent(target);
+            if (!sel || cards.length === 0) return;
+
+            // Pastikan ada cadangan di kedua sisi SEBELUM geser, supaya wrap
+            // (mis. 3→1 saat geser kanan) tidak mentok di ujung.
+            normalizeTrack(sel, false);
+
+            const A = sel.querySelector('.student-selector-card.active') || cards[0];
+            const gap = parseFloat(getComputedStyle(sel).columnGap) || 12;
+            const step = A.offsetWidth + gap;
+
+            const start = sel.scrollLeft;
+            const target = start + direction * step;
+
+            sel.scrollTo({ left: target, behavior: 'smooth' });
+
+            // Setelah animasi selesai: tentukan kartu paling dekat tengah,
+            // jadikan aktif, lalu normalisasi (instan) agar siap geser lagi.
+            clearTimeout(sel._navTimer);
+            sel._navTimer = setTimeout(function() {
+                const nearest = pickNearestCenterCard(sel);
+                if (!nearest) return;
+
+                const studentId = nearest.dataset.studentId;
+
+                applyActiveById(studentId);
+                normalizeTrack(sel, false);      // snap balik ke salinan tengah, tanpa lompatan visual
+
+                // Fetch data anak (pakai salinan TENGAH agar konsisten)
+                const centerCard = sel.querySelector('.student-selector-card.is-center-copy.active[data-url]')
+                                || sel.querySelector('.student-selector-card.active[data-url]');
+                if (centerCard) loadStudent(centerCard);
+            }, 340);
+        }
+
+        // Card yang paling dekat dengan titik tengah track
+        function pickNearestCenterCard(sel) {
+            const cards = Array.from(sel.querySelectorAll('.student-selector-card'));
+            if (cards.length === 0) return null;
+            const trackRect = sel.getBoundingClientRect();
+            const center = trackRect.x + trackRect.width / 2;
+            let best = null, bestDist = Infinity;
+            cards.forEach(function(c) {
+                const r = c.getBoundingClientRect();
+                const dist = Math.abs((r.x + r.width / 2) - center);
+                if (dist < bestDist) { bestDist = dist; best = c; }
+            });
+            return best;
+        }
+
+        // Terapkan .active berdasarkan id (semua salinan) TANPA fetch
+        function applyActiveById(studentId) {
+            allSelectors.forEach(function(sel) {
+                sel.querySelectorAll('.student-selector-card').forEach(function(card) {
+                    card.classList.toggle('active', String(card.dataset.studentId) === String(studentId));
+                });
+            });
         }
 
         allPrevBtns.forEach(function(btn) {
@@ -651,17 +862,82 @@
             });
         }
 
-        // Scroll carousel agar card aktif selalu terlihat
-        function scrollToActiveCardIn(sel) {
-            const activeCard = sel.querySelector('.student-selector-card.active');
-            if (activeCard) {
-                sel.scrollTo({
-                    left: activeCard.offsetLeft - 12,
-                    behavior: 'smooth'
-                });
-            }
+        // ── CENTER-PEEK: hitung lebar card & padding track secara eksak ────
+        // W = lebar track terlihat, g = gap, C = lebar card
+        //   C = W/2 - g           → tetangga terlihat setengah card
+        //   P = (W - C)/2         → card aktif pas di tengah
+        function applyCenterPeek(sel) {
+            const W = sel.getBoundingClientRect().width;
+            if (!W) return;
+
+            const g = parseFloat(getComputedStyle(sel).columnGap) || 12;
+            const C = W / 2 - g;          // lebar card
+            if (C <= 0) return;
+            const P = (W - C) / 2;        // padding kiri/kanan agar card center
+
+            sel.style.setProperty('--card-w', C.toFixed(2) + 'px');
+            sel.style.paddingLeft = P.toFixed(2) + 'px';
+            sel.style.paddingRight = P.toFixed(2) + 'px';
         }
-        allSelectors.forEach(function(sel) { setTimeout(function() { scrollToActiveCardIn(sel); }, 150); });
+
+        function resetCenterPeek(sel) {
+            sel.style.removeProperty('--card-w');
+            sel.style.paddingLeft = '';
+            sel.style.paddingRight = '';
+        }
+
+        // Scroll carousel agar card aktif EXACT di TENGAH track (center-peek).
+        // Dengan triplicate, pilih card aktif di SALINAN TENGAH (.is-center-copy)
+        // agar cadangan kiri/kanan tetap tersedia untuk geser berulang.
+        function scrollToActiveCardIn(sel) {
+            const card = sel.querySelector('.student-selector-card.is-center-copy.active')
+                       || sel.querySelector('.student-selector-card.active');
+            if (!card) return;
+
+            const padLeft = parseFloat(getComputedStyle(sel).paddingLeft) || 0;
+
+            // Posisi tengah card relatif terhadap isi track
+            const cardCenter = card.offsetLeft - padLeft + card.offsetWidth / 2;
+
+            // Target scrollLeft = cardCenter - (lebar terlihat / 2)
+            let target = cardCenter - sel.clientWidth / 2;
+
+            // Clamp ke rentang scroll yang valid
+            const maxScroll = sel.scrollWidth - sel.clientWidth;
+            target = Math.max(0, Math.min(target, maxScroll));
+
+            sel.scrollTo({ left: target, behavior: 'smooth' });
+        }
+
+        // Center-peek hanya untuk layout mobile (desktop tampil semua card).
+        function isMobileCarousel() {
+            return window.matchMedia('(max-width: 991.98px)').matches;
+        }
+
+        // Terapkan / lepas center-peek sesuai breakpoint, lalu posisikan card
+        function layoutCarousels() {
+            const mobile = isMobileCarousel();
+            allSelectors.forEach(function(sel) {
+                if (mobile) {
+                    applyCenterPeek(sel);
+                    // set padding dulu, baru hitung posisi (butuh layout baru)
+                    requestAnimationFrame(function() { scrollToActiveCardIn(sel); });
+                } else {
+                    resetCenterPeek(sel);
+                    sel.scrollLeft = 0;
+                }
+            });
+        }
+
+        layoutCarousels();
+        setTimeout(layoutCarousels, 150);
+
+        // Reposisi saat resize / rotasi layar (mis. HP → tablet → desktop)
+        let resizeTimer = null;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(layoutCarousels, 180);
+        });
 
         // ── Simple toast notification ─────────────────────────────────────
         function showToast(message) {
