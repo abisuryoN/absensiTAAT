@@ -215,8 +215,8 @@
             .student-selector-card { width: 150px; }
             .carousel-arrow        { width: 30px; height: 30px; font-size: .85rem; }
         }
-        /* Tablet/desktop: arrow DIHAPUS (desktop memakai grid semua card terlihat) */
-        @media (min-width: 768px) {
+        /* Desktop (≥992px = layout desktop): tombol < > DIHAPUS, semua card tampil */
+        @media (min-width: 992px) {
             .carousel-arrow { display: none !important; }
         }
         /* Mobile: larang browser memakan gesture swipe carousel */
@@ -548,11 +548,8 @@
                     initializeChart();
                 }, 150);
 
-                // Smooth scroll to dashboard content on mobile
-                if (window.innerWidth < 992) {
-                    const visible = visibleContentBox();
-                    if (visible) visible.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                // JANGAN auto-scroll ke konten di mobile: carousel harus tetap
+                // di bawah jari agar swipe/panah bisa dipakai berulang.
             } catch (err) {
                 console.error('Gagal memuat data siswa:', err);
                 // Restore active state on error
