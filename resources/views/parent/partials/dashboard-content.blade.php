@@ -15,31 +15,8 @@
 {{-- ── Student Profile Card with Navigation ──────────────────────── --}}
 <div class="card student-profile-card shadow-sm mb-4">
     <div class="card-body p-3 p-md-4">
-        {{-- Navigation Controls (only if multiple children) --}}
-        @if(isset($children) && $children->count() > 1)
-        <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
-            <button type="button"
-                    class="btn btn-sm student-nav-btn"
-                    id="prevStudentBtn"
-                    data-direction="prev"
-                    aria-label="Anak sebelumnya"
-                    style="background:rgba(255,255,255,.2); color:#fff; border:none; width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all .2s;">
-                <i class="bi bi-chevron-left"></i>
-            </button>
-            <div class="text-center flex-grow-1" style="color:#fff; font-weight:600; font-size:.95rem;">
-                {{ $activeStudent->name }}
-            </div>
-            <button type="button"
-                    class="btn btn-sm student-nav-btn"
-                    id="nextStudentBtn"
-                    data-direction="next"
-                    aria-label="Anak selanjutnya"
-                    style="background:rgba(255,255,255,.2); color:#fff; border:none; width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all .2s;">
-                <i class="bi bi-chevron-right"></i>
-            </button>
-        </div>
-        @endif
-
+        {{-- Navigation Controls (Removed as requested) --}}
+        
         <div class="d-flex align-items-center gap-3">
             <div class="student-avatar">
                 <img src="{{ $activeStudent->photo_url }}"
@@ -303,74 +280,3 @@
 <script type="application/json" id="chartTrendData">
 @json($sixMonthTrend)
 </script>
-
-{{-- Navigation script for prev/next buttons --}}
-@if(isset($children) && $children->count() > 1)
-<script>
-(function() {
-    'use strict';
-
-    // Wait for DOM to be ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initNavigation);
-    } else {
-        initNavigation();
-    }
-
-    function initNavigation() {
-        const prevBtn = document.getElementById('prevStudentBtn');
-        const nextBtn = document.getElementById('nextStudentBtn');
-        const childrenDataEl = document.getElementById('childrenData');
-
-        if (!prevBtn || !nextBtn || !childrenDataEl) return;
-
-        try {
-            const data = JSON.parse(childrenDataEl.textContent);
-            const children = data.children;
-            const activeStudentId = data.activeId;
-            const currentIndex = children.findIndex(function(c) { return c.id === activeStudentId; });
-
-            if (currentIndex === -1) return;
-
-            // Update button states
-            updateButtonState(prevBtn, currentIndex > 0);
-            updateButtonState(nextBtn, currentIndex < children.length - 1);
-
-            // Attach event listeners
-            prevBtn.onclick = function() {
-                if (currentIndex > 0) {
-                    navigateToStudent(children[currentIndex - 1]);
-                }
-            };
-
-            nextBtn.onclick = function() {
-                if (currentIndex < children.length - 1) {
-                    navigateToStudent(children[currentIndex + 1]);
-                }
-            };
-        } catch (e) {
-            console.error('Failed to initialize navigation:', e);
-        }
-    }
-
-    function updateButtonState(btn, enabled) {
-        if (enabled) {
-            btn.disabled = false;
-            btn.style.opacity = '1';
-            btn.style.cursor = 'pointer';
-        } else {
-            btn.disabled = true;
-            btn.style.opacity = '0.3';
-            btn.style.cursor = 'not-allowed';
-        }
-    }
-
-    function navigateToStudent(student) {
-        // Trigger the same load mechanism as selector cards
-        if (window.parentDashboard && window.parentDashboard.loadStudentByUrl) {
-            window.parentDashboard.loadStudentByUrl(student.url, student.id);
-        }
-    }
-})();
-</script>
-@endif

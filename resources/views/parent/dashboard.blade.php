@@ -89,13 +89,46 @@
             color: #64748b;
             margin-bottom: .75rem;
         }
+        /* Carousel wrapper: arrow kiri - track - arrow kanan (tidak menumpuk card) */
+        .selector-carousel {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .carousel-arrow {
+            flex: 0 0 auto;
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .95rem;
+            line-height: 1;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, .08);
+            transition: background .18s, color .18s, border-color .18s, transform .18s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .carousel-arrow:hover  { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+        .carousel-arrow:active { transform: scale(.94); }
+        .carousel-arrow:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
+
         .selector-scroll {
+            flex: 1 1 auto;
+            min-width: 0;
             display: flex;
             gap: .75rem;
             overflow-x: auto;
             padding-bottom: .5rem;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            scroll-snap-type: x proximity;
+            scroll-padding-left: 2px;
         }
         .selector-scroll::-webkit-scrollbar { display: none; }
 
@@ -173,15 +206,6 @@
         }
         #dashboard-spinner.show { display: block; }
 
-        /* Navigation buttons in profile card */
-        .student-nav-btn:hover:not(:disabled) {
-            background: rgba(255,255,255,.35) !important;
-            transform: scale(1.05);
-        }
-        .student-nav-btn:active:not(:disabled) {
-            transform: scale(0.95);
-        }
-
         /* Mobile tweaks */
         @media (max-width: 575.98px) {
             .stat-card .stat-value { font-size: 1.6rem; }
@@ -189,13 +213,21 @@
             .stat-card .stat-icon  { width: 42px; height: 42px; font-size: 1.15rem; margin-bottom: .5rem !important; }
             .student-avatar        { width: 48px; height: 48px; font-size: 1.2rem; }
             .student-selector-card { width: 150px; }
-            .student-nav-btn       { width: 40px !important; height: 40px !important; font-size: 1.1rem; }
+            .carousel-arrow        { width: 30px; height: 30px; font-size: .85rem; }
+        }
+        /* Tablet/desktop: arrow DIHAPUS (desktop memakai grid semua card terlihat) */
+        @media (min-width: 768px) {
+            .carousel-arrow { display: none !important; }
+        }
+        /* Mobile: larang browser memakan gesture swipe carousel */
+        .selector-scroll {
+            touch-action: pan-y;
         }
     </style>
     @endpush
 
     {{-- ── Loading Spinner ───────────────────────────────────────────────── --}}
-    <div id="dashboard-spinner">
+    <div id="dashboard-spinner" class="dashboard-spinner-box">
         <div class="spinner-border text-primary" style="width:2.5rem;height:2.5rem;" role="status">
             <span class="visually-hidden">Memuat...</span>
         </div>
@@ -204,10 +236,14 @@
     {{-- ── Student Selector (outside #dashboard-content, NOT re-rendered) ──── --}}
     @if($children->count() > 1)
     <div class="selector-section">
-        <div class="selector-label">
+        <div class="selector-label mb-2">
             <i class="bi bi-people me-1"></i>Pilih Anak
         </div>
-        <div class="selector-scroll" id="student-selector">
+        <div class="selector-carousel">
+            <button type="button" class="carousel-arrow carousel-prev" aria-label="Anak sebelumnya">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <div class="selector-scroll" id="student-selector">
             @foreach($children as $child)
             <div class="student-selector-card {{ $activeStudent && $activeStudent->id === $child->id ? 'active' : '' }}"
                  data-student-id="{{ $child->id }}"
@@ -237,12 +273,16 @@
                 </div>
             </div>
             @endforeach
+            </div>
+            <button type="button" class="carousel-arrow carousel-next" aria-label="Anak selanjutnya">
+                <i class="bi bi-chevron-right"></i>
+            </button>
         </div>
     </div>
     @endif
 
     {{-- ── Dashboard Content (replaced via AJAX) ──────────────────────────── --}}
-    <div id="dashboard-content">
+    <div id="dashboard-content" class="dashboard-content-box">
         @if($activeStudent)
             @include('parent.partials.dashboard-content', [
                 'activeStudent'     => $activeStudent,
@@ -272,14 +312,25 @@
     (function () {
         'use strict';
 
-        const selector   = document.getElementById('student-selector');
-        const contentBox = document.getElementById('dashboard-content');
-        const spinner    = document.getElementById('dashboard-spinner');
+        // Layout me-render konten DUA KALI (desktop d-none d-lg-flex + mobile d-lg-none).
+        // Jadi setiap id muncul 2x di DOM. Semua helper di bawah bekerja pada
+        // SEMUA instance, dan hanya instance yang terlihat yang dipakai untuk UI.
+        const allSelectors  = Array.from(document.querySelectorAll('.selector-scroll'));
+        const allContentBox = Array.from(document.querySelectorAll('.dashboard-content-box'));
+        const allPrevBtns   = Array.from(document.querySelectorAll('.carousel-prev'));
+        const allNextBtns   = Array.from(document.querySelectorAll('.carousel-next'));
+        const spinners      = Array.from(document.querySelectorAll('.dashboard-spinner-box'));
+
+        const hasSelector = allSelectors.length > 0;
+
+        // Instance pertama (kompatibilitas kode lama)
+        const selector   = allSelectors[0] || null;
+        const contentBox = allContentBox[0] || null;
 
         // Global chart instance holder
         let attendanceChart = null;
 
-        if (!contentBox) return;
+        if (allContentBox.length === 0) return;
 
         // ── Chart Management ─────────────────────────────────────────────
         function initializeChart() {
@@ -438,18 +489,18 @@
             setTimeout(initializeChart, 100);
         }
 
-        if (!selector) return;
-
         // ── Helpers ──────────────────────────────────────────────────────
         function setLoading(on) {
-            contentBox.classList.toggle('loading', on);
-            spinner.classList.toggle('show', on);
+            allContentBox.forEach(function(el) { el.classList.toggle('loading', on); });
+            spinners.forEach(function(el) { el.classList.toggle('show', on); });
         }
 
         function setActiveCard(studentId) {
-            selector.querySelectorAll('.student-selector-card').forEach(function(card) {
-                const isActive = String(card.dataset.studentId) === String(studentId);
-                card.classList.toggle('active', isActive);
+            allSelectors.forEach(function(sel) {
+                sel.querySelectorAll('.student-selector-card').forEach(function(card) {
+                    const isActive = String(card.dataset.studentId) === String(studentId);
+                    card.classList.toggle('active', isActive);
+                });
             });
         }
 
@@ -459,6 +510,13 @@
             const url       = card.dataset.url;
 
             if (card.classList.contains('active')) return; // already selected
+
+            // Simpan card aktif sebelumnya dari SEMUA selector (desktop + mobile)
+            let previousActive = null;
+            allSelectors.forEach(function(sel) {
+                const a = sel.querySelector('.student-selector-card.active');
+                if (a && !previousActive) previousActive = a;
+            });
 
             setLoading(true);
             setActiveCard(studentId);
@@ -476,26 +534,34 @@
                 }
 
                 const html = await response.text();
-                contentBox.innerHTML = html;
 
-                console.log('[AJAX] Content swapped, re-initializing chart...');
+                // Layout me-render $slot dua kali (desktop + mobile): swap SEMUA copy
+                allContentBox.forEach(function(el) { el.innerHTML = html; });
+
+                // Pastikan card aktif terlihat di carousel mobile
+                allSelectors.forEach(scrollToActiveCardIn);
+
+                console.log('[AJAX] Content swapped (x' + allContentBox.length + '), re-initializing chart...');
 
                 // Re-initialize chart after content swap with proper delay
-                // Wait for browser to render the new DOM
                 setTimeout(function() {
                     initializeChart();
                 }, 150);
 
                 // Smooth scroll to dashboard content on mobile
-                if (window.innerWidth < 768) {
-                    contentBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                if (window.innerWidth < 992) {
+                    const visible = visibleContentBox();
+                    if (visible) visible.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             } catch (err) {
                 console.error('Gagal memuat data siswa:', err);
                 // Restore active state on error
-                const prevActive = selector.querySelector('.student-selector-card.active');
-                if (prevActive) prevActive.classList.add('active');
-                card.classList.remove('active');
+                allSelectors.forEach(function(sel) {
+                    sel.querySelectorAll('.student-selector-card').forEach(function(c) {
+                        if (String(c.dataset.studentId) === String(studentId)) c.classList.remove('active');
+                    });
+                });
+                if (previousActive) previousActive.classList.add('active');
 
                 // Show small error toast
                 showToast('Gagal memuat data. Silakan coba lagi.');
@@ -504,27 +570,101 @@
             }
         }
 
-        // Expose to window for navigation buttons
+        // Instance dashboard-content yang sedang terlihat (mobile atau desktop)
+        function visibleContentBox() {
+            for (const el of allContentBox) {
+                if (el.offsetParent !== null || el.getClientRects().length > 0) return el;
+            }
+            return allContentBox[0] || null;
+        }
+
+        // Expose to window for external navigation helpers
         window.parentDashboard = {
             loadStudentByUrl: function(url, studentId) {
-                // Find the card matching this student and trigger load
-                const card = selector.querySelector('[data-student-id="' + studentId + '"]');
-                if (card) {
-                    loadStudent(card);
+                if (!hasSelector) return;
+                for (const sel of allSelectors) {
+                    const card = sel.querySelector('[data-student-id="' + studentId + '"]');
+                    if (card) { loadStudent(card); return; }
                 }
             }
         };
 
-        // ── Event listeners (click + keyboard Enter/Space) ────────────────
-        selector.querySelectorAll('.student-selector-card').forEach(function(card) {
-            card.addEventListener('click', function() { loadStudent(card); });
-            card.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    loadStudent(card);
-                }
+        // ── Event delegation untuk card click + keyboard (semua selector) ──
+        if (hasSelector) {
+            allSelectors.forEach(function(sel) {
+                sel.addEventListener('click', function(e) {
+                    const card = e.target.closest('.student-selector-card');
+                    if (card) loadStudent(card);
+                });
+                sel.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        const card = e.target.closest('.student-selector-card');
+                        if (card) { e.preventDefault(); loadStudent(card); }
+                    }
+                });
             });
+        }
+
+        // ── Carousel Navigation: < > memindahkan anak terpilih (infinite) ─
+        function getCards() {
+            if (!hasSelector) return [];
+            return Array.from(allSelectors[0].querySelectorAll('.student-selector-card'));
+        }
+
+        function navigateCarousel(direction) {
+            const cards = getCards();
+            if (cards.length === 0) return;
+            const activeIdx = cards.findIndex(function(c) { return c.classList.contains('active'); });
+            // Infinite loop dua arah: 1→2→3→1 / 3→2→1→3
+            const nextIdx = (activeIdx < 0 ? 0 : activeIdx + direction + cards.length) % cards.length;
+            const target = cards[nextIdx];
+            if (target) loadStudent(target);
+        }
+
+        allPrevBtns.forEach(function(btn) {
+            btn.addEventListener('click', function(e) { e.preventDefault(); navigateCarousel(-1); });
         });
+        allNextBtns.forEach(function(btn) {
+            btn.addEventListener('click', function(e) { e.preventDefault(); navigateCarousel(1); });
+        });
+
+        // ── Swipe kiri/kanan pada carousel (mobile) → pindah anak ────────
+        if (hasSelector) {
+            let touchStartX = 0, touchStartY = 0, touchTracking = false;
+
+            allSelectors.forEach(function(sel) {
+                sel.addEventListener('touchstart', function(e) {
+                    const t = e.changedTouches[0];
+                    touchStartX = t.clientX;
+                    touchStartY = t.clientY;
+                    touchTracking = true;
+                }, { passive: true });
+
+                sel.addEventListener('touchend', function(e) {
+                    if (!touchTracking) return;
+                    touchTracking = false;
+                    const t = e.changedTouches[0];
+                    const dx = t.clientX - touchStartX;
+                    const dy = t.clientY - touchStartY;
+                    // Swipe horizontal dominan & melewati threshold
+                    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                        navigateCarousel(dx < 0 ? 1 : -1);
+                    }
+                }, { passive: true });
+            });
+        }
+
+        // Scroll carousel agar card aktif selalu terlihat
+        function scrollToActiveCardIn(sel) {
+            const activeCard = sel.querySelector('.student-selector-card.active');
+            if (activeCard) {
+                sel.scrollTo({
+                    left: activeCard.offsetLeft - 12,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        allSelectors.forEach(function(sel) { setTimeout(function() { scrollToActiveCardIn(sel); }, 150); });
 
         // ── Simple toast notification ─────────────────────────────────────
         function showToast(message) {
