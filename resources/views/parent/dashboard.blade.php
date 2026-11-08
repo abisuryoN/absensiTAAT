@@ -73,7 +73,7 @@
         }
         @media (min-width: 768px) {
             .stat-cards-grid .stat-card-col {
-                flex: 0 0 calc(25% - .75rem);
+                flex: 0 0 calc(20% - .8rem);
             }
         }
 

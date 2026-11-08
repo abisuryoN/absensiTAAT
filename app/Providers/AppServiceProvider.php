@@ -6,7 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Student;
+use App\Models\AttendanceGate;
 use App\Policies\StudentParentPolicy;
+use App\Observers\AttendanceGateObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +29,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Parent → Student authorization
         Gate::policy(Student::class, StudentParentPolicy::class);
+
+        // Register Attendance Observer
+        AttendanceGate::observe(AttendanceGateObserver::class);
 
         // Listen to login event to show welcome SweetAlert
         \Illuminate\Support\Facades\Event::listen(

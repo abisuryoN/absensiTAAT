@@ -216,7 +216,13 @@ class ParentPortalController extends Controller
             $this->withLateInfo($todayRecord, $student);
         }
 
-        return compact('todayRecord', 'summary', 'recentAttendances');
+        // Six-month trend data for chart
+        $sixMonthTrend = $this->buildSixMonthTrend($student->id);
+
+        // Monthly comparison (current vs previous month)
+        $monthlyComparison = $this->buildMonthlyComparison($student->id);
+
+        return compact('todayRecord', 'summary', 'recentAttendances', 'sixMonthTrend', 'monthlyComparison');
     }
 
     // ──────────────────────────────────────────────
@@ -230,13 +236,25 @@ class ParentPortalController extends Controller
             ->whereMonth('date', $month)
             ->get();
 
+        $hadir = $records->where('status', 'hadir')->count();
+        $terlambat = $records->where('status', 'terlambat')->count();
+        $izin = $records->where('status', 'izin')->count();
+        $sakit = $records->where('status', 'sakit')->count();
+        $tidakHadir = $records->where('status', 'tidak_hadir')->count();
+        $total = $records->count();
+
+        // Calculate attendance percentage (hadir + terlambat considered as "attended")
+        $attended = $hadir + $terlambat;
+        $percentage = $total > 0 ? round(($attended / $total) * 100, 1) : 0;
+
         return [
-            'hadir'     => $records->where('status', 'hadir')->count(),
-            'terlambat' => $records->where('status', 'terlambat')->count(),
-            'izin'      => $records->where('status', 'izin')->count(),
-            'sakit'     => $records->where('status', 'sakit')->count(),
-            'tidak_hadir' => $records->where('status', 'tidak_hadir')->count(),
-            'total'     => $records->count(),
+            'hadir'       => $hadir,
+            'terlambat'   => $terlambat,
+            'izin'        => $izin,
+            'sakit'       => $sakit,
+            'tidak_hadir' => $tidakHadir,
+            'total'       => $total,
+            'percentage'  => $percentage,
         ];
     }
 
@@ -278,5 +296,60 @@ class ParentPortalController extends Controller
     private function emptyMonthStats(): array
     {
         return ['hadir' => 0, 'terlambat' => 0, 'izin' => 0, 'sakit' => 0, 'tidak_hadir' => 0, 'total' => 0];
+    }
+
+    /**
+     * Build six-month trend data for chart.
+     * Returns array of 6 months (oldest to newest) with attendance stats.
+     */
+    private function buildSixMonthTrend(int $studentId): array
+    {
+        $trend = [];
+        $now = Carbon::now()->startOfMonth(); // Normalize to first day of month
+
+        // Get last 6 months (including current month)
+        for ($i = 5; $i >= 0; $i--) {
+            $date = $now->copy()->subMonthsNoOverflow($i);
+            $stats = $this->buildMonthStats($studentId, $date->year, $date->month);
+            $stats['month_label'] = $date->translatedFormat('M Y'); // e.g., "Okt 2026"
+            $stats['month_short'] = $date->translatedFormat('M'); // e.g., "Okt"
+            $trend[] = $stats;
+        }
+
+        return $trend;
+    }
+
+    /**
+     * Build monthly comparison between current and previous month.
+     */
+    private function buildMonthlyComparison(int $studentId): array
+    {
+        $now = Carbon::now()->startOfMonth(); // Normalize to first day of month
+        $currentMonth = $this->buildMonthStats($studentId, $now->year, $now->month);
+
+        $prevDate = $now->copy()->subMonthNoOverflow();
+        $previousMonth = $this->buildMonthStats($studentId, $prevDate->year, $prevDate->month);
+
+        // Check if we have valid data for comparison
+        $currentTotal = $currentMonth['total'] ?? 0;
+        $previousTotal = $previousMonth['total'] ?? 0;
+
+        // Calculate change in percentage
+        $currentPct = $currentMonth['percentage'] ?? 0;
+        $previousPct = $previousMonth['percentage'] ?? 0;
+        $change = $currentPct - $previousPct;
+
+        return [
+            'current' => $currentMonth,
+            'previous' => $previousMonth,
+            'current_label' => $now->translatedFormat('F Y'),
+            'previous_label' => $prevDate->translatedFormat('F Y'),
+            'change' => $change,
+            'change_abs' => abs($change),
+            'is_improvement' => $change >= 0,
+            'has_current_data' => $currentTotal > 0,
+            'has_previous_data' => $previousTotal > 0,
+            'can_compare' => $currentTotal > 0 && $previousTotal > 0,
+        ];
     }
 }

@@ -5,11 +5,11 @@
 <section>
     <header>
         <h2 class="fw-semibold fs-5 text-dark mb-2">
-            {{ __('Delete Account') }}
+            Hapus Akun
         </h2>
 
         <p class="text-muted mb-4">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
+            Setelah akun Anda dihapus, semua data dan informasi akan dihapus secara permanen. Sebelum menghapus akun, silakan unduh data atau informasi yang ingin Anda simpan.
         </p>
     </header>
 
@@ -21,7 +21,7 @@
         </div>
     @else
     <button type="button" class="btn-delete" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
-        {{ __('Delete Account') }}
+        Hapus Akun
     </button>
     @endif
 
@@ -37,19 +37,19 @@
                     
                     <div class="modal-header border-0 pb-0">
                         <h5 class="modal-title fw-semibold text-dark" id="confirmDeleteModalLabel">
-                            {{ __('Are you sure you want to delete your account?') }}
+                            Apakah Anda yakin ingin menghapus akun Anda?
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
                     
                     <div class="modal-body pt-2">
                         <p class="text-muted mb-4">
-                            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
+                            Setelah akun Anda dihapus, semua data dan informasi akan dihapus secara permanen. Masukkan kata sandi Anda untuk mengkonfirmasi bahwa Anda ingin menghapus akun secara permanen.
                         </p>
 
                         <div class="form-group mb-0">
-                            <label for="password" class="visually-hidden">{{ __('Password') }}</label>
-                            <input id="password" name="password" type="password" class="form-control" placeholder="{{ __('Password') }}" required>
+                            <label for="password" class="visually-hidden">Kata Sandi</label>
+                            <input id="password" name="password" type="password" class="form-control" placeholder="Kata Sandi" required>
                             @if ($errors->userDeletion->has('password'))
                                 <div class="error-message">{{ $errors->userDeletion->first('password') }}</div>
                             @endif
@@ -58,10 +58,10 @@
                     
                     <div class="modal-footer border-0 pt-0">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">
-                            {{ __('Cancel') }}
+                            Batal
                         </button>
                         <button type="submit" class="btn-delete">
-                            {{ __('Delete Account') }}
+                            Hapus Akun
                         </button>
                     </div>
                 </form>

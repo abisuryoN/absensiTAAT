@@ -113,6 +113,94 @@
             </div>
         </div>
     </div>
+    <div class="stat-card-col">
+        <div class="card stat-card shadow-sm h-100" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);">
+            <div class="card-body">
+                <div class="stat-icon mb-2">
+                    <i class="bi bi-percent text-white"></i>
+                </div>
+                <div class="stat-value">{{ $summary['percentage'] ?? 0 }}%</div>
+                <div class="stat-label">Persentase Hadir</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ── Monthly Comparison Card ────────────────────────────────────── --}}
+<div class="card section-card shadow-sm mb-4">
+    <div class="card-header">
+        <h6 class="fw-bold mb-0" style="color:#1e293b;">
+            <i class="bi bi-arrow-left-right me-2 text-primary"></i>Perbandingan Bulanan
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="p-3 rounded" style="background:#f8fafc;">
+                    <div class="small text-muted mb-1">{{ $monthlyComparison['current_label'] }}</div>
+                    <div class="fs-3 fw-bold text-primary">{{ $monthlyComparison['current']['percentage'] }}%</div>
+                    <div class="small text-muted">
+                        {{ $monthlyComparison['current']['total'] }} hari tercatat
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 rounded" style="background:#f8fafc;">
+                    <div class="small text-muted mb-1">{{ $monthlyComparison['previous_label'] }}</div>
+                    <div class="fs-3 fw-bold text-secondary">{{ $monthlyComparison['previous']['percentage'] }}%</div>
+                    <div class="small text-muted">
+                        {{ $monthlyComparison['previous']['total'] }} hari tercatat
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if($monthlyComparison['can_compare'])
+            @if($monthlyComparison['change'] != 0)
+            <div class="mt-3 text-center">
+                <span class="badge {{ $monthlyComparison['is_improvement'] ? 'bg-success' : 'bg-warning' }} px-3 py-2">
+                    <i class="bi bi-{{ $monthlyComparison['is_improvement'] ? 'arrow-up' : 'arrow-down' }} me-1"></i>
+                    {{ $monthlyComparison['is_improvement'] ? 'Meningkat' : 'Menurun' }} {{ number_format($monthlyComparison['change_abs'], 1) }}% dari bulan lalu
+                </span>
+            </div>
+            @else
+            <div class="mt-3 text-center">
+                <span class="badge bg-secondary px-3 py-2">
+                    <i class="bi bi-dash-lg me-1"></i>Tidak ada perubahan dari bulan lalu
+                </span>
+            </div>
+            @endif
+        @elseif(!$monthlyComparison['has_previous_data'] && $monthlyComparison['has_current_data'])
+        <div class="mt-3 text-center">
+            <span class="badge bg-info px-3 py-2">
+                <i class="bi bi-info-circle me-1"></i>Data bulan sebelumnya belum tersedia
+            </span>
+        </div>
+        @elseif(!$monthlyComparison['has_current_data'] && $monthlyComparison['has_previous_data'])
+        <div class="mt-3 text-center">
+            <span class="badge bg-info px-3 py-2">
+                <i class="bi bi-info-circle me-1"></i>Data bulan ini belum tersedia
+            </span>
+        </div>
+        @else
+        <div class="mt-3 text-center">
+            <span class="badge bg-light text-dark px-3 py-2">
+                <i class="bi bi-calendar-x me-1"></i>Belum ada data untuk kedua bulan
+            </span>
+        </div>
+        @endif
+    </div>
+</div>
+
+{{-- ── Six-Month Trend Chart ──────────────────────────────────────── --}}
+<div class="card section-card shadow-sm mb-4">
+    <div class="card-header">
+        <h6 class="fw-bold mb-0" style="color:#1e293b;">
+            <i class="bi bi-graph-up me-2 text-primary"></i>Tren Kehadiran 6 Bulan Terakhir
+        </h6>
+    </div>
+    <div class="card-body">
+        <canvas id="attendanceTrendChart" style="max-height: 300px;"></canvas>
+    </div>
 </div>
 
 {{-- ── Recent Attendance Table ────────────────────────────────────── --}}
@@ -174,3 +262,91 @@
         @endif
     </div>
 </div>
+
+{{-- Chart.js Script for Trend Chart --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    'use strict';
+
+    const trendData = @json($sixMonthTrend);
+    const labels = trendData.map(m => m.month_short);
+    const hadirData = trendData.map(m => m.hadir);
+    const terlambatData = trendData.map(m => m.terlambat);
+    const tidakHadirData = trendData.map(m => m.tidak_hadir);
+
+    const ctx = document.getElementById('attendanceTrendChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Hadir',
+                        data: hadirData,
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Terlambat',
+                        data: terlambatData,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Tidak Hadir',
+                        data: tidakHadirData,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 12 },
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+})();
+</script>

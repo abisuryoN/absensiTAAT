@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\GuruPiketAccountController;
 use App\Http\Controllers\Admin\SchoolHolidayController;
 use App\Http\Controllers\Parent\ParentPortalController;
+use App\Http\Controllers\Parent\ParentAttendanceExportController;
 use App\Http\Controllers\GuruPiket\GuruPiketController;
 
 Route::get('/', function () {
@@ -192,7 +193,11 @@ Route::middleware(['auth', 'active', 'role:parent'])
         Route::get('/dashboard', [ParentPortalController::class, 'dashboard'])->name('dashboard');
         Route::get('/dashboard/student/{student}', [ParentPortalController::class, 'studentData'])->name('student.data');
         Route::get('/rekap-harian', [ParentPortalController::class, 'rekapHarian'])->name('rekap_harian');
+        Route::get('/rekap-harian/export/excel', [ParentAttendanceExportController::class, 'dailyExcel'])->name('rekap_harian.excel');
+        Route::get('/rekap-harian/export/pdf', [ParentAttendanceExportController::class, 'dailyPdf'])->name('rekap_harian.pdf');
         Route::get('/rekap-bulanan', [ParentPortalController::class, 'rekapBulanan'])->name('rekap_bulanan');
+        Route::get('/rekap-bulanan/export/excel', [ParentAttendanceExportController::class, 'monthlyExcel'])->name('rekap_bulanan.excel');
+        Route::get('/rekap-bulanan/export/pdf', [ParentAttendanceExportController::class, 'monthlyPdf'])->name('rekap_bulanan.pdf');
     });
 
 // 5. Guru Piket Group (shared account, multi-session)
