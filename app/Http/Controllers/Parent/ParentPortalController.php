@@ -79,8 +79,27 @@ class ParentPortalController extends Controller
 
         $dashboardData = $this->getDashboardData($student);
 
+        // Get all children for navigation
+        $parent = Auth::user()->parent;
+        $children = $parent ? $parent->students()->get() : collect();
+
+        // Prepare navigation data for prev/next buttons
+        $childrenNavData = null;
+        if ($children->count() > 1) {
+            $childrenNavData = [
+                'activeId' => $student->id,
+                'children' => $children->map(function($c) {
+                    return [
+                        'id' => $c->id,
+                        'name' => $c->name,
+                        'url' => route('parent.student.data', $c->id)
+                    ];
+                })->values()
+            ];
+        }
+
         return view('parent.partials.dashboard-content', array_merge(
-            ['activeStudent' => $student],
+            ['activeStudent' => $student, 'children' => $children, 'childrenNavData' => $childrenNavData],
             $dashboardData
         ));
     }

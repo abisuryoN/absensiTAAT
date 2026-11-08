@@ -12,9 +12,34 @@
 {{-- ── Penjelasan siswa nonaktif ─────────────────────────────────── --}}
 @include('parent._inactive_notice', ['student' => $activeStudent])
 
-{{-- ── Student Profile Card ──────────────────────────────────────── --}}
+{{-- ── Student Profile Card with Navigation ──────────────────────── --}}
 <div class="card student-profile-card shadow-sm mb-4">
     <div class="card-body p-3 p-md-4">
+        {{-- Navigation Controls (only if multiple children) --}}
+        @if(isset($children) && $children->count() > 1)
+        <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
+            <button type="button"
+                    class="btn btn-sm student-nav-btn"
+                    id="prevStudentBtn"
+                    data-direction="prev"
+                    aria-label="Anak sebelumnya"
+                    style="background:rgba(255,255,255,.2); color:#fff; border:none; width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all .2s;">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <div class="text-center flex-grow-1" style="color:#fff; font-weight:600; font-size:.95rem;">
+                {{ $activeStudent->name }}
+            </div>
+            <button type="button"
+                    class="btn btn-sm student-nav-btn"
+                    id="nextStudentBtn"
+                    data-direction="next"
+                    aria-label="Anak selanjutnya"
+                    style="background:rgba(255,255,255,.2); color:#fff; border:none; width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all .2s;">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+        @endif
+
         <div class="d-flex align-items-center gap-3">
             <div class="student-avatar">
                 <img src="{{ $activeStudent->photo_url }}"
@@ -24,7 +49,9 @@
                      onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($activeStudent->name) }}&background=6366f1&color=fff&size=96&bold=true'">
             </div>
             <div class="flex-grow-1 min-width-0">
-                <div class="fw-bold fs-5 mb-1" style="color:#fff;">{{ $activeStudent->name }}</div>
+                @unless(isset($children) && $children->count() > 1)
+                    <div class="fw-bold fs-5 mb-1" style="color:#fff;">{{ $activeStudent->name }}</div>
+                @endunless
                 <div style="color:rgba(255,255,255,.82); font-size:.85rem;">
                     NIS: {{ $activeStudent->nis ?? '-' }}
                     &bull; @php $studentClass = $activeStudent->displayClass(); @endphp
@@ -66,6 +93,13 @@
         @endif
     </div>
 </div>
+
+{{-- Hidden data for navigation script --}}
+@if(isset($childrenNavData))
+<script type="application/json" id="childrenData">
+@json($childrenNavData)
+</script>
+@endif
 
 {{-- ── Stat Cards ────────────────────────────────────────────────── --}}
 <div class="stat-cards-grid">
@@ -198,8 +232,10 @@
             <i class="bi bi-graph-up me-2 text-primary"></i>Tren Kehadiran 6 Bulan Terakhir
         </h6>
     </div>
-    <div class="card-body">
-        <canvas id="attendanceTrendChart" style="max-height: 300px;"></canvas>
+    <div class="card-body" style="min-height: 300px !important; position: relative; padding: 20px;">
+        <div style="position: relative !important; width: 100% !important; height: 280px !important; display: block !important;">
+            <canvas id="attendanceTrendChart" style="display: block !important; box-sizing: border-box; width: 100% !important; height: 100% !important;"></canvas>
+        </div>
     </div>
 </div>
 
@@ -263,90 +299,78 @@
     </div>
 </div>
 
-{{-- Chart.js Script for Trend Chart --}}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{{-- Chart data embedded for re-initialization --}}
+<script type="application/json" id="chartTrendData">
+@json($sixMonthTrend)
+</script>
+
+{{-- Navigation script for prev/next buttons --}}
+@if(isset($children) && $children->count() > 1)
 <script>
 (function() {
     'use strict';
 
-    const trendData = @json($sixMonthTrend);
-    const labels = trendData.map(m => m.month_short);
-    const hadirData = trendData.map(m => m.hadir);
-    const terlambatData = trendData.map(m => m.terlambat);
-    const tidakHadirData = trendData.map(m => m.tidak_hadir);
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initNavigation);
+    } else {
+        initNavigation();
+    }
 
-    const ctx = document.getElementById('attendanceTrendChart');
-    if (ctx) {
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Hadir',
-                        data: hadirData,
-                        borderColor: '#22c55e',
-                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    },
-                    {
-                        label: 'Terlambat',
-                        data: terlambatData,
-                        borderColor: '#f59e0b',
-                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    },
-                    {
-                        label: 'Tidak Hadir',
-                        data: tidakHadirData,
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 15,
-                            font: { size: 12 },
-                            usePointStyle: true
-                        }
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        padding: 12,
-                        cornerRadius: 8
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1,
-                            precision: 0
-                        },
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
+    function initNavigation() {
+        const prevBtn = document.getElementById('prevStudentBtn');
+        const nextBtn = document.getElementById('nextStudentBtn');
+        const childrenDataEl = document.getElementById('childrenData');
+
+        if (!prevBtn || !nextBtn || !childrenDataEl) return;
+
+        try {
+            const data = JSON.parse(childrenDataEl.textContent);
+            const children = data.children;
+            const activeStudentId = data.activeId;
+            const currentIndex = children.findIndex(function(c) { return c.id === activeStudentId; });
+
+            if (currentIndex === -1) return;
+
+            // Update button states
+            updateButtonState(prevBtn, currentIndex > 0);
+            updateButtonState(nextBtn, currentIndex < children.length - 1);
+
+            // Attach event listeners
+            prevBtn.onclick = function() {
+                if (currentIndex > 0) {
+                    navigateToStudent(children[currentIndex - 1]);
                 }
-            }
-        });
+            };
+
+            nextBtn.onclick = function() {
+                if (currentIndex < children.length - 1) {
+                    navigateToStudent(children[currentIndex + 1]);
+                }
+            };
+        } catch (e) {
+            console.error('Failed to initialize navigation:', e);
+        }
+    }
+
+    function updateButtonState(btn, enabled) {
+        if (enabled) {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+        } else {
+            btn.disabled = true;
+            btn.style.opacity = '0.3';
+            btn.style.cursor = 'not-allowed';
+        }
+    }
+
+    function navigateToStudent(student) {
+        // Trigger the same load mechanism as selector cards
+        if (window.parentDashboard && window.parentDashboard.loadStudentByUrl) {
+            window.parentDashboard.loadStudentByUrl(student.url, student.id);
+        }
     }
 })();
 </script>
+@endif

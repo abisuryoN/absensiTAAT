@@ -173,6 +173,15 @@
         }
         #dashboard-spinner.show { display: block; }
 
+        /* Navigation buttons in profile card */
+        .student-nav-btn:hover:not(:disabled) {
+            background: rgba(255,255,255,.35) !important;
+            transform: scale(1.05);
+        }
+        .student-nav-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
         /* Mobile tweaks */
         @media (max-width: 575.98px) {
             .stat-card .stat-value { font-size: 1.6rem; }
@@ -180,6 +189,7 @@
             .stat-card .stat-icon  { width: 42px; height: 42px; font-size: 1.15rem; margin-bottom: .5rem !important; }
             .student-avatar        { width: 48px; height: 48px; font-size: 1.2rem; }
             .student-selector-card { width: 150px; }
+            .student-nav-btn       { width: 40px !important; height: 40px !important; font-size: 1.1rem; }
         }
     </style>
     @endpush
@@ -255,6 +265,9 @@
     </div>
 
     @push('scripts')
+    <!-- Chart.js CDN (loaded once) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
     <script>
     (function () {
         'use strict';
@@ -263,7 +276,169 @@
         const contentBox = document.getElementById('dashboard-content');
         const spinner    = document.getElementById('dashboard-spinner');
 
-        if (!selector || !contentBox) return;
+        // Global chart instance holder
+        let attendanceChart = null;
+
+        if (!contentBox) return;
+
+        // ── Chart Management ─────────────────────────────────────────────
+        function initializeChart() {
+            console.log('[Chart] Initializing chart...');
+
+            // Find ALL canvases (both desktop and mobile layouts)
+            const allCanvases = document.querySelectorAll('#attendanceTrendChart');
+            console.log('[Chart] Found', allCanvases.length, 'canvas element(s)');
+
+            // Find the VISIBLE canvas
+            let ctx = null;
+            allCanvases.forEach(function(canvas) {
+                const rect = canvas.getBoundingClientRect();
+                const isVisible = rect.width > 0 && rect.height > 0;
+                console.log('[Chart] Canvas check - offsetWidth:', canvas.offsetWidth, 'offsetHeight:', canvas.offsetHeight, 'visible:', isVisible);
+                if (isVisible && !ctx) {
+                    ctx = canvas;
+                }
+            });
+
+            if (!ctx) {
+                console.warn('[Chart] No visible canvas found. Chart initialization skipped.');
+                return;
+            }
+
+            console.log('[Chart] Using visible canvas with dimensions:', ctx.offsetWidth, 'x', ctx.offsetHeight);
+
+            const dataEl = document.getElementById('chartTrendData');
+
+            if (!dataEl) {
+                console.warn('[Chart] Chart data element not found');
+                return;
+            }
+
+            // Check if Chart.js is loaded
+            if (typeof Chart === 'undefined') {
+                console.error('[Chart] Chart.js library not loaded');
+                return;
+            }
+
+            // Destroy existing chart instance
+            if (attendanceChart) {
+                console.log('[Chart] Destroying previous chart instance');
+                attendanceChart.destroy();
+                attendanceChart = null;
+            }
+
+            try {
+                const trendData = JSON.parse(dataEl.textContent);
+                console.log('[Chart] Parsed data:', trendData);
+
+                if (!Array.isArray(trendData) || trendData.length === 0) {
+                    console.warn('[Chart] No data available for chart');
+                    ctx.parentElement.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-info-circle me-2"></i>Belum ada data kehadiran</div>';
+                    return;
+                }
+
+                const labels = trendData.map(function(m) { return m.month_short; });
+                const hadirData = trendData.map(function(m) { return m.hadir; });
+                const terlambatData = trendData.map(function(m) { return m.terlambat; });
+                const tidakHadirData = trendData.map(function(m) { return m.tidak_hadir; });
+
+                console.log('[Chart] Labels:', labels);
+                console.log('[Chart] Creating chart with datasets:', {
+                    hadir: hadirData,
+                    terlambat: terlambatData,
+                    tidakHadir: tidakHadirData
+                });
+
+                attendanceChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Hadir',
+                                data: hadirData,
+                                borderColor: '#22c55e',
+                                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                                tension: 0.3,
+                                fill: true
+                            },
+                            {
+                                label: 'Terlambat',
+                                data: terlambatData,
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                tension: 0.3,
+                                fill: true
+                            },
+                            {
+                                label: 'Tidak Hadir',
+                                data: tidakHadirData,
+                                borderColor: '#ef4444',
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                tension: 0.3,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    font: { size: window.innerWidth < 768 ? 10 : 12 },
+                                    usePointStyle: true
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                cornerRadius: 8
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    precision: 0
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+
+                console.log('[Chart] Chart created successfully');
+            } catch (err) {
+                console.error('[Chart] Failed to initialize chart:', err);
+                if (ctx && ctx.parentElement) {
+                    ctx.parentElement.innerHTML = '<div class="text-center text-danger py-4"><i class="bi bi-exclamation-circle me-2"></i>Gagal memuat grafik: ' + err.message + '</div>';
+                }
+            }
+        }
+
+        // Initialize chart on page load with delay to ensure DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(initializeChart, 100);
+            });
+        } else {
+            setTimeout(initializeChart, 100);
+        }
+
+        if (!selector) return;
 
         // ── Helpers ──────────────────────────────────────────────────────
         function setLoading(on) {
@@ -272,7 +447,7 @@
         }
 
         function setActiveCard(studentId) {
-            selector.querySelectorAll('.student-selector-card').forEach(card => {
+            selector.querySelectorAll('.student-selector-card').forEach(function(card) {
                 const isActive = String(card.dataset.studentId) === String(studentId);
                 card.classList.toggle('active', isActive);
             });
@@ -303,6 +478,14 @@
                 const html = await response.text();
                 contentBox.innerHTML = html;
 
+                console.log('[AJAX] Content swapped, re-initializing chart...');
+
+                // Re-initialize chart after content swap with proper delay
+                // Wait for browser to render the new DOM
+                setTimeout(function() {
+                    initializeChart();
+                }, 150);
+
                 // Smooth scroll to dashboard content on mobile
                 if (window.innerWidth < 768) {
                     contentBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -321,10 +504,21 @@
             }
         }
 
+        // Expose to window for navigation buttons
+        window.parentDashboard = {
+            loadStudentByUrl: function(url, studentId) {
+                // Find the card matching this student and trigger load
+                const card = selector.querySelector('[data-student-id="' + studentId + '"]');
+                if (card) {
+                    loadStudent(card);
+                }
+            }
+        };
+
         // ── Event listeners (click + keyboard Enter/Space) ────────────────
-        selector.querySelectorAll('.student-selector-card').forEach(card => {
-            card.addEventListener('click', () => loadStudent(card));
-            card.addEventListener('keydown', e => {
+        selector.querySelectorAll('.student-selector-card').forEach(function(card) {
+            card.addEventListener('click', function() { loadStudent(card); });
+            card.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     loadStudent(card);
@@ -346,10 +540,10 @@
             ].join(';');
             toast.textContent = message;
             document.body.appendChild(toast);
-            requestAnimationFrame(() => { toast.style.opacity = '1'; });
-            setTimeout(() => {
+            requestAnimationFrame(function() { toast.style.opacity = '1'; });
+            setTimeout(function() {
                 toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
+                setTimeout(function() { toast.remove(); }, 300);
             }, 3000);
         }
     })();
